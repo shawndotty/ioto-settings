@@ -1,11 +1,11 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
+	"id": "ioto-setting",
+	"name": "IOTO Setting",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "This is a sample plugin for Obsidian. This plugin demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "This is a plugin for IOTO framework. You can use this plugin to customize your IOTO framework.",
+	"author": "Johnny Learns",
+	"authorUrl": "https://space.bilibili.com/432408734",
+	"fundingUrl": "https://space.bilibili.com/432408734",
 	"isDesktopOnly": false
 }
