@@ -1,4 +1,4 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, TFile, normalizePath, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
 
 import { t } from "./lang/helpers";
 
@@ -36,6 +36,15 @@ export default class IOTO extends Plugin {
 		this.addSettingTab(new IOTOSettingTab(this.app, this));
 
 
+		this.addCommand({
+			id: 'ioto-rebuild-dataview-dashboard',
+			name: t("REBUILD_DATAVIEW_QUERY"),
+			callback: () => {
+				console.log("here");
+			}
+		});
+
+		
 	}
 
 	onunload() {
@@ -48,6 +57,17 @@ export default class IOTO extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+	}
+
+	async rebuildTaskDashboard(taskFolder: string) {
+		const {IOTOFrameworkPath} = this.settings;
+		const taskDashboard = this.app.vault.getAbstractFileByPath(normalizePath(`${IOTOFrameworkPath}/Dashboard/Task-Dashboard.md`));
+
+		if (taskDashboard instanceof TFile) {
+			let content = await this.app.vault.read(taskDashboard);
+			content = content.replace(/(calendar file\.day\nfrom )".+"/g, `$1"${taskFolder}"`);
+			await this.app.vault.modify(taskDashboard, content);
+		}
 	}
 }
 
@@ -113,6 +133,7 @@ class IOTOSettingTab extends PluginSettingTab {
 			.onChange(async (value) => {
 				this.plugin.settings.taskFolder = value;
 				await this.plugin.saveSettings();
+				await this.plugin.rebuildTaskDashboard(value);
 			}));
 
 		new Setting(containerEl)

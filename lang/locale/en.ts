@@ -28,4 +28,5 @@ export default {
     LTD_LIST_OUTCOME_HEADING: "Heading For Your LTD List Outcome Section",
     SET_LTD_LIST_OUTCOME_HEADING: "Set Your Heading For The LTD List Outcome Section",
     LTD_LIST_OUTCOME_HEADING_HINT: "Enter Your Heading",
+    REBUILD_DATAVIEW_QUERY: "Use New IOTO folder path in Dataview Queries"
 }
