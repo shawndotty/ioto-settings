@@ -36,16 +36,6 @@ export default class IOTO extends Plugin {
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new IOTOSettingTab(this.app, this));
-
-
-		this.addCommand({
-			id: 'ioto-rebuild-dataview-dashboard',
-			name: t("REBUILD_DATAVIEW_QUERY"),
-			callback: () => {
-				console.log("here");
-			}
-		});
-
 		
 	}
 
