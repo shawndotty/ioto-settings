@@ -1,5 +1,7 @@
 export default {
     IOTO_Settings_Heading: "IOTO框架设置",
+    IOTO_Basic_Settings: "IOTO基本设置",
+    IOTO_LTD_List_Headings_Settings: "IOTO LTD列表中的标题设置",
     INPUT_FOLDER: "输入文件夹",
     SET_INPUT_FOLDER: "设置你的输入文件夹路径",
     SET_INPUT_FOLDER_HINT: "请填入你的输入文件夹路径",

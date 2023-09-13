@@ -1,6 +1,7 @@
-
 export default {
     IOTO_Settings_Heading: "IOTO Framework Settings",
+    IOTO_Basic_Settings: "IOTO Basic Settings",
+    IOTO_LTD_List_Headings_Settings: "IOTO LTD List Headings Settings",
     INPUT_FOLDER: "Input Folder",
     SET_INPUT_FOLDER: "Set Your Input Folder Path",
     SET_INPUT_FOLDER_HINT: "Enter Your Input Folder Path",
@@ -28,5 +29,4 @@ export default {
     LTD_LIST_OUTCOME_HEADING: "Heading For Your LTD List Outcome Section",
     SET_LTD_LIST_OUTCOME_HEADING: "Set Your Heading For The LTD List Outcome Section",
     LTD_LIST_OUTCOME_HEADING_HINT: "Enter Your Heading",
-    REBUILD_DATAVIEW_QUERY: "Use New IOTO folder path in Dataview Queries"
 }
