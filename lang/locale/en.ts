@@ -29,4 +29,6 @@ export default {
     LTD_LIST_OUTCOME_HEADING: "Heading For Your LTD List Outcome Section",
     SET_LTD_LIST_OUTCOME_HEADING: "Set Your Heading For The LTD List Outcome Section",
     LTD_LIST_OUTCOME_HEADING_HINT: "Enter Your Heading",
+    USE_USER_TEMPLATE: "Use User Templates",
+    TOGGLE_USE_USER_TEMPLATE: "Toggle This ON to Use Templates Created By Yourself When They Are Available. Toggle this OFF to Use IOTO Default Templates Only.",
 }

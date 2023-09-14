@@ -14,6 +14,7 @@ interface IOTOSettings {
 	LTDListInputSectionHeading: string;
 	LTDListOutputSectionHeading: string;
 	LTDListOutcomeSectionHeading: string;
+	useUserTemplate: boolean;
 }
 
 const DEFAULT_SETTINGS: IOTOSettings = {
@@ -26,6 +27,7 @@ const DEFAULT_SETTINGS: IOTOSettings = {
 	LTDListInputSectionHeading: '输入 LEARN',
 	LTDListOutputSectionHeading: '输出 THINK',
 	LTDListOutcomeSectionHeading: '成果 DO',
+	useUserTemplate: true,
 }
 
 export default class IOTO extends Plugin {
@@ -163,6 +165,17 @@ class IOTOSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				})
 			
+		});
+
+		new Setting(containerEl)
+		.setName(t("USE_USER_TEMPLATE"))
+		.setDesc(t("TOGGLE_USE_USER_TEMPLATE"))
+		.addToggle((toggle) => {
+			toggle.setValue(this.plugin.settings.useUserTemplate)
+                .onChange(async (useUT) => {
+					this.plugin.settings.useUserTemplate = useUT;
+					await this.plugin.saveSettings();
+				});
 		});
 		
 		containerEl.createEl("h2", {text: t("IOTO_LTD_List_Headings_Settings")});

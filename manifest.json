@@ -1,7 +1,7 @@
 {
 	"id": "ioto-setting",
-	"name": "IOTO Framework Setting",
-	"version": "1.0.1",
+	"name": "IOTO Framework Settings",
+	"version": "1.0.2",
 	"minAppVersion": "0.15.0",
 	"description": "This is a plugin for IOTO framework. You can use this plugin to customize your IOTO framework.",
 	"author": "Johnny Learns",

@@ -29,4 +29,6 @@ export default {
     LTD_LIST_OUTCOME_HEADING: "LTD列表中的成果模塊標題",
     SET_LTD_LIST_OUTCOME_HEADING: "設置你LTD列表中的成果模塊標題", 
     LTD_LIST_OUTCOME_HEADING_HINT: "請輸入標題",
-  }
+    USE_USER_TEMPLATE: "使用自定義模板",
+    TOGGLE_USE_USER_TEMPLATE: "開啟此選項，IOTO將會使用你提供的自定義模板，如果你沒有提過，則使用默認模板；關閉此選項，IOTO將會只使用默認模板",
+}
