@@ -15,6 +15,7 @@ interface IOTOSettings {
 	LTDListOutputSectionHeading: string;
 	LTDListOutcomeSectionHeading: string;
 	useUserTemplate: boolean;
+	IOTOMovieTimeTags: string;
 }
 
 const DEFAULT_SETTINGS: IOTOSettings = {
@@ -28,6 +29,7 @@ const DEFAULT_SETTINGS: IOTOSettings = {
 	LTDListOutputSectionHeading: '输出 THINK',
 	LTDListOutcomeSectionHeading: '成果 DO',
 	useUserTemplate: true,
+	IOTOMovieTimeTags: 'MT1,MT2,MT3,MT4',
 }
 
 export default class IOTO extends Plugin {
@@ -212,5 +214,19 @@ class IOTOSettingTab extends PluginSettingTab {
 				this.plugin.settings.LTDListOutcomeSectionHeading = value;
 				await this.plugin.saveSettings();
 			}));
+
+		containerEl.createEl("h2", {text: t("IOTO_Movie_Time_Tags_Settings")});
+
+		new Setting(containerEl)
+		.setName(t("IOTO_MOVIE_TIME_TAGS"))
+		.setDesc(t("SET_IOTO_MOVIE_TIME_TAGS"))
+		.addText(text => text
+			.setPlaceholder(t("IOTO_MOVIE_TIME_TAGS_HINT"))
+			.setValue(this.plugin.settings.IOTOMovieTimeTags)
+			.onChange(async (value) => {
+				this.plugin.settings.IOTOMovieTimeTags = value;
+				await this.plugin.saveSettings();
+			}));
+
 	}
 }

@@ -2,6 +2,7 @@ export default {
     IOTO_Settings_Heading: "IOTO Framework Settings",
     IOTO_Basic_Settings: "IOTO Basic Settings",
     IOTO_LTD_List_Headings_Settings: "IOTO LTD List Headings Settings",
+    IOTO_Movie_Time_Tags_Settings: "IOTO Movie Time Tags Settings",
     INPUT_FOLDER: "Input Folder",
     SET_INPUT_FOLDER: "Set Your Input Folder Path",
     SET_INPUT_FOLDER_HINT: "Enter Your Input Folder Path",
@@ -31,4 +32,7 @@ export default {
     LTD_LIST_OUTCOME_HEADING_HINT: "Enter Your Heading",
     USE_USER_TEMPLATE: "Use User Templates",
     TOGGLE_USE_USER_TEMPLATE: "Toggle This ON to Use Templates Created By Yourself When They Are Available. Toggle this OFF to Use IOTO Default Templates Only.",
+    IOTO_MOVIE_TIME_TAGS: "Set The Tags You Use for Your Movie Time",
+    SET_IOTO_MOVIE_TIME_TAGS: "Just Input The Names of Your Tags",
+    IOTO_MOVIE_TIME_TAGS_HINT: "Use \, to Seperate Your Tags"
 }

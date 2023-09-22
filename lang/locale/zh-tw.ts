@@ -2,6 +2,7 @@ export default {
     IOTO_Settings_Heading: "IOTO架構設置",
     IOTO_Basic_Settings: "IOTO基本設置",
     IOTO_LTD_List_Headings_Settings: "IOTO LTD列表中的標題設置",
+    IOTO_Movie_Time_Tags_Settings: "設置IOTO電影時間使用的標簽",
     INPUT_FOLDER: "輸入文件夾",
     SET_INPUT_FOLDER: "設置你的輸入文件夾路徑",
     SET_INPUT_FOLDER_HINT: "請填入你的輸入文件夾路徑",
@@ -31,4 +32,7 @@ export default {
     LTD_LIST_OUTCOME_HEADING_HINT: "請輸入標題",
     USE_USER_TEMPLATE: "使用自定義模板",
     TOGGLE_USE_USER_TEMPLATE: "開啟此選項，IOTO將會使用你提供的自定義模板，如果你沒有提過，則使用默認模板；關閉此選項，IOTO將會只使用默認模板",
+    IOTO_MOVIE_TIME_TAGS: "設置你的電影時間所使用的標簽",
+    SET_IOTO_MOVIE_TIME_TAGS: "只需要輸入標簽的名字，並使用英文逗號間隔，比如: MT1,MT2,MT3",
+    IOTO_MOVIE_TIME_TAGS_HINT: "使用英文逗號間隔你的標簽名字"
 }
