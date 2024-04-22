@@ -16,6 +16,9 @@ interface IOTOSettings {
 	LTDListOutcomeSectionHeading: string;
 	useUserTemplate: boolean;
 	IOTOMovieTimeTags: string;
+	addLinkToCurrentTDL: boolean;
+	defaultTDLDateFormat: string;
+	projectNameFormat: string;
 }
 
 const DEFAULT_SETTINGS: IOTOSettings = {
@@ -30,6 +33,9 @@ const DEFAULT_SETTINGS: IOTOSettings = {
 	LTDListOutcomeSectionHeading: '成果 DO',
 	useUserTemplate: true,
 	IOTOMovieTimeTags: 'MT1,MT2,MT3,MT4',
+	addLinkToCurrentTDL: true,
+	defaultTDLDateFormat: "YYYY-MM-DD",
+	projectNameFormat: "lastDash",
 }
 
 export default class IOTO extends Plugin {
@@ -61,7 +67,7 @@ export default class IOTO extends Plugin {
 
 		if (taskDashboard instanceof TFile) {
 			let content = await this.app.vault.read(taskDashboard);
-			content = content.replace(/(calendar file\.day\nfrom )".+"/g, `$1"${taskFolder}"`);
+			content = content.replace(/from .+"\n/g, `from "${taskFolder}"\n`);
 			await this.app.vault.modify(taskDashboard, content);
 		}
 	}
@@ -179,8 +185,45 @@ class IOTOSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				});
 		});
+
+		new Setting(containerEl)
+		.setName(t("ADD_LINK_TO_CURRENT_TDL"))
+		.setDesc(t("ADD_LINK_TO_CURRENT_TDL_HINT"))
+		.addToggle((toggle) => {
+			toggle.setValue(this.plugin.settings.addLinkToCurrentTDL)
+                .onChange(async (addLToTDL) => {
+					this.plugin.settings.addLinkToCurrentTDL = addLToTDL;
+					await this.plugin.saveSettings();
+				});
+		});
 		
-		containerEl.createEl("h2", {text: t("IOTO_LTD_List_Headings_Settings")});
+		containerEl.createEl("h2", {text: t("IOTO_PROJECT_AND_LTD_List_Settings")});
+
+		new Setting(containerEl)
+		.setName(t("PROJECT_NAME_FORMAT"))
+		.setDesc(t("PROJECT_NAME_FORMAT_HINT"))
+		.addDropdown(cb => {
+			cb.addOption("lastDash", t("Project_NAME_FORMAT_1"))
+				.addOption("firstDash", t("Project_NAME_FORMAT_2"))
+				.addOption("wholeFolderName", t("Project_NAME_FORMAT_3"))
+				.setValue(this.plugin.settings.projectNameFormat)
+				.onChange(async (value) => {
+					console.dir(value);
+					this.plugin.settings.projectNameFormat = value;
+					await this.plugin.saveSettings();
+				})
+		});
+
+		new Setting(containerEl)
+		.setName(t("LTD_LIST_DATE_FORMAT"))
+		.setDesc(t("LTD_LIST_DATE_FORMAT_HINT"))
+		.addText(text => text
+			.setPlaceholder(t("LTD_LIST_DATE_FORMAT_PLACE_HOLDER"))
+			.setValue(this.plugin.settings.defaultTDLDateFormat)
+			.onChange(async (value) => {
+				this.plugin.settings.defaultTDLDateFormat = value;
+				await this.plugin.saveSettings();
+			}));
 
 		new Setting(containerEl)
 		.setName(t("LTD_LIST_INPUT_HEADING"))
