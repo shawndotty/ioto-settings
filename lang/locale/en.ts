@@ -99,4 +99,7 @@ export default {
     USE_CUSTOM_TDL_NAMES: "Use Custom TDL Names",
     USE_CUSTOM_TDL_NAMES_HINT: "When You Enable This Option You Can Set Custom Name For You TDL",
     USE_USER_TEMPLATE: "Use User Templates",
+    HEADING_LEVEL_1: "Heading Level 1st",
+    HEADING_LEVEL_2: "Heading Level 2nd",
+    HEADING_LEVEL_3: "Heading Level 3rd",
 }

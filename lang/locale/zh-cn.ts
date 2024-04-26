@@ -99,4 +99,7 @@ export default {
     USE_CUSTOM_TDL_NAMES: "使用自定义 TDL 名称",
     USE_CUSTOM_TDL_NAMES_HINT: "启用此选项后，您可以为 TDL 设置自定义名称",
     USE_USER_TEMPLATE: "使用用户模板",
+    HEADING_LEVEL_1: "1号标题",
+    HEADING_LEVEL_2: "2号标题",
+    HEADING_LEVEL_3: "3号标题",
 }
