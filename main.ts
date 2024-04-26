@@ -19,6 +19,41 @@ interface IOTOSettings {
 	addLinkToCurrentTDL: boolean;
 	defaultTDLDateFormat: string;
 	projectNameFormat: string;
+	inputSelectorExcludesPaths: string;
+	outputSelectorExcludesPaths: string;
+	taskSelectorExcludesPaths: string;
+	outcomeSelectorExcludesPaths: string;
+	inputSelectorShowOptionOrder: boolean;
+	outputSelectorShowOptionOrder: boolean;
+	taskSelectorShowOptionOrder: boolean;
+	outcomeSelectorShowOptionOrder: boolean;
+	inputSelectorShowBasePath: boolean;
+	outputSelectorShowBasePath: boolean;
+	taskSelectorShowBasePath: boolean;
+	outcomeSelectorShowBasePath: boolean;
+	inputSelectorFolderOptionTemplate: string;
+	outputSelectorFolderOptionTemplate: string;
+	taskSelectorFolderOptionTemplate: string;
+	outcomeSelectorFolderOptionTemplate: string;
+	outcomeSelectorIncludeParentFolder: boolean;
+	outcomeProjectDefaultSubFolders: string;
+	newInputNoteFollowUpAction: string;
+	newOutputNoteFollowUpAction: string;
+	newOutcomeNoteFollowUpAction: string;
+	taskSelectorEnableFutureDaysChoices: boolean;
+	taskSelectorUseCustomTdlNames: boolean;
+	fleetingNotePrefix: string;
+	fleetingNoteDateFormat: string;
+	inputNoteNamePrefix: string;
+	inputNoteNamePostfix: string;
+	inputNoteDefaultExcalidrawTemplate: string;
+	outputNoteNamePrefix: string;
+	outputNoteNamePostfix: string;
+	outputNoteDefaultExcalidrawTemplate: string;
+	outcomeNoteNamePrefix: string;
+	outcomeNoteNamePostfix: string;
+	outcomeNoteDefaultExcalidrawTemplate: string;
+	defaultTDLHeadingLevel: string;
 }
 
 const DEFAULT_SETTINGS: IOTOSettings = {
@@ -36,6 +71,41 @@ const DEFAULT_SETTINGS: IOTOSettings = {
 	addLinkToCurrentTDL: true,
 	defaultTDLDateFormat: "YYYY-MM-DD",
 	projectNameFormat: "lastDash",
+	inputSelectorExcludesPaths: "",
+	outputSelectorExcludesPaths: "",
+	taskSelectorExcludesPaths: "",
+	outcomeSelectorExcludesPaths: "",
+	inputSelectorShowOptionOrder: true,
+	outputSelectorShowOptionOrder: true,
+	taskSelectorShowOptionOrder: true,
+	outcomeSelectorShowOptionOrder: true,
+	inputSelectorShowBasePath: false,
+	outputSelectorShowBasePath: false,
+	taskSelectorShowBasePath: false,
+	outcomeSelectorShowBasePath: false,
+	inputSelectorFolderOptionTemplate: "在 {{folder}} 创建输入笔记",
+	outputSelectorFolderOptionTemplate: "在 {{folder}} 创建输出笔记",
+	taskSelectorFolderOptionTemplate: "在 {{folder}} 创建任务列表",
+	outcomeSelectorFolderOptionTemplate: "在 {{folder}} 创建成果笔记",
+	outcomeSelectorIncludeParentFolder: true,
+	outcomeProjectDefaultSubFolders: "文章\n总结",
+	newInputNoteFollowUpAction: "0",
+	newOutputNoteFollowUpAction: "0",
+	newOutcomeNoteFollowUpAction: "0",
+	taskSelectorEnableFutureDaysChoices: false,
+	taskSelectorUseCustomTdlNames: false,
+	fleetingNotePrefix: "闪念",
+	fleetingNoteDateFormat: "YYYY-MM-DD",
+	inputNoteNamePrefix: "",
+	inputNoteNamePostfix: "",
+	inputNoteDefaultExcalidrawTemplate: "",
+	outputNoteNamePrefix: "",
+	outputNoteNamePostfix: "",
+	outputNoteDefaultExcalidrawTemplate: "",
+	outcomeNoteNamePrefix: "",
+	outcomeNoteNamePostfix: "",
+	outcomeNoteDefaultExcalidrawTemplate: "",
+	defaultTDLHeadingLevel: "##"
 }
 
 export default class IOTO extends Plugin {
