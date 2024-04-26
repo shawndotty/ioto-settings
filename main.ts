@@ -167,21 +167,21 @@ class IOTOSettingTab extends PluginSettingTab {
 			});
 		});
 		new Setting(containerEl).setName(t("INPUT_FOLDER")).setDesc(t("SET_INPUT_FOLDER")).addSearch((cb) => {
-			new FolderSuggest(cb.inputEl, this.app);
+			new FolderSuggest(cb.inputEl);
 			cb.setPlaceholder(t("SET_INPUT_FOLDER_HINT")).setValue(this.plugin.settings.inputFolder).onChange(async (newFolder) => {
 				this.plugin.settings.inputFolder = newFolder;
 				await this.plugin.saveSettings();
 			});
 		});
 		new Setting(containerEl).setName(t("OUTPUT_FOLDER")).setDesc(t("SET_OUTPUT_FOLDER")).addSearch((cb) => {
-			new FolderSuggest(cb.inputEl, this.app);
+			new FolderSuggest(cb.inputEl);
 			cb.setPlaceholder(t("SET_OUTPUT_FOLDER_HINT")).setValue(this.plugin.settings.outputFolder).onChange(async (newFolder) => {
 				this.plugin.settings.outputFolder = newFolder;
 				await this.plugin.saveSettings();
 			});
 		});
 		new Setting(containerEl).setName(t("TASK_FOLDER")).setDesc(t("SET_TASK_FOLDER")).addSearch((cb) => {
-			new FolderSuggest(cb.inputEl, this.app);
+			new FolderSuggest(cb.inputEl);
 			cb.setPlaceholder(t("SET_TASK_FOLDER_HINT")).setValue(this.plugin.settings.taskFolder).onChange(async (newFolder) => {
 				this.plugin.settings.taskFolder = newFolder;
 				await this.plugin.saveSettings();
@@ -189,21 +189,21 @@ class IOTOSettingTab extends PluginSettingTab {
 			});
 		});
 		new Setting(containerEl).setName(t("OUTCOME_FOLDER")).setDesc(t("SET_OUTCOME_FOLDER")).addSearch((cb) => {
-			new FolderSuggest(cb.inputEl, this.app);
+			new FolderSuggest(cb.inputEl);
 			cb.setPlaceholder(t("SET_OUTCOME_FOLDER_HINT")).setValue(this.plugin.settings.outcomeFolder).onChange(async (newFolder) => {
 				this.plugin.settings.outcomeFolder = newFolder;
 				await this.plugin.saveSettings();
 			});
 		});
 		new Setting(containerEl).setName(t("EXTRA_FOLDER")).setDesc(t("SET_EXTRA_FOLDER")).addSearch((cb) => {
-			new FolderSuggest(cb.inputEl, this.app);
+			new FolderSuggest(cb.inputEl);
 			cb.setPlaceholder(t("SET_EXTRA_FOLDER_HINT")).setValue(this.plugin.settings.extraFolder).onChange(async (newFolder) => {
 				this.plugin.settings.extraFolder = newFolder;
 				await this.plugin.saveSettings();
 			});
 		});
 		new Setting(containerEl).setName(t("IOTO_FRAMEWORK_PATH")).setDesc(t("SET_IOTO_FRAMEWORK_PATH")).addSearch((cb) => {
-			new FolderSuggest(cb.inputEl, this.app);
+			new FolderSuggest(cb.inputEl);
 			cb.setPlaceholder(t("SET_IOTO_FRAMEWORK_PATH_HINT")).setValue(this.plugin.settings.IOTOFrameworkPath).onChange(async (newFolder) => {
 				this.plugin.settings.IOTOFrameworkPath = newFolder;
 				await this.plugin.saveSettings();
