@@ -1,4 +1,4 @@
-import { App, TFile, normalizePath, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, TFile, normalizePath, Plugin, PluginSettingTab, Setting } from 'obsidian';
 
 import { t } from "./lang/helpers";
 
@@ -54,6 +54,9 @@ interface IOTOSettings {
 	outcomeNoteNamePostfix: string;
 	outcomeNoteDefaultExcalidrawTemplate: string;
 	defaultTDLHeadingLevel: string;
+	templaterDataPath: string;
+	hotkeysFile: string;
+	workspacesFile: string;
 }
 
 const DEFAULT_SETTINGS: IOTOSettings = {
@@ -105,7 +108,10 @@ const DEFAULT_SETTINGS: IOTOSettings = {
 	outcomeNoteNamePrefix: "",
 	outcomeNoteNamePostfix: "",
 	outcomeNoteDefaultExcalidrawTemplate: "",
-	defaultTDLHeadingLevel: "##"
+	defaultTDLHeadingLevel: "##",
+	templaterDataPath: "plugins/templater-obsidian/data.json",
+	hotkeysFile: "hotkeys.json",
+	workspacesFile: "workspaces.json",
 }
 
 export default class IOTO extends Plugin {
@@ -141,6 +147,27 @@ export default class IOTO extends Plugin {
 			await this.app.vault.modify(taskDashboard, content);
 		}
 	}
+
+	async changeIOTOBaseFolder(newFolder: string, oldFolder: string) {
+		const {templaterDataPath, hotkeysFile, workspacesFile} = this.settings;
+		const configDir = this.app.vault.configDir;
+		const files = [
+			configDir + "/" + templaterDataPath,
+			configDir + "/" + hotkeysFile,
+			configDir + "/" + workspacesFile,
+		]
+		console.dir(newFolder);
+		console.dir(oldFolder);
+		for (let index = 0; index < files.length; index++) {
+			const filePath = files[index];
+			if(await this.app.vault.adapter.exists(filePath) && "" !== newFolder && newFolder !== oldFolder) {
+				console.log("here");
+				let content = await this.app.vault.adapter.read(filePath);
+				content = content.replaceAll(":"+oldFolder + "/", ":"+newFolder + "/").replaceAll('"'+oldFolder + "/", '"'+newFolder + "/");
+				await this.app.vault.adapter.write(filePath, content);
+			}
+		}
+	}
 }
 
 class IOTOSettingTab extends PluginSettingTab {
@@ -169,44 +196,70 @@ class IOTOSettingTab extends PluginSettingTab {
 		new Setting(containerEl).setName(t("INPUT_FOLDER")).setDesc(t("SET_INPUT_FOLDER")).addText((cb) => {
 			//new FolderSuggest(cb.inputEl);
 			cb.setPlaceholder(t("SET_INPUT_FOLDER_HINT")).setValue(this.plugin.settings.inputFolder).onChange(async (newFolder) => {
-				this.plugin.settings.inputFolder = newFolder;
+				const oldFolder = this.plugin.settings.inputFolder;
+				if (newFolder) {
+					this.plugin.settings.inputFolder = newFolder;
+				}
 				await this.plugin.saveSettings();
+				
+				await this.plugin.changeIOTOBaseFolder(newFolder, oldFolder);
+				
 			});
 		});
 		new Setting(containerEl).setName(t("OUTPUT_FOLDER")).setDesc(t("SET_OUTPUT_FOLDER")).addText((cb) => {
-			
+			//new FolderSuggest(cb.inputEl);
 			cb.setPlaceholder(t("SET_OUTPUT_FOLDER_HINT")).setValue(this.plugin.settings.outputFolder).onChange(async (newFolder) => {
+				const oldFolder = this.plugin.settings.outputFolder;
+				if (newFolder) {
 				this.plugin.settings.outputFolder = newFolder;
+				}
 				await this.plugin.saveSettings();
+				await this.plugin.changeIOTOBaseFolder(newFolder, oldFolder);
 			});
 		});
 		new Setting(containerEl).setName(t("TASK_FOLDER")).setDesc(t("SET_TASK_FOLDER")).addText((cb) => {
-			
+			//new FolderSuggest(cb.inputEl);
 			cb.setPlaceholder(t("SET_TASK_FOLDER_HINT")).setValue(this.plugin.settings.taskFolder).onChange(async (newFolder) => {
-				this.plugin.settings.taskFolder = newFolder;
+				const oldFolder = this.plugin.settings.taskFolder;
+				if (newFolder) {
+					this.plugin.settings.taskFolder = newFolder;
+				}
 				await this.plugin.saveSettings();
-				await this.plugin.rebuildTaskDashboard(newFolder);
+				await this.plugin.rebuildTaskDashboard(newFolder ? newFolder : oldFolder);
+				await this.plugin.changeIOTOBaseFolder(newFolder, oldFolder);
 			});
 		});
 		new Setting(containerEl).setName(t("OUTCOME_FOLDER")).setDesc(t("SET_OUTCOME_FOLDER")).addText((cb) => {
-			
+			//new FolderSuggest(cb.inputEl);
 			cb.setPlaceholder(t("SET_OUTCOME_FOLDER_HINT")).setValue(this.plugin.settings.outcomeFolder).onChange(async (newFolder) => {
-				this.plugin.settings.outcomeFolder = newFolder;
+				const oldFolder = this.plugin.settings.outcomeFolder;
+				if (newFolder) {
+					this.plugin.settings.outcomeFolder = newFolder;
+				}
 				await this.plugin.saveSettings();
+				await this.plugin.changeIOTOBaseFolder(newFolder, oldFolder);
 			});
 		});
 		new Setting(containerEl).setName(t("EXTRA_FOLDER")).setDesc(t("SET_EXTRA_FOLDER")).addText((cb) => {
-			
+			//new FolderSuggest(cb.inputEl);
 			cb.setPlaceholder(t("SET_EXTRA_FOLDER_HINT")).setValue(this.plugin.settings.extraFolder).onChange(async (newFolder) => {
-				this.plugin.settings.extraFolder = newFolder;
+				const oldFolder = this.plugin.settings.extraFolder;
+				if (newFolder) {
+					this.plugin.settings.extraFolder = newFolder;
+				}
 				await this.plugin.saveSettings();
+				await this.plugin.changeIOTOBaseFolder(newFolder, oldFolder);
 			});
 		});
 		new Setting(containerEl).setName(t("IOTO_FRAMEWORK_PATH")).setDesc(t("SET_IOTO_FRAMEWORK_PATH")).addText((cb) => {
-			
+			//new FolderSuggest(cb.inputEl);
 			cb.setPlaceholder(t("SET_IOTO_FRAMEWORK_PATH_HINT")).setValue(this.plugin.settings.IOTOFrameworkPath).onChange(async (newFolder) => {
-				this.plugin.settings.IOTOFrameworkPath = newFolder;
+				const oldFolder = this.plugin.settings.IOTOFrameworkPath;
+				if (newFolder) {
+					this.plugin.settings.IOTOFrameworkPath = newFolder;
+				}
 				await this.plugin.saveSettings();
+				await this.plugin.changeIOTOBaseFolder(newFolder, oldFolder);
 			});
 		});
 		containerEl.createEl("h3", { text: t("IOTO_PROJECT_AND_LTD_List_Settings") });
