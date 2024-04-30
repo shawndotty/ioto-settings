@@ -102,4 +102,8 @@ export default {
     HEADING_LEVEL_1: "1号标题",
     HEADING_LEVEL_2: "2号标题",
     HEADING_LEVEL_3: "3号标题",
+    PROJECT_NAME_SOURCE: "项目名称来源",
+    PROJECT_NAME_SOURCE_HINT: "你可以选择任务文件夹下的第一级或者最后一级子文件名称作为项目名字的来源",
+    PROJECT_NAME_SOURCE_1: "使用第一级",
+    PROJECT_NAME_SOURCE_2: "使用最后一级",
 }

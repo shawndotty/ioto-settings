@@ -102,4 +102,8 @@ export default {
     HEADING_LEVEL_1: "1號標題",
     HEADING_LEVEL_2: "2號標題",
     HEADING_LEVEL_3: "3號標題",
+    PROJECT_NAME_SOURCE: "項目名稱來源",
+    PROJECT_NAME_SOURCE_HINT: "你可以選擇任務文件夾下的第一級或者最後一級子文件名稱作為項目名字的來源",
+    PROJECT_NAME_SOURCE_1: "使用第一級",
+    PROJECT_NAME_SOURCE_2: "使用最後一級",
 }

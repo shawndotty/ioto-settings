@@ -102,4 +102,8 @@ export default {
     HEADING_LEVEL_1: "Heading Level 1st",
     HEADING_LEVEL_2: "Heading Level 2nd",
     HEADING_LEVEL_3: "Heading Level 3rd",
+    PROJECT_NAME_SOURCE: "Project Name Based On",
+    PROJECT_NAME_SOURCE_HINT: "Your Can Choose The First Or Last Level Sub Folder Name In Tasks Folder As Project Name Source",
+    PROJECT_NAME_SOURCE_1: "Use First Level",
+    PROJECT_NAME_SOURCE_2: "Use Last Level",
 }

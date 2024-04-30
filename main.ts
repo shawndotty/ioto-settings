@@ -57,6 +57,7 @@ interface IOTOSettings {
 	templaterDataPath: string;
 	hotkeysFile: string;
 	workspacesFile: string;
+	projectNameSource: string
 }
 
 const DEFAULT_SETTINGS: IOTOSettings = {
@@ -112,6 +113,7 @@ const DEFAULT_SETTINGS: IOTOSettings = {
 	templaterDataPath: "plugins/templater-obsidian/data.json",
 	hotkeysFile: "hotkeys.json",
 	workspacesFile: "workspaces.json",
+	projectNameSource: "first",
 }
 
 export default class IOTO extends Plugin {
@@ -156,8 +158,6 @@ export default class IOTO extends Plugin {
 			configDir + "/" + hotkeysFile,
 			configDir + "/" + workspacesFile,
 		]
-		console.dir(newFolder);
-		console.dir(oldFolder);
 		for (let index = 0; index < files.length; index++) {
 			const filePath = files[index];
 			if(await this.app.vault.adapter.exists(filePath) && "" !== newFolder && newFolder !== oldFolder) {
@@ -266,6 +266,12 @@ class IOTOSettingTab extends PluginSettingTab {
 		new Setting(containerEl).setName(t("ADD_LINK_TO_CURRENT_TDL")).setDesc(t("ADD_LINK_TO_CURRENT_TDL_HINT")).addToggle((toggle) => {
 			toggle.setValue(this.plugin.settings.addLinkToCurrentTDL).onChange(async (addLToTDL) => {
 				this.plugin.settings.addLinkToCurrentTDL = addLToTDL;
+				await this.plugin.saveSettings();
+			});
+		});
+		new Setting(containerEl).setName(t("PROJECT_NAME_SOURCE")).setDesc(t("PROJECT_NAME_SOURCE_HINT")).addDropdown((cb) => {
+			cb.addOption("first", t("PROJECT_NAME_SOURCE_1")).addOption("last", t("PROJECT_NAME_SOURCE_2")).setValue(this.plugin.settings.projectNameSource).onChange(async (value) => {
+				this.plugin.settings.projectNameSource = value;
 				await this.plugin.saveSettings();
 			});
 		});
