@@ -106,4 +106,13 @@ export default {
     PROJECT_NAME_SOURCE_HINT: "你可以選擇任務文件夾下的第一級或者最後一級子文件名稱作為項目名字的來源",
     PROJECT_NAME_SOURCE_1: "使用第一級",
     PROJECT_NAME_SOURCE_2: "使用最後一級",
+    DEFAULT_INPUT_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION: "输入笔记被加入TDL后在当前笔记的默认操作",
+    DEFAULT_OUTPUT_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION: "输出笔记被加入TDL后在当前笔记的默认操作",
+    DEFAULT_OUTCOME_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION: "成果笔记被加入TDL后在当前笔记的默认操作",
+    DEFAULT_INPUT_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION_HINT: "设置输入笔记被加入TDL后在当前笔记的默认操作",
+    DEFAULT_OUTPUT_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION_HINT: "设置输出笔记被加入TDL后在当前笔记的默认操作",
+    DEFAULT_OUTCOME_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION_HINT: "设置成果笔记被加入TDL后在当前笔记的默认操作",
+    ADDED_TO_TDL_FOLLOW_UP_ACTION_0: "显示操作选项",
+    ADDED_TO_TDL_FOLLOW_UP_ACTION_1: "插入笔记链接",
+    ADDED_TO_TDL_FOLLOW_UP_ACTION_2: "嵌入TDL中的任务条目",
 }

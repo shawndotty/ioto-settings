@@ -106,4 +106,13 @@ export default {
     PROJECT_NAME_SOURCE_HINT: "Your Can Choose The First Or Last Level Sub Folder Name In Tasks Folder As Project Name Source",
     PROJECT_NAME_SOURCE_1: "Use First Level",
     PROJECT_NAME_SOURCE_2: "Use Last Level",
+    DEFAULT_INPUT_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION: "Default Follow Up Action When A New Input Note Is Added To TDL",
+    DEFAULT_OUTPUT_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION: "Default Follow Up Action When A New Output Note Is Added To TDL",
+    DEFAULT_OUTCOME_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION: "Default Follow Up Action When A New Outcome Note Is Added To TDL",
+    DEFAULT_INPUT_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION_HINT: "Set Up The Default Follow Up Action When A New Input Note Is Added To TDL",
+    DEFAULT_OUTPUT_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION_HINT: "Set Up The Default Follow Up Action When A New Output Note Is Added To TDL",
+    DEFAULT_OUTCOME_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION_HINT: "Set Up The Default Follow Up Action When A New Outcome Note Is Added To TDL",
+    ADDED_TO_TDL_FOLLOW_UP_ACTION_0: "Show Options",
+    ADDED_TO_TDL_FOLLOW_UP_ACTION_1: "Insert Note Link",
+    ADDED_TO_TDL_FOLLOW_UP_ACTION_2: "Embed TDL Item For Note",
 }

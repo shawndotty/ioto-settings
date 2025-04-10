@@ -57,7 +57,10 @@ interface IOTOSettings {
 	templaterDataPath: string;
 	hotkeysFile: string;
 	workspacesFile: string;
-	projectNameSource: string
+	projectNameSource: string;
+	newInputNoteAddedToTDLFollowUpAction: string;
+	newOutputNoteAddedToTDLFollowUpAction: string;
+	newOutcomeNoteAddedToTDLFollowUpAction: string;
 }
 
 const DEFAULT_SETTINGS: IOTOSettings = {
@@ -114,6 +117,9 @@ const DEFAULT_SETTINGS: IOTOSettings = {
 	hotkeysFile: "hotkeys.json",
 	workspacesFile: "workspaces.json",
 	projectNameSource: "first",
+	newInputNoteAddedToTDLFollowUpAction: "0",
+	newOutputNoteAddedToTDLFollowUpAction: "0",
+	newOutcomeNoteAddedToTDLFollowUpAction: "0",
 }
 
 export default class IOTO extends Plugin {
@@ -161,9 +167,8 @@ export default class IOTO extends Plugin {
 		for (let index = 0; index < files.length; index++) {
 			const filePath = files[index];
 			if(await this.app.vault.adapter.exists(filePath) && "" !== newFolder && newFolder !== oldFolder) {
-				console.log("here");
 				let content = await this.app.vault.adapter.read(filePath);
-				content = content.replaceAll(":"+oldFolder + "/", ":"+newFolder + "/").replaceAll('"'+oldFolder + "/", '"'+newFolder + "/");
+				content = content.replace(":"+oldFolder + "/", ":"+newFolder + "/").replace('"'+oldFolder + "/", '"'+newFolder + "/");
 				await this.app.vault.adapter.write(filePath, content);
 			}
 		}
@@ -263,12 +268,7 @@ class IOTOSettingTab extends PluginSettingTab {
 			});
 		});
 		containerEl.createEl("h3", { text: t("IOTO_PROJECT_AND_LTD_List_Settings") });
-		new Setting(containerEl).setName(t("ADD_LINK_TO_CURRENT_TDL")).setDesc(t("ADD_LINK_TO_CURRENT_TDL_HINT")).addToggle((toggle) => {
-			toggle.setValue(this.plugin.settings.addLinkToCurrentTDL).onChange(async (addLToTDL) => {
-				this.plugin.settings.addLinkToCurrentTDL = addLToTDL;
-				await this.plugin.saveSettings();
-			});
-		});
+		
 		new Setting(containerEl).setName(t("PROJECT_NAME_SOURCE")).setDesc(t("PROJECT_NAME_SOURCE_HINT")).addDropdown((cb) => {
 			cb.addOption("first", t("PROJECT_NAME_SOURCE_1")).addOption("last", t("PROJECT_NAME_SOURCE_2")).setValue(this.plugin.settings.projectNameSource).onChange(async (value) => {
 				this.plugin.settings.projectNameSource = value;
@@ -320,6 +320,32 @@ class IOTOSettingTab extends PluginSettingTab {
 				await this.plugin.saveSettings();
 			});
 		});
+		new Setting(containerEl).setName(t("ADD_LINK_TO_CURRENT_TDL")).setDesc(t("ADD_LINK_TO_CURRENT_TDL_HINT")).addToggle((toggle) => {
+			toggle.setValue(this.plugin.settings.addLinkToCurrentTDL).onChange(async (addLToTDL) => {
+				this.plugin.settings.addLinkToCurrentTDL = addLToTDL;
+				await this.plugin.saveSettings();
+			});
+		});
+		new Setting(containerEl).setName(t("DEFAULT_INPUT_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION")).setDesc(t("DEFAULT_INPUT_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION_HINT")).addDropdown((cb) => {
+			cb.addOption("0", t("ADDED_TO_TDL_FOLLOW_UP_ACTION_0")).addOption("1", t("ADDED_TO_TDL_FOLLOW_UP_ACTION_1")).addOption("2", t("ADDED_TO_TDL_FOLLOW_UP_ACTION_2")).setValue(this.plugin.settings.newInputNoteAddedToTDLFollowUpAction).onChange(async (value) => {
+				this.plugin.settings.newInputNoteAddedToTDLFollowUpAction = value;
+				await this.plugin.saveSettings();
+			});
+		});
+		new Setting(containerEl).setName(t("DEFAULT_OUTPUT_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION")).setDesc(t("DEFAULT_OUTPUT_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION_HINT")).addDropdown((cb) => {
+			cb.addOption("0", t("ADDED_TO_TDL_FOLLOW_UP_ACTION_0")).addOption("1", t("ADDED_TO_TDL_FOLLOW_UP_ACTION_1")).addOption("2", t("ADDED_TO_TDL_FOLLOW_UP_ACTION_2")).setValue(this.plugin.settings.newOutputNoteAddedToTDLFollowUpAction).onChange(async (value) => {
+				this.plugin.settings.newOutputNoteAddedToTDLFollowUpAction = value;
+				await this.plugin.saveSettings();
+			});
+		});
+		new Setting(containerEl).setName(t("DEFAULT_OUTCOME_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION")).setDesc(t("DEFAULT_OUTCOME_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION_HINT")).addDropdown((cb) => {
+			cb.addOption("0", t("ADDED_TO_TDL_FOLLOW_UP_ACTION_0")).addOption("1", t("ADDED_TO_TDL_FOLLOW_UP_ACTION_1")).addOption("2", t("ADDED_TO_TDL_FOLLOW_UP_ACTION_2")).setValue(this.plugin.settings.newOutcomeNoteAddedToTDLFollowUpAction).onChange(async (value) => {
+				this.plugin.settings.newOutcomeNoteAddedToTDLFollowUpAction = value;
+				await this.plugin.saveSettings();
+			});
+		});
+
+
 		containerEl.createEl("h3", { text: t("IOTO_INPUT_SELECTOR_SETTINGS") });
 		containerEl.createEl("h4", { text: t("IOTO_INPUT_SELECTOR_FOLDER_OPTION_SETTINGS") });
 		new Setting(containerEl).setName(t("INPUT_SELECTOR_EXCLUDES_PATHS")).setDesc(t("INPUT_SELECTOR_EXCLUDES_PATHS_HINT")).addTextArea(
