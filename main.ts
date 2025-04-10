@@ -2,8 +2,6 @@ import { App, TFile, normalizePath, Plugin, PluginSettingTab, Setting } from 'ob
 
 import { t } from "./lang/helpers";
 
-//import { FolderSuggest } from "./suggesters/FolderSuggester";
-
 interface IOTOSettings {
 	inputFolder: string;
 	outputFolder: string;
