@@ -129,91 +129,103 @@ const DEFAULT_SETTINGS: IOTOSettings = {
 };
 
 export class InputModal extends Modal {
-    private resolve: (value: string | null) => void;
-    private inputEl: HTMLInputElement;
-    
-    constructor(app: App, private promptText: string, private defaultValue?: string) {
-        super(app);
-    }
-    
-    onOpen() {
-        const { contentEl } = this;
-        
-        // 添加模态框容器样式
-        contentEl.addClass('ioto-input-modal');
-        
-        // 创建标题
-        contentEl.createEl('h2', { 
-            text: this.promptText,
-            cls: 'ioto-input-modal-title'
-        });
-        
-        // 创建输入框容器
-        const inputContainer = contentEl.createEl('div', {
-            cls: 'ioto-input-container'
-        });
-        
-        // 创建输入框
-        this.inputEl = inputContainer.createEl('input', {
-            type: 'text',
-            value: this.defaultValue || '',
-            cls: 'ioto-input'
-        });
+	private resolve: (value: string | null) => void;
+	private inputEl: HTMLInputElement;
 
-        // 添加键盘事件监听
-        this.inputEl.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                this.resolve(this.inputEl.value);
-                this.close();
-            } else if (e.key === 'Escape') {
-                e.preventDefault();
-                this.resolve(null);
-                this.close();
-            }
-        });
-        
-        // 创建按钮容器
-        const buttonContainer = contentEl.createEl('div', {
-            cls: 'ioto-button-container'
-        });
-        
-        // 创建取消按钮
-        buttonContainer.createEl('button', { 
-            text: t('Cancel'),
-            cls: 'ioto-button ioto-button-cancel'
-        }, (btn) => {
-            btn.addEventListener('click', () => {
-                this.resolve(null);
-                this.close();
-            });
-        });
-        
-        // 创建确认按钮
-        buttonContainer.createEl('button', { 
-            text: t('Confirm'),
-            cls: 'ioto-button ioto-button-confirm'
-        }, (btn) => {
-            btn.addEventListener('click', () => {
-                this.resolve(this.inputEl.value);
-                this.close();
-            });
-        });
-        
-        // 自动聚焦输入框
-        this.inputEl.focus();
-    }
-    
-    onClose() {
-        this.contentEl.empty();
-    }
-    
-    async openAndGetValue(): Promise<string | null> {
-        return new Promise((resolve) => {
-            this.resolve = resolve;
-            this.open();
-        });
-    }
+	constructor(
+		app: App,
+		private promptText: string,
+		private defaultValue?: string
+	) {
+		super(app);
+	}
+
+	onOpen() {
+		const { contentEl } = this;
+
+		// 添加模态框容器样式
+		contentEl.addClass("ioto-input-modal");
+
+		// 创建标题
+		contentEl.createEl("h2", {
+			text: this.promptText,
+			cls: "ioto-input-modal-title",
+		});
+
+		// 创建输入框容器
+		const inputContainer = contentEl.createEl("div", {
+			cls: "ioto-input-container",
+		});
+
+		// 创建输入框
+		this.inputEl = inputContainer.createEl("input", {
+			type: "text",
+			value: this.defaultValue || "",
+			cls: "ioto-input",
+		});
+
+		// 添加键盘事件监听
+		this.inputEl.addEventListener("keydown", (e) => {
+			if (e.key === "Enter") {
+				e.preventDefault();
+				this.resolve(this.inputEl.value);
+				this.close();
+			} else if (e.key === "Escape") {
+				e.preventDefault();
+				this.resolve(null);
+				this.close();
+			}
+		});
+
+		// 创建按钮容器
+		const buttonContainer = contentEl.createEl("div", {
+			cls: "ioto-button-container",
+		});
+
+		// 创建取消按钮
+		buttonContainer.createEl(
+			"button",
+			{
+				text: t("Cancel"),
+				cls: "ioto-button ioto-button-cancel",
+			},
+			(btn) => {
+				btn.addEventListener("click", () => {
+					this.resolve(null);
+					this.close();
+				});
+			}
+		);
+
+		// 创建确认按钮
+		buttonContainer.createEl(
+			"button",
+			{
+				text: t("Confirm"),
+				cls: "ioto-button ioto-button-confirm",
+			},
+			(btn) => {
+				btn.addEventListener("click", () => {
+					this.resolve(this.inputEl.value);
+					this.close();
+				});
+			}
+		);
+
+		// 自动聚焦输入框
+		this.inputEl.focus();
+	}
+
+	onClose() {
+		this.contentEl.empty();
+	}
+
+	async openAndGetValue(): Promise<string | null> {
+		return new Promise((resolve) => {
+			this.resolve = resolve;
+			this.open();
+		});
+	}
 }
 
 export default class IOTO extends Plugin {
@@ -227,13 +239,20 @@ export default class IOTO extends Plugin {
 			id: "ioto-create-ioto-folders",
 			name: t("Create IOTO Folders"),
 			callback: async () => {
-				const { inputFolder, outputFolder, taskFolder, outcomeFolder, extraFolder, IOTOFrameworkPath } = this.settings;
+				const {
+					inputFolder,
+					outputFolder,
+					taskFolder,
+					outcomeFolder,
+					extraFolder,
+					IOTOFrameworkPath,
+				} = this.settings;
 				await this.createPathIfNeeded(inputFolder);
 				await this.createPathIfNeeded(outputFolder);
 				await this.createPathIfNeeded(taskFolder);
 				await this.createPathIfNeeded(outcomeFolder);
 				await this.createPathIfNeeded(extraFolder);
-				await this.createPathIfNeeded(IOTOFrameworkPath);			
+				await this.createPathIfNeeded(IOTOFrameworkPath);
 			},
 		});
 
@@ -241,20 +260,31 @@ export default class IOTO extends Plugin {
 			id: "ioto-create-project",
 			name: t("Create New Project"),
 			callback: async () => {
-				const { taskFolder, outcomeFolder, outcomeProjectDefaultSubFolders } = this.settings;
+				const {
+					taskFolder,
+					outcomeFolder,
+					outcomeProjectDefaultSubFolders,
+				} = this.settings;
 				// 弹出对话框让用户输入项目名称
-				const modal = new InputModal(this.app, t("Please input project name"), "");
-				const projectName =  await modal.openAndGetValue();	
+				const modal = new InputModal(
+					this.app,
+					t("Please input project name"),
+					""
+				);
+				const projectName = await modal.openAndGetValue();
 
 				if (!projectName) return;
 
 				// 在任务和成果文件夹下创建项目文件夹
 				await this.createPathIfNeeded(`${taskFolder}/${projectName}`);
-				await this.createPathIfNeeded(`${outcomeFolder}/${projectName}`);
+				await this.createPathIfNeeded(
+					`${outcomeFolder}/${projectName}`
+				);
 
 				// 如果配置了子文件夹,则创建子文件夹
 				if (outcomeProjectDefaultSubFolders) {
-					const subFolders = outcomeProjectDefaultSubFolders.split("\n");
+					const subFolders =
+						outcomeProjectDefaultSubFolders.split("\n");
 					for (const folder of subFolders) {
 						if (folder.trim()) {
 							await this.createPathIfNeeded(
@@ -445,18 +475,6 @@ class IOTOSettingTab extends PluginSettingTab {
 		const tabbedSettings = new TabbedSettings(containerEl);
 
 		tabbedSettings.addTab(t("IOTO_Basic_Settings"), (content) => {
-			new Setting(content)
-				.setName(t("USE_USER_TEMPLATE"))
-				.setDesc(t("TOGGLE_USE_USER_TEMPLATE"))
-				.addToggle((toggle) => {
-					toggle
-						.setValue(this.plugin.settings.useUserTemplate)
-						.onChange(async (useUT) => {
-							this.plugin.settings.useUserTemplate = useUT;
-							await this.plugin.saveSettings();
-						});
-				});
-
 			new Setting(content)
 				.setName(t("USE_USER_TEMPLATE"))
 				.setDesc(t("TOGGLE_USE_USER_TEMPLATE"))
