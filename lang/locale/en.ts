@@ -38,7 +38,7 @@ export default {
     IOTO_OUTPUT_SELECTOR_FOLDER_OPTION_SETTINGS: "Ioto Output Selector Folder Option Settings",
     IOTO_OUTPUT_SELECTOR_NOTE_OPTION_SETTINGS: "Ioto Output Selector Note Option Settings",
     IOTO_OUTPUT_SELECTOR_SETTINGS: "Output",
-    IOTO_PROJECT_AND_LTD_List_Settings: "Project And TDL",
+    IOTO_PROJECT_AND_LTD_List_Settings: "Project & TDL",
     IOTO_Settings_Heading: "Ioto Framework Settings",
     IOTO_TASK_SELECTOR_FOLDER_OPTION_SETTINGS: "Ioto Task Selector Folder Option Settings",
     IOTO_TASK_SELECTOR_NOTE_OPTION_SETTINGS: "Ioto Task Selector Note Option Settings",
