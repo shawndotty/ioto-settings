@@ -3,6 +3,7 @@ import {
 	TFile,
 	normalizePath,
 	Plugin,
+	Modal,
 	PluginSettingTab,
 	Setting,
 } from "obsidian";
@@ -127,6 +128,94 @@ const DEFAULT_SETTINGS: IOTOSettings = {
 	newOutcomeNoteAddedToTDLFollowUpAction: "0",
 };
 
+export class InputModal extends Modal {
+    private resolve: (value: string | null) => void;
+    private inputEl: HTMLInputElement;
+    
+    constructor(app: App, private promptText: string, private defaultValue?: string) {
+        super(app);
+    }
+    
+    onOpen() {
+        const { contentEl } = this;
+        
+        // 添加模态框容器样式
+        contentEl.addClass('ioto-input-modal');
+        
+        // 创建标题
+        contentEl.createEl('h2', { 
+            text: this.promptText,
+            cls: 'ioto-input-modal-title'
+        });
+        
+        // 创建输入框容器
+        const inputContainer = contentEl.createEl('div', {
+            cls: 'ioto-input-container'
+        });
+        
+        // 创建输入框
+        this.inputEl = inputContainer.createEl('input', {
+            type: 'text',
+            value: this.defaultValue || '',
+            cls: 'ioto-input'
+        });
+
+        // 添加键盘事件监听
+        this.inputEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.resolve(this.inputEl.value);
+                this.close();
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                this.resolve(null);
+                this.close();
+            }
+        });
+        
+        // 创建按钮容器
+        const buttonContainer = contentEl.createEl('div', {
+            cls: 'ioto-button-container'
+        });
+        
+        // 创建取消按钮
+        buttonContainer.createEl('button', { 
+            text: '取消',
+            cls: 'ioto-button ioto-button-cancel'
+        }, (btn) => {
+            btn.addEventListener('click', () => {
+                this.resolve(null);
+                this.close();
+            });
+        });
+        
+        // 创建确认按钮
+        buttonContainer.createEl('button', { 
+            text: '确认',
+            cls: 'ioto-button ioto-button-confirm'
+        }, (btn) => {
+            btn.addEventListener('click', () => {
+                this.resolve(this.inputEl.value);
+                this.close();
+            });
+        });
+        
+        // 自动聚焦输入框
+        this.inputEl.focus();
+    }
+    
+    onClose() {
+        this.contentEl.empty();
+    }
+    
+    async openAndGetValue(): Promise<string | null> {
+        return new Promise((resolve) => {
+            this.resolve = resolve;
+            this.open();
+        });
+    }
+}
+
 export default class IOTO extends Plugin {
 	settings: IOTOSettings;
 
@@ -134,6 +223,48 @@ export default class IOTO extends Plugin {
 		this.addStyle();
 		await this.loadSettings();
 
+		this.addCommand({
+			id: "ioto-create-ioto-folders",
+			name: "Create IOTO folders",
+			callback: async () => {
+				const { inputFolder, outputFolder, taskFolder, outcomeFolder, extraFolder, IOTOFrameworkPath } = this.settings;
+				await this.createPathIfNeeded(inputFolder);
+				await this.createPathIfNeeded(outputFolder);
+				await this.createPathIfNeeded(taskFolder);
+				await this.createPathIfNeeded(outcomeFolder);
+				await this.createPathIfNeeded(extraFolder);
+				await this.createPathIfNeeded(IOTOFrameworkPath);			
+			},
+		});
+
+		this.addCommand({
+			id: "ioto-create-project",
+			name: "Create IOTO Project",
+			callback: async () => {
+				const { taskFolder, outcomeFolder, outcomeProjectDefaultSubFolders } = this.settings;
+				// 弹出对话框让用户输入项目名称
+				const modal = new InputModal(this.app, "请输入项目名称", "");
+				const projectName =  await modal.openAndGetValue();	
+
+				if (!projectName) return;
+
+				// 在任务和成果文件夹下创建项目文件夹
+				await this.createPathIfNeeded(`${taskFolder}/${projectName}`);
+				await this.createPathIfNeeded(`${outcomeFolder}/${projectName}`);
+
+				// 如果配置了子文件夹,则创建子文件夹
+				if (outcomeProjectDefaultSubFolders) {
+					const subFolders = outcomeProjectDefaultSubFolders.split("\n");
+					for (const folder of subFolders) {
+						if (folder.trim()) {
+							await this.createPathIfNeeded(
+								`${outcomeFolder}/${projectName}/${folder.trim()}`
+							);
+						}
+					}
+				}
+			},
+		});
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new IOTOSettingTab(this.app, this));
 	}
@@ -150,6 +281,15 @@ export default class IOTO extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+	}
+
+	async createPathIfNeeded(folderPath: string): Promise<void> {
+		const { vault } = this.app;
+		// 使用 vault.adapter.exists() 来检查文件夹是否存在
+		const directoryExists = await vault.adapter.exists(folderPath);
+		if (!directoryExists) {
+			await vault.createFolder(normalizePath(folderPath));
+		}
 	}
 
 	async rebuildTaskDashboard(taskFolder: string) {
@@ -212,6 +352,75 @@ export default class IOTO extends Plugin {
             
             .settings-tab:hover {
                 color: var(--text-accent);
+            }
+
+            .ioto-input-modal {
+                padding: 20px;
+                border-radius: 8px;
+                background: var(--background-primary);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .ioto-input-modal-title {
+                margin: 0 0 20px 0;
+                color: var(--text-normal);
+                font-size: 1.2em;
+                font-weight: 600;
+            }
+
+            .ioto-input-container {
+                margin-bottom: 20px;
+            }
+
+            .ioto-input {
+                width: 100%;
+                padding: 8px 12px;
+                border: 1px solid var(--background-modifier-border);
+                border-radius: 4px;
+                background: var(--background-primary);
+                color: var(--text-normal);
+                font-size: 14px;
+                transition: all 0.3s ease;
+            }
+
+            .ioto-input:focus {
+                outline: none;
+                border-color: var(--interactive-accent);
+                box-shadow: 0 0 0 2px rgba(var(--interactive-accent-rgb), 0.2);
+            }
+
+            .ioto-button-container {
+                display: flex;
+                justify-content: flex-end;
+                gap: 10px;
+            }
+
+            .ioto-button {
+                padding: 8px 16px;
+                border: none;
+                border-radius: 4px;
+                font-size: 14px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .ioto-button-cancel {
+                background: var(--background-modifier-border);
+                color: var(--text-muted);
+            }
+
+            .ioto-button-cancel:hover {
+                background: var(--background-modifier-border-hover);
+            }
+
+            .ioto-button-confirm {
+                background: var(--interactive-accent);
+                color: var(--text-on-accent);
+            }
+
+            .ioto-button-confirm:hover {
+                background: var(--interactive-accent-hover);
             }
         `;
 		document.head.appendChild(style);
