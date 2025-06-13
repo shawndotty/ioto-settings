@@ -180,7 +180,7 @@ export class InputModal extends Modal {
         
         // 创建取消按钮
         buttonContainer.createEl('button', { 
-            text: '取消',
+            text: t('Cancel'),
             cls: 'ioto-button ioto-button-cancel'
         }, (btn) => {
             btn.addEventListener('click', () => {
@@ -191,7 +191,7 @@ export class InputModal extends Modal {
         
         // 创建确认按钮
         buttonContainer.createEl('button', { 
-            text: '确认',
+            text: t('Confirm'),
             cls: 'ioto-button ioto-button-confirm'
         }, (btn) => {
             btn.addEventListener('click', () => {
@@ -225,7 +225,7 @@ export default class IOTO extends Plugin {
 
 		this.addCommand({
 			id: "ioto-create-ioto-folders",
-			name: "Create IOTO folders",
+			name: t("Create IOTO Folders"),
 			callback: async () => {
 				const { inputFolder, outputFolder, taskFolder, outcomeFolder, extraFolder, IOTOFrameworkPath } = this.settings;
 				await this.createPathIfNeeded(inputFolder);
@@ -239,11 +239,11 @@ export default class IOTO extends Plugin {
 
 		this.addCommand({
 			id: "ioto-create-project",
-			name: "Create IOTO Project",
+			name: t("Create New Project"),
 			callback: async () => {
 				const { taskFolder, outcomeFolder, outcomeProjectDefaultSubFolders } = this.settings;
 				// 弹出对话框让用户输入项目名称
-				const modal = new InputModal(this.app, "请输入项目名称", "");
+				const modal = new InputModal(this.app, t("Please input project name"), "");
 				const projectName =  await modal.openAndGetValue();	
 
 				if (!projectName) return;

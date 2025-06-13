@@ -115,4 +115,9 @@ export default {
     ADDED_TO_TDL_FOLLOW_UP_ACTION_0: "显示操作选项",
     ADDED_TO_TDL_FOLLOW_UP_ACTION_1: "插入笔记链接",
     ADDED_TO_TDL_FOLLOW_UP_ACTION_2: "嵌入TDL中的任务条目",
+    "Create New Project": "创建新项目",
+    "Create IOTO Folders": "创建IOTO文件夹",
+    "Cancel": "取消",
+    "Confirm": "确认",
+    "Please input project name": "请输入项目名称"
 }
