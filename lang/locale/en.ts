@@ -115,4 +115,9 @@ export default {
     ADDED_TO_TDL_FOLLOW_UP_ACTION_0: "Show Options",
     ADDED_TO_TDL_FOLLOW_UP_ACTION_1: "Insert Note Link",
     ADDED_TO_TDL_FOLLOW_UP_ACTION_2: "Embed TDL Item For Note",
+    "Create New Project": "Create New Project",
+    "Create IOTO Folders": "Create IOTO Folders",
+    "Cancel": "Cancel",
+    "Confirm": "Confirm",
+    "Please input project name": "Please input project name"
 }
