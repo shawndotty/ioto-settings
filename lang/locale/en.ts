@@ -174,4 +174,18 @@ export default {
 	"Create TDL In {{folder}}": "Create TDL In {{folder}}",
 	"Articles\nSummary": "Articles\nSummary",
 	"Fleeting Notes": "Fleeting Notes",
+	"Successfully added": "Successfully added",
+	"hotkeys to Obsidian": "hotkeys to Obsidian",
+	"Write to hotkeys.json error:": "Write to hotkeys.json error:",
+	"Update hotkeys.json failed": "Update hotkeys.json failed",
+	"Initialize IOTO": "Initialize IOTO",
+	"Successfully added hotkeys to Obsidian":
+		"Successfully added hotkeys to Obsidian",
+	"Add IOTO Hotkeys": "Add IOTO Hotkeys",
+	"Templater plugin not found or not enabled":
+		"Templater plugin not found or not enabled",
+	Added: "Added",
+	"template(s) to Templater hotkeys": "template(s) to Templater hotkeys",
+	"Template does not exist:": "Template does not exist:",
+	"Read hotkeys.json error:": "Read hotkeys.json error:",
 };

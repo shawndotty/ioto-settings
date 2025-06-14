@@ -1,6 +1,7 @@
 import {
 	App,
 	TFile,
+	Notice,
 	normalizePath,
 	Plugin,
 	Modal,
@@ -238,23 +239,19 @@ export default class IOTO extends Plugin {
 		await this.loadSettings();
 
 		this.addCommand({
+			id: "ioto-init-setup",
+			name: t("Initialize IOTO"),
+			callback: async () => {
+				await this.addIOTOFolders();
+				await this.addIOTOHotkeys();
+			},
+		});
+
+		this.addCommand({
 			id: "ioto-create-ioto-folders",
 			name: t("Create IOTO Folders"),
 			callback: async () => {
-				const {
-					inputFolder,
-					outputFolder,
-					taskFolder,
-					outcomeFolder,
-					extraFolder,
-					IOTOFrameworkPath,
-				} = this.settings;
-				await this.createPathIfNeeded(inputFolder);
-				await this.createPathIfNeeded(outputFolder);
-				await this.createPathIfNeeded(taskFolder);
-				await this.createPathIfNeeded(outcomeFolder);
-				await this.createPathIfNeeded(extraFolder);
-				await this.createPathIfNeeded(IOTOFrameworkPath);
+				await this.addIOTOFolders();
 			},
 		});
 
@@ -297,6 +294,14 @@ export default class IOTO extends Plugin {
 				}
 			},
 		});
+
+		this.addCommand({
+			id: "ioto-add-templater-hotkeys",
+			name: t("Add IOTO Hotkeys"),
+			callback: () => {
+				this.addIOTOHotkeys();
+			},
+		});
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new IOTOSettingTab(this.app, this));
 	}
@@ -313,6 +318,23 @@ export default class IOTO extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+	}
+
+	async addIOTOFolders() {
+		const {
+			inputFolder,
+			outputFolder,
+			taskFolder,
+			outcomeFolder,
+			extraFolder,
+			IOTOFrameworkPath,
+		} = this.settings;
+		await this.createPathIfNeeded(inputFolder);
+		await this.createPathIfNeeded(outputFolder);
+		await this.createPathIfNeeded(taskFolder);
+		await this.createPathIfNeeded(outcomeFolder);
+		await this.createPathIfNeeded(extraFolder);
+		await this.createPathIfNeeded(IOTOFrameworkPath);
 	}
 
 	async createPathIfNeeded(folderPath: string): Promise<void> {
@@ -360,6 +382,236 @@ export default class IOTO extends Plugin {
 				await this.app.vault.adapter.write(filePath, content);
 			}
 		}
+	}
+
+	private async addTemplaterHotkeys(templatePaths: Array<string> = []) {
+		// 获取Templater插件实例
+		// @ts-ignore
+		const templater = this.app.plugins.getPlugin("templater-obsidian");
+
+		if (!templater) {
+			new Notice(t("Templater plugin not found or not enabled"));
+			return;
+		}
+
+		// 获取当前配置
+		const currentSettings = templater.settings || {};
+
+		// 初始化enabled_templates_hotkeys数组（如果不存在）
+		if (!Array.isArray(currentSettings.enabled_templates_hotkeys)) {
+			currentSettings.enabled_templates_hotkeys = [];
+		}
+
+		// 添加不存在的模板路径
+		let addedCount = 0;
+		for (const templatePath of templatePaths) {
+			if (
+				!currentSettings.enabled_templates_hotkeys.includes(
+					templatePath
+				)
+			) {
+				currentSettings.enabled_templates_hotkeys.push(templatePath);
+				addedCount++;
+			}
+		}
+
+		if (addedCount > 0) {
+			// 保存设置
+			await templater.save_settings();
+			new Notice(
+				`${t("Added")} ${addedCount} ${t(
+					"template(s) to Templater hotkeys"
+				)}`
+			);
+		} else {
+			new Notice("All templates already exist in Templater hotkeys");
+		}
+	}
+
+	private async addIOTOHotkeys() {
+		// 定义要添加的热键映射
+		const hotkeyMappings = [
+			{
+				templatePath: `${t(
+					"0-Extras"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO-选择器-创建输入.md`,
+				hotkey: {
+					modifiers: ["Alt"],
+					key: "1",
+				},
+			},
+			{
+				templatePath: `${t(
+					"0-Extras"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO-选择器-创建输出.md`,
+				hotkey: {
+					modifiers: ["Alt"],
+					key: "2",
+				},
+			},
+			{
+				templatePath: `${t(
+					"0-Extras"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO-选择器-创建任务.md`,
+				hotkey: {
+					modifiers: ["Alt"],
+					key: "3",
+				},
+			},
+			{
+				templatePath: `${t(
+					"0-Extras"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO-选择器-创建成果.md`,
+				hotkey: {
+					modifiers: ["Alt"],
+					key: "4",
+				},
+			},
+			{
+				templatePath: `${t(
+					"0-Extras"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO-选择器-辅助工具.md`,
+				hotkey: {
+					modifiers: ["Alt"],
+					key: "5",
+				},
+			},
+			{
+				templatePath: `${t(
+					"0-Extras"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO同步模板/IOTO-OBSyncAirtable.md`,
+				hotkey: {
+					modifiers: ["Alt"],
+					key: "A",
+				},
+			},
+			{
+				templatePath: `${t(
+					"0-Extras"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO同步模板/IOTO-OBFetchAirtable.md`,
+				hotkey: {
+					modifiers: ["Alt", "Shift"],
+					key: "A",
+				},
+			},
+			{
+				templatePath: `${t(
+					"0-Extras"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO同步模板/IOTO-OBSyncVika.md`,
+				hotkey: {
+					modifiers: ["Alt"],
+					key: "V",
+				},
+			},
+			{
+				templatePath: `${t(
+					"0-Extras"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO同步模板/IOTO-OBFetchVika.md`,
+				hotkey: {
+					modifiers: ["Alt", "Shift"],
+					key: "V",
+				},
+			},
+			{
+				templatePath: `${t(
+					"0-Extras"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO同步模板/IOTO-OBSyncFeishu.md`,
+				hotkey: {
+					modifiers: ["Alt"],
+					key: "F",
+				},
+			},
+			{
+				templatePath: `${t(
+					"0-Extras"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO同步模板/IOTO-OBFetchFeishu.md`,
+				hotkey: {
+					modifiers: ["Alt", "Shift"],
+					key: "F",
+				},
+			},
+		];
+
+		// 提取所有模板路径到一个数组中
+		const templatePaths = hotkeyMappings.map(
+			(mapping) => mapping.templatePath
+		);
+
+		await this.addTemplaterHotkeys(templatePaths);
+
+		// 1. 确保模板存在
+		for (const mapping of hotkeyMappings) {
+			if (!this.templateExists(mapping.templatePath)) {
+				new Notice(
+					`${t("Template does not exist:")} ${mapping.templatePath}`
+				);
+				return;
+			}
+		}
+
+		// 2. 获取当前热键配置
+		const hotkeysPath = ".obsidian/hotkeys.json";
+		interface HotkeyConfig {
+			[key: string]: Array<{ modifiers: string[]; key: string }>;
+		}
+		let currentHotkeys: HotkeyConfig = {};
+
+		try {
+			const content = await this.app.vault.adapter.read(hotkeysPath);
+			currentHotkeys = JSON.parse(content || "{}");
+		} catch (e) {
+			console.error(t("Read hotkeys.json error:"), e);
+			// 如果文件不存在，创建空对象
+			currentHotkeys = {};
+		}
+
+		// 3. 添加新热键
+		let addedCount = 0;
+		for (const mapping of hotkeyMappings) {
+			const commandId = `templater-obsidian:${mapping.templatePath}`;
+			const newHotkey = mapping.hotkey;
+
+			// 初始化此命令的热键数组（如果不存在）
+			if (!currentHotkeys[commandId]) {
+				currentHotkeys[commandId] = [];
+			}
+
+			// 检查是否已存在相同的热键配置
+			const exists = currentHotkeys[commandId].some((existingHotkey) => {
+				return (
+					existingHotkey.key === newHotkey.key &&
+					JSON.stringify(existingHotkey.modifiers.sort()) ===
+						JSON.stringify(newHotkey.modifiers.sort())
+				);
+			});
+
+			if (!exists) {
+				currentHotkeys[commandId].push(newHotkey);
+				addedCount++;
+			}
+		}
+
+		// 4. 保存回hotkeys.json
+		try {
+			await this.app.vault.adapter.write(
+				hotkeysPath,
+				JSON.stringify(currentHotkeys, null, 2)
+			);
+			new Notice(
+				`${t("Successfully added")} ${addedCount} ${t(
+					"hotkeys to Obsidian"
+				)}`
+			);
+		} catch (e) {
+			console.error(t("Write to hotkeys.json error:"), e);
+			new Notice(t("Update hotkeys.json failed"));
+		}
+	}
+
+	// 检查模板文件是否存在
+	private templateExists(templatePath: string): boolean {
+		const file = this.app.vault.getAbstractFileByPath(templatePath);
+		return file instanceof TFile;
 	}
 
 	addStyle() {
