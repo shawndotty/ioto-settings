@@ -171,4 +171,7 @@ export default {
 	"template(s) to Templater hotkeys": "模板(s)到Templater热键",
 	"Template does not exist:": "模板不存在:",
 	"Read hotkeys.json error:": "读取hotkeys.json错误:",
+	"Successfully add Templater paths": "成功添加了Templater路径",
+	"Add IOTO Templates and Scripts Path to Templater Plugin Setting":
+		"在Templater插件设置中添加IOTO的模板和脚本路径",
 };

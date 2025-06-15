@@ -188,4 +188,7 @@ export default {
 	"template(s) to Templater hotkeys": "template(s) to Templater hotkeys",
 	"Template does not exist:": "Template does not exist:",
 	"Read hotkeys.json error:": "Read hotkeys.json error:",
+	"Successfully add Templater paths": "Successfully add Templater paths",
+	"Add IOTO Templates and Scripts Path to Templater Plugin Setting":
+		"Add IOTO Templates and Scripts Path to Templater Plugin Setting",
 };

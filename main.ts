@@ -11,6 +11,19 @@ import {
 
 import { t } from "./lang/helpers";
 
+declare module "obsidian" {
+	interface App {
+		commands: {
+			executeCommandById(id: string): void;
+		};
+		plugins: {
+			plugins: {
+				[key: string]: any;
+			};
+		};
+	}
+}
+
 interface IOTOSettings {
 	inputFolder: string;
 	outputFolder: string;
@@ -244,6 +257,10 @@ export default class IOTO extends Plugin {
 			callback: async () => {
 				await this.addIOTOFolders();
 				await this.addIOTOHotkeys();
+				await this.addTemplaterPaths();
+				setTimeout(() => {
+					this.app.commands.executeCommandById("app:reload");
+				}, 1000);
 			},
 		});
 
@@ -298,8 +315,24 @@ export default class IOTO extends Plugin {
 		this.addCommand({
 			id: "ioto-add-templater-hotkeys",
 			name: t("Add IOTO Hotkeys"),
-			callback: () => {
-				this.addIOTOHotkeys();
+			callback: async () => {
+				await this.addIOTOHotkeys();
+				setTimeout(() => {
+					this.app.commands.executeCommandById("app:reload");
+				}, 1000);
+			},
+		});
+
+		this.addCommand({
+			id: "ioto-add-templater-paths",
+			name: t(
+				"Add IOTO Templates and Scripts Path to Templater Plugin Setting"
+			),
+			callback: async () => {
+				await this.addTemplaterPaths();
+				setTimeout(() => {
+					this.app.commands.executeCommandById("app:reload");
+				}, 1000);
 			},
 		});
 		// This adds a settings tab so the user can configure various aspects of the plugin
@@ -384,7 +417,7 @@ export default class IOTO extends Plugin {
 		}
 	}
 
-	private async addTemplaterHotkeys(templatePaths: Array<string> = []) {
+	private getTemplater() {
 		// 获取Templater插件实例
 		// @ts-ignore
 		const templater = this.app.plugins.getPlugin("templater-obsidian");
@@ -395,6 +428,25 @@ export default class IOTO extends Plugin {
 		}
 
 		// 获取当前配置
+		return templater;
+	}
+
+	private async addTemplaterPaths() {
+		// 获取当前配置
+		const templater = this.getTemplater();
+		const currentSettings = templater.settings || {};
+		currentSettings.templates_folder = `${t(
+			"0-Extras"
+		)}/IOTO/Templates/Templater`;
+		currentSettings.user_scripts_folder = `${t("0-Extras")}/IOTO/Scripts`;
+		// 保存设置
+		await templater.save_settings();
+		new Notice(t("Successfully add Templater paths"));
+	}
+
+	private async addTemplaterHotkeys(templatePaths: Array<string> = []) {
+		// 获取当前配置
+		const templater = this.getTemplater();
 		const currentSettings = templater.settings || {};
 
 		// 初始化enabled_templates_hotkeys数组（如果不存在）
