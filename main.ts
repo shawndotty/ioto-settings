@@ -81,6 +81,9 @@ interface IOTOSettings {
 	newInputNoteAddedToTDLFollowUpAction: string;
 	newOutputNoteAddedToTDLFollowUpAction: string;
 	newOutcomeNoteAddedToTDLFollowUpAction: string;
+	inputFolderDefaultSubFolders: string;
+	outputFolderDefaultSubFolders: string;
+	defaultProjects: string;
 }
 
 const DEFAULT_SETTINGS: IOTOSettings = {
@@ -142,6 +145,9 @@ const DEFAULT_SETTINGS: IOTOSettings = {
 	newInputNoteAddedToTDLFollowUpAction: "0",
 	newOutputNoteAddedToTDLFollowUpAction: "0",
 	newOutcomeNoteAddedToTDLFollowUpAction: "0",
+	inputFolderDefaultSubFolders: t("Resources\nQuickNotes"),
+	outputFolderDefaultSubFolders: t("FleetingNotes\nCardNotes"),
+	defaultProjects: t("LearnIOTO\nLearnAI"),
 };
 
 export class InputModal extends Modal {
@@ -256,6 +262,9 @@ export default class IOTO extends Plugin {
 			name: t("Initialize IOTO"),
 			callback: async () => {
 				await this.addIOTOFolders();
+				await this.addIOTODefaultInputSubFolders();
+				await this.addIOTODefaultOutputSubFolders();
+				await this.addIOTODefaultProjects();
 				await this.addIOTOHotkeys();
 				await this.addTemplaterPaths();
 				setTimeout(() => {
@@ -276,39 +285,31 @@ export default class IOTO extends Plugin {
 			id: "ioto-create-project",
 			name: t("Create New Project"),
 			callback: async () => {
-				const {
-					taskFolder,
-					outcomeFolder,
-					outcomeProjectDefaultSubFolders,
-				} = this.settings;
-				// 弹出对话框让用户输入项目名称
-				const modal = new InputModal(
-					this.app,
-					t("Please input project name"),
-					""
-				);
-				const projectName = await modal.openAndGetValue();
+				await this.addIOTOProject();
+			},
+		});
 
-				if (!projectName) return;
+		this.addCommand({
+			id: "ioto-create-default-projects",
+			name: t("Create Default Projects"),
+			callback: async () => {
+				await this.addIOTODefaultProjects();
+			},
+		});
 
-				// 在任务和成果文件夹下创建项目文件夹
-				await this.createPathIfNeeded(`${taskFolder}/${projectName}`);
-				await this.createPathIfNeeded(
-					`${outcomeFolder}/${projectName}`
-				);
+		this.addCommand({
+			id: "ioto-create-default-input-sub-folders",
+			name: t("Create Default Input Sub Folders"),
+			callback: async () => {
+				await this.addIOTODefaultInputSubFolders();
+			},
+		});
 
-				// 如果配置了子文件夹,则创建子文件夹
-				if (outcomeProjectDefaultSubFolders) {
-					const subFolders =
-						outcomeProjectDefaultSubFolders.split("\n");
-					for (const folder of subFolders) {
-						if (folder.trim()) {
-							await this.createPathIfNeeded(
-								`${outcomeFolder}/${projectName}/${folder.trim()}`
-							);
-						}
-					}
-				}
+		this.addCommand({
+			id: "ioto-create-default-output-sub-folders",
+			name: t("Create Default Output Sub Folders"),
+			callback: async () => {
+				await this.addIOTODefaultOutputSubFolders();
 			},
 		});
 
@@ -368,6 +369,64 @@ export default class IOTO extends Plugin {
 		await this.createPathIfNeeded(outcomeFolder);
 		await this.createPathIfNeeded(extraFolder);
 		await this.createPathIfNeeded(IOTOFrameworkPath);
+	}
+
+	async addIOTOProject(projectName: string | null = "") {
+		const { taskFolder, outcomeFolder, outcomeProjectDefaultSubFolders } =
+			this.settings;
+		if (!projectName) {
+			// 弹出对话框让用户输入项目名称
+			const modal = new InputModal(
+				this.app,
+				t("Please input project name"),
+				""
+			);
+			projectName = await modal.openAndGetValue();
+		}
+
+		if (!projectName) return;
+
+		// 在任务和成果文件夹下创建项目文件夹
+		await this.createPathIfNeeded(`${taskFolder}/${projectName}`);
+		await this.createPathIfNeeded(`${outcomeFolder}/${projectName}`);
+
+		// 如果配置了子文件夹,则创建子文件夹
+		if (outcomeProjectDefaultSubFolders) {
+			const subFolders = outcomeProjectDefaultSubFolders.split("\n");
+			for (const folder of subFolders) {
+				if (folder.trim()) {
+					await this.createPathIfNeeded(
+						`${outcomeFolder}/${projectName}/${folder.trim()}`
+					);
+				}
+			}
+		}
+	}
+
+	async addIOTODefaultInputSubFolders() {
+		const { inputFolder, inputFolderDefaultSubFolders } = this.settings;
+		const subFolders = inputFolderDefaultSubFolders.trim().split("\n");
+		for (const subFolder of subFolders) {
+			await this.createPathIfNeeded(`${inputFolder}/${subFolder.trim()}`);
+		}
+	}
+
+	async addIOTODefaultOutputSubFolders() {
+		const { outputFolder, outputFolderDefaultSubFolders } = this.settings;
+		const subFolders = outputFolderDefaultSubFolders.trim().split("\n");
+		for (const subFolder of subFolders) {
+			await this.createPathIfNeeded(
+				`${outputFolder}/${subFolder.trim()}`
+			);
+		}
+	}
+
+	async addIOTODefaultProjects() {
+		const { defaultProjects } = this.settings;
+		const projects = defaultProjects.trim().split("\n");
+		for (const project of projects) {
+			await this.addIOTOProject(project.trim());
+		}
 	}
 
 	async createPathIfNeeded(folderPath: string): Promise<void> {
@@ -919,6 +978,18 @@ class IOTOSettingTab extends PluginSettingTab {
 			t("IOTO_PROJECT_AND_LTD_List_Settings"),
 			(content) => {
 				new Setting(content)
+					.setName(t("Setup Your Default Porjects"))
+					.setDesc(t("Please Input Your Default Projects"))
+					.addTextArea((textArea) =>
+						textArea
+							.setPlaceholder("")
+							.setValue(this.plugin.settings.defaultProjects)
+							.onChange(async (value) => {
+								this.plugin.settings.defaultProjects = value;
+								await this.plugin.saveSettings();
+							})
+					);
+				new Setting(content)
 					.setName(t("PROJECT_NAME_SOURCE"))
 					.setDesc(t("PROJECT_NAME_SOURCE_HINT"))
 					.addDropdown((cb) => {
@@ -1265,6 +1336,26 @@ class IOTOSettingTab extends PluginSettingTab {
 							await this.plugin.saveSettings();
 						})
 				);
+
+			content.createEl("h6", {
+				text: t("Default Input Sub Folders"),
+			});
+
+			new Setting(content)
+				.setName(t("Setup Your Default Input Sub Folders"))
+				.setDesc(t("Please Input Your Default Input Sub Folders"))
+				.addTextArea((textArea) =>
+					textArea
+						.setPlaceholder("")
+						.setValue(
+							this.plugin.settings.inputFolderDefaultSubFolders
+						)
+						.onChange(async (value) => {
+							this.plugin.settings.inputFolderDefaultSubFolders =
+								value;
+							await this.plugin.saveSettings();
+						})
+				);
 		});
 
 		tabbedSettings.addTab(t("IOTO_OUTPUT_SELECTOR_SETTINGS"), (content) => {
@@ -1412,6 +1503,26 @@ class IOTOSettingTab extends PluginSettingTab {
 						.setValue(this.plugin.settings.fleetingNoteDateFormat)
 						.onChange(async (value) => {
 							this.plugin.settings.fleetingNoteDateFormat = value;
+							await this.plugin.saveSettings();
+						})
+				);
+
+			content.createEl("h6", {
+				text: t("Default Output Sub Folders"),
+			});
+
+			new Setting(content)
+				.setName(t("Setup Your Default Output Sub Folders"))
+				.setDesc(t("Please Input Your Default Output Sub Folders"))
+				.addTextArea((textArea) =>
+					textArea
+						.setPlaceholder("")
+						.setValue(
+							this.plugin.settings.outputFolderDefaultSubFolders
+						)
+						.onChange(async (value) => {
+							this.plugin.settings.outputFolderDefaultSubFolders =
+								value;
 							await this.plugin.saveSettings();
 						})
 				);

@@ -191,4 +191,22 @@ export default {
 	"Successfully add Templater paths": "Successfully add Templater paths",
 	"Add IOTO Templates and Scripts Path to Templater Plugin Setting":
 		"Add IOTO Templates and Scripts Path to Templater Plugin Setting",
+	"Resources\nQuickNotes": "Resources\nQuickNotes",
+	"FleetingNotes\nCardNotes": "FleetingNotes\nCardNotes",
+	"LearnIOTO\nLearnAI": "LearnIOTO\nLearnAI",
+	"Default Output Sub Folders": "Default Output Sub Folders",
+	"Setup Your Default Output Sub Folders":
+		"Setup Your Default Output Sub Folders",
+	"Please Input Your Default Output Sub Folders":
+		"Please Input Your Default Output Sub Folders",
+	"Default Input Sub Folders": "Default Input Sub Folders",
+	"Setup Your Default Input Sub Folders":
+		"Setup Your Default INput Sub Folders",
+	"Please Input Your Default Input Sub Folders":
+		"Please Input Your Default Input Sub Folders",
+	"Setup Your Default Porjects": "Setup Your Default Porjects",
+	"Please Input Your Default Projects": "Please Input Your Default Projects",
+	"Create Default Projects": "Create Default Projects",
+	"Create Default Input Sub Folders": "Create Default Input Sub Folders",
+	"Create Default Output Sub Folders": "Create Default Output Sub Folders",
 };

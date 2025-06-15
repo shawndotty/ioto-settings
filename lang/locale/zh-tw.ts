@@ -173,4 +173,19 @@ export default {
 	"Successfully add Templater paths": "成功添加了Templater路径",
 	"Add IOTO Templates and Scripts Path to Templater Plugin Setting":
 		"在Templater插件设置中添加IOTO的模板和脚本路径",
+	"Resources\nQuickNotes": "資源\n碎片筆記",
+	"FleetingNotes\nCardNotes": "閃念筆記\n卡片筆記",
+	"LearnIOTO\nLearnAI": "學習IOTO\n學習AI",
+	"Default Output Sub Folders": "默認輸出子文件夾",
+	"Setup Your Default Output Sub Folders": "設置您的默認輸出子文件夾",
+	"Please Input Your Default Output Sub Folders":
+		"請輸入您的默認輸出子文件夾",
+	"Default Input Sub Folders": "默認輸入子文件夾",
+	"Setup Your Default Input Sub Folders": "設置您的默認輸入子文件夾",
+	"Please Input Your Default Input Sub Folders": "請輸入您的默認輸入子文件夾",
+	"Setup Your Default Porjects": "設置您的默認項目",
+	"Please Input Your Default Projects": "請輸入您的默認項目",
+	"Create Default Projects": "創建默認項目",
+	"Create Default Input Sub Folders": "創建默認輸入子文件夾",
+	"Create Default Output Sub Folders": "創建默認輸出子文件夾",
 };
