@@ -4,7 +4,7 @@ export default {
 		"Toggle This On To Add Your IOO Link To Specified Project'S Current TDL List",
 	DEFAULT_EXCALIDRAW_TEMPLATE: "Default Excalidraw Template",
 	DEFAULT_EXCALIDRAW_TEMPLATE_HINT:
-		"When Your Create An Excalidraw Note Use Ioto Shortcut, It Will Use The Template You Set Here",
+		"When Your Create An Excalidraw Note Use IOTO Shortcut, It Will Use The Template You Set Here",
 	DEFAULT_NEW_NOTE_FOLLOW_UP_ACTION:
 		"Default Follow Up Action When A New Note Is Created",
 	DEFAULT_NEW_NOTE_FOLLOW_UP_ACTION_HINT:
@@ -34,31 +34,31 @@ export default {
 	INPUT_SELECTOR_EXCLUDES_PATHS_HINT:
 		"Set Folder Paths You Want To Hide In Your Input Selector Use New Line To Seperate Your Folders",
 	IOTO_Basic_Settings: "Basic",
-	IOTO_FRAMEWORK_PATH: "Ioto Framework Path",
+	IOTO_FRAMEWORK_PATH: "IOTO Framework Path",
 	IOTO_INPUT_SELECTOR_FOLDER_OPTION_SETTINGS:
-		"Ioto Input Selector Folder Option Settings",
+		"IOTO Input Selector Folder Option Settings",
 	IOTO_INPUT_SELECTOR_NOTE_OPTION_SETTINGS:
-		"Ioto Input Selector Note Option Settings",
+		"IOTO Input Selector Note Option Settings",
 	IOTO_INPUT_SELECTOR_SETTINGS: "Input",
 	IOTO_MOVIE_TIME_TAGS: "Set The Tags You Use For Your Movie Time",
 	IOTO_MOVIE_TIME_TAGS_HINT: "Use  To Seperate Your Tags",
 	IOTO_Movie_Time_Tags_Settings: "Movie Time Tags",
 	IOTO_OUTCOME_SELECTOR_FOLDER_OPTION_SETTINGS:
-		"Ioto Outcome Selector Folder Option Settings",
+		"IOTO Outcome Selector Folder Option Settings",
 	IOTO_OUTCOME_SELECTOR_NOTE_OPTION_SETTINGS:
-		"Ioto Outcome Selector Note Option Settings",
+		"IOTO Outcome Selector Note Option Settings",
 	IOTO_OUTCOME_SELECTOR_SETTINGS: "Outcome",
 	IOTO_OUTPUT_SELECTOR_FOLDER_OPTION_SETTINGS:
-		"Ioto Output Selector Folder Option Settings",
+		"IOTO Output Selector Folder Option Settings",
 	IOTO_OUTPUT_SELECTOR_NOTE_OPTION_SETTINGS:
-		"Ioto Output Selector Note Option Settings",
+		"IOTO Output Selector Note Option Settings",
 	IOTO_OUTPUT_SELECTOR_SETTINGS: "Output",
 	IOTO_PROJECT_AND_LTD_List_Settings: "Project & TDL",
-	IOTO_Settings_Heading: "Ioto Framework Settings",
+	IOTO_Settings_Heading: "IOTO Framework Settings",
 	IOTO_TASK_SELECTOR_FOLDER_OPTION_SETTINGS:
-		"Ioto Task Selector Folder Option Settings",
+		"IOTO Task Selector Folder Option Settings",
 	IOTO_TASK_SELECTOR_NOTE_OPTION_SETTINGS:
-		"Ioto Task Selector Note Option Settings",
+		"IOTO Task Selector Note Option Settings",
 	IOTO_TASK_SELECTOR_OTHER_OPTION_SETTINGS: "Task Selector Other Settings",
 	IOTO_TASK_SELECTOR_SETTINGS: "Task",
 	LTD_LIST_DATE_FORMAT: "Default Date Format For TDL",
@@ -100,8 +100,8 @@ export default {
 	SET_EXTRA_FOLDER_HINT: "Enter Your Extra Folder Path",
 	SET_INPUT_FOLDER: "Set Your Input Folder Path",
 	SET_INPUT_FOLDER_HINT: "Enter Your Input Folder Path",
-	SET_IOTO_FRAMEWORK_PATH: "Set Your Ioto Framework Path",
-	SET_IOTO_FRAMEWORK_PATH_HINT: "Enter Your Ioto Framework Path",
+	SET_IOTO_FRAMEWORK_PATH: "Set Your IOTO Framework Path",
+	SET_IOTO_FRAMEWORK_PATH_HINT: "Enter Your IOTO Framework Path",
 	SET_IOTO_MOVIE_TIME_TAGS: "Just Input The Names Of Your Tags",
 	SET_LTD_LIST_INPUT_HEADING:
 		"Set Your Heading For The TDL List Input Section",
@@ -126,7 +126,7 @@ export default {
 	TASK_SELECTOR_EXCLUDES_PATHS_HINT:
 		"Set Folder Paths You Want To Hide In Your Task Selector Use New Line To Seperate Your Folders",
 	TOGGLE_USE_USER_TEMPLATE:
-		"Toggle This On To Use Templates Created By Yourself When They Are Available. Toggle This Off To Use Ioto Default Templates Only.",
+		"Toggle This On To Use Templates Created By Yourself When They Are Available. Toggle This Off To Use IOTO Default Templates Only.",
 	USE_CUSTOM_TDL_NAMES: "Use Custom TDL Names",
 	USE_CUSTOM_TDL_NAMES_HINT:
 		"When You Enable This Option You Can Set Custom Name For You TDL",
@@ -178,7 +178,7 @@ export default {
 	"hotkeys to Obsidian": "hotkeys to Obsidian",
 	"Write to hotkeys.json error:": "Write to hotkeys.json error:",
 	"Update hotkeys.json failed": "Update hotkeys.json failed",
-	"Initialize IOTO": "Initialize IOTO",
+	"Initialize IOTO": "Initialize IOTO Framework ⭐",
 	"Successfully added hotkeys to Obsidian":
 		"Successfully added hotkeys to Obsidian",
 	"Add IOTO Hotkeys": "Add IOTO Hotkeys",

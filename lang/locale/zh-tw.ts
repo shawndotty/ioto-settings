@@ -162,7 +162,7 @@ export default {
 	"hotkeys to Obsidian": "個熱鍵到Obsidian",
 	"Write to hotkeys.json error:": "寫入hotkeys.json錯誤:",
 	"Update hotkeys.json failed": "更新hotkeys.json失敗",
-	"Initialize IOTO": "初始化IOTO",
+	"Initialize IOTO": "初始化IOTO框架 ⭐",
 	"Successfully added hotkeys to Obsidian": "成功添加熱鍵到Obsidian",
 	"Add IOTO Hotkeys": "添加IOTO熱鍵",
 	"Templater plugin not found or not enabled": "Templater插件未找到或未啟用",
