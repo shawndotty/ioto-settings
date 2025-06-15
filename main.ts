@@ -1,6 +1,7 @@
 import {
 	App,
 	TFile,
+	Notice,
 	normalizePath,
 	Plugin,
 	Modal,
@@ -70,15 +71,15 @@ interface IOTOSettings {
 }
 
 const DEFAULT_SETTINGS: IOTOSettings = {
-	inputFolder: "1-输入",
-	outputFolder: "2-输出",
-	taskFolder: "3-任务",
-	outcomeFolder: "4-成果",
-	extraFolder: "0-辅助",
-	IOTOFrameworkPath: "0-辅助/IOTO",
-	LTDListInputSectionHeading: "输入 LEARN",
-	LTDListOutputSectionHeading: "输出 THINK",
-	LTDListOutcomeSectionHeading: "成果 DO",
+	inputFolder: t("1-Inputs"),
+	outputFolder: t("2-Outputs"),
+	taskFolder: t("3-Tasks"),
+	outcomeFolder: t("4-Outcomes"),
+	extraFolder: t("0-Extras"),
+	IOTOFrameworkPath: t("0-Extras/IOTO"),
+	LTDListInputSectionHeading: t("Input (LEARN)"),
+	LTDListOutputSectionHeading: t("Output (THINK)"),
+	LTDListOutcomeSectionHeading: t("Outcome (DO)"),
 	useUserTemplate: true,
 	IOTOMovieTimeTags: "MT1,MT2,MT3,MT4",
 	addLinkToCurrentTDL: true,
@@ -96,18 +97,20 @@ const DEFAULT_SETTINGS: IOTOSettings = {
 	outputSelectorShowBasePath: false,
 	taskSelectorShowBasePath: false,
 	outcomeSelectorShowBasePath: false,
-	inputSelectorFolderOptionTemplate: "在 {{folder}} 创建输入笔记",
-	outputSelectorFolderOptionTemplate: "在 {{folder}} 创建输出笔记",
-	taskSelectorFolderOptionTemplate: "在 {{folder}} 创建任务列表",
-	outcomeSelectorFolderOptionTemplate: "在 {{folder}} 创建成果笔记",
+	inputSelectorFolderOptionTemplate: t("Create Input Notes In {{folder}}"),
+	outputSelectorFolderOptionTemplate: t("Create Output Notes In {{folder}}"),
+	taskSelectorFolderOptionTemplate: t("Create TDL In {{folder}}"),
+	outcomeSelectorFolderOptionTemplate: t(
+		"Create Outcome Notes In {{folder}}"
+	),
 	outcomeSelectorIncludeParentFolder: true,
-	outcomeProjectDefaultSubFolders: "文章\n总结",
+	outcomeProjectDefaultSubFolders: t("Articles\nSummary"),
 	newInputNoteFollowUpAction: "0",
 	newOutputNoteFollowUpAction: "0",
 	newOutcomeNoteFollowUpAction: "0",
 	taskSelectorEnableFutureDaysChoices: false,
 	taskSelectorUseCustomTdlNames: false,
-	fleetingNotePrefix: "闪念",
+	fleetingNotePrefix: t("Fleeting Notes"),
 	fleetingNoteDateFormat: "YYYY-MM-DD",
 	inputNoteNamePrefix: "",
 	inputNoteNamePostfix: "",
@@ -129,91 +132,103 @@ const DEFAULT_SETTINGS: IOTOSettings = {
 };
 
 export class InputModal extends Modal {
-    private resolve: (value: string | null) => void;
-    private inputEl: HTMLInputElement;
-    
-    constructor(app: App, private promptText: string, private defaultValue?: string) {
-        super(app);
-    }
-    
-    onOpen() {
-        const { contentEl } = this;
-        
-        // 添加模态框容器样式
-        contentEl.addClass('ioto-input-modal');
-        
-        // 创建标题
-        contentEl.createEl('h2', { 
-            text: this.promptText,
-            cls: 'ioto-input-modal-title'
-        });
-        
-        // 创建输入框容器
-        const inputContainer = contentEl.createEl('div', {
-            cls: 'ioto-input-container'
-        });
-        
-        // 创建输入框
-        this.inputEl = inputContainer.createEl('input', {
-            type: 'text',
-            value: this.defaultValue || '',
-            cls: 'ioto-input'
-        });
+	private resolve: (value: string | null) => void;
+	private inputEl: HTMLInputElement;
 
-        // 添加键盘事件监听
-        this.inputEl.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                this.resolve(this.inputEl.value);
-                this.close();
-            } else if (e.key === 'Escape') {
-                e.preventDefault();
-                this.resolve(null);
-                this.close();
-            }
-        });
-        
-        // 创建按钮容器
-        const buttonContainer = contentEl.createEl('div', {
-            cls: 'ioto-button-container'
-        });
-        
-        // 创建取消按钮
-        buttonContainer.createEl('button', { 
-            text: t('Cancel'),
-            cls: 'ioto-button ioto-button-cancel'
-        }, (btn) => {
-            btn.addEventListener('click', () => {
-                this.resolve(null);
-                this.close();
-            });
-        });
-        
-        // 创建确认按钮
-        buttonContainer.createEl('button', { 
-            text: t('Confirm'),
-            cls: 'ioto-button ioto-button-confirm'
-        }, (btn) => {
-            btn.addEventListener('click', () => {
-                this.resolve(this.inputEl.value);
-                this.close();
-            });
-        });
-        
-        // 自动聚焦输入框
-        this.inputEl.focus();
-    }
-    
-    onClose() {
-        this.contentEl.empty();
-    }
-    
-    async openAndGetValue(): Promise<string | null> {
-        return new Promise((resolve) => {
-            this.resolve = resolve;
-            this.open();
-        });
-    }
+	constructor(
+		app: App,
+		private promptText: string,
+		private defaultValue?: string
+	) {
+		super(app);
+	}
+
+	onOpen() {
+		const { contentEl } = this;
+
+		// 添加模态框容器样式
+		contentEl.addClass("ioto-input-modal");
+
+		// 创建标题
+		contentEl.createEl("h2", {
+			text: this.promptText,
+			cls: "ioto-input-modal-title",
+		});
+
+		// 创建输入框容器
+		const inputContainer = contentEl.createEl("div", {
+			cls: "ioto-input-container",
+		});
+
+		// 创建输入框
+		this.inputEl = inputContainer.createEl("input", {
+			type: "text",
+			value: this.defaultValue || "",
+			cls: "ioto-input",
+		});
+
+		// 添加键盘事件监听
+		this.inputEl.addEventListener("keydown", (e) => {
+			if (e.key === "Enter") {
+				e.preventDefault();
+				this.resolve(this.inputEl.value);
+				this.close();
+			} else if (e.key === "Escape") {
+				e.preventDefault();
+				this.resolve(null);
+				this.close();
+			}
+		});
+
+		// 创建按钮容器
+		const buttonContainer = contentEl.createEl("div", {
+			cls: "ioto-button-container",
+		});
+
+		// 创建取消按钮
+		buttonContainer.createEl(
+			"button",
+			{
+				text: t("Cancel"),
+				cls: "ioto-button ioto-button-cancel",
+			},
+			(btn) => {
+				btn.addEventListener("click", () => {
+					this.resolve(null);
+					this.close();
+				});
+			}
+		);
+
+		// 创建确认按钮
+		buttonContainer.createEl(
+			"button",
+			{
+				text: t("Confirm"),
+				cls: "ioto-button ioto-button-confirm",
+			},
+			(btn) => {
+				btn.addEventListener("click", () => {
+					this.resolve(this.inputEl.value);
+					this.close();
+				});
+			}
+		);
+
+		// 自动聚焦输入框
+		this.inputEl.focus();
+	}
+
+	onClose() {
+		this.contentEl.empty();
+	}
+
+	async openAndGetValue(): Promise<string | null> {
+		return new Promise((resolve) => {
+			this.resolve = resolve;
+			this.open();
+		});
+	}
 }
 
 export default class IOTO extends Plugin {
@@ -224,16 +239,19 @@ export default class IOTO extends Plugin {
 		await this.loadSettings();
 
 		this.addCommand({
+			id: "ioto-init-setup",
+			name: t("Initialize IOTO"),
+			callback: async () => {
+				await this.addIOTOFolders();
+				await this.addIOTOHotkeys();
+			},
+		});
+
+		this.addCommand({
 			id: "ioto-create-ioto-folders",
 			name: t("Create IOTO Folders"),
 			callback: async () => {
-				const { inputFolder, outputFolder, taskFolder, outcomeFolder, extraFolder, IOTOFrameworkPath } = this.settings;
-				await this.createPathIfNeeded(inputFolder);
-				await this.createPathIfNeeded(outputFolder);
-				await this.createPathIfNeeded(taskFolder);
-				await this.createPathIfNeeded(outcomeFolder);
-				await this.createPathIfNeeded(extraFolder);
-				await this.createPathIfNeeded(IOTOFrameworkPath);			
+				await this.addIOTOFolders();
 			},
 		});
 
@@ -241,20 +259,31 @@ export default class IOTO extends Plugin {
 			id: "ioto-create-project",
 			name: t("Create New Project"),
 			callback: async () => {
-				const { taskFolder, outcomeFolder, outcomeProjectDefaultSubFolders } = this.settings;
+				const {
+					taskFolder,
+					outcomeFolder,
+					outcomeProjectDefaultSubFolders,
+				} = this.settings;
 				// 弹出对话框让用户输入项目名称
-				const modal = new InputModal(this.app, t("Please input project name"), "");
-				const projectName =  await modal.openAndGetValue();	
+				const modal = new InputModal(
+					this.app,
+					t("Please input project name"),
+					""
+				);
+				const projectName = await modal.openAndGetValue();
 
 				if (!projectName) return;
 
 				// 在任务和成果文件夹下创建项目文件夹
 				await this.createPathIfNeeded(`${taskFolder}/${projectName}`);
-				await this.createPathIfNeeded(`${outcomeFolder}/${projectName}`);
+				await this.createPathIfNeeded(
+					`${outcomeFolder}/${projectName}`
+				);
 
 				// 如果配置了子文件夹,则创建子文件夹
 				if (outcomeProjectDefaultSubFolders) {
-					const subFolders = outcomeProjectDefaultSubFolders.split("\n");
+					const subFolders =
+						outcomeProjectDefaultSubFolders.split("\n");
 					for (const folder of subFolders) {
 						if (folder.trim()) {
 							await this.createPathIfNeeded(
@@ -263,6 +292,14 @@ export default class IOTO extends Plugin {
 						}
 					}
 				}
+			},
+		});
+
+		this.addCommand({
+			id: "ioto-add-templater-hotkeys",
+			name: t("Add IOTO Hotkeys"),
+			callback: () => {
+				this.addIOTOHotkeys();
 			},
 		});
 		// This adds a settings tab so the user can configure various aspects of the plugin
@@ -281,6 +318,23 @@ export default class IOTO extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+	}
+
+	async addIOTOFolders() {
+		const {
+			inputFolder,
+			outputFolder,
+			taskFolder,
+			outcomeFolder,
+			extraFolder,
+			IOTOFrameworkPath,
+		} = this.settings;
+		await this.createPathIfNeeded(inputFolder);
+		await this.createPathIfNeeded(outputFolder);
+		await this.createPathIfNeeded(taskFolder);
+		await this.createPathIfNeeded(outcomeFolder);
+		await this.createPathIfNeeded(extraFolder);
+		await this.createPathIfNeeded(IOTOFrameworkPath);
 	}
 
 	async createPathIfNeeded(folderPath: string): Promise<void> {
@@ -328,6 +382,236 @@ export default class IOTO extends Plugin {
 				await this.app.vault.adapter.write(filePath, content);
 			}
 		}
+	}
+
+	private async addTemplaterHotkeys(templatePaths: Array<string> = []) {
+		// 获取Templater插件实例
+		// @ts-ignore
+		const templater = this.app.plugins.getPlugin("templater-obsidian");
+
+		if (!templater) {
+			new Notice(t("Templater plugin not found or not enabled"));
+			return;
+		}
+
+		// 获取当前配置
+		const currentSettings = templater.settings || {};
+
+		// 初始化enabled_templates_hotkeys数组（如果不存在）
+		if (!Array.isArray(currentSettings.enabled_templates_hotkeys)) {
+			currentSettings.enabled_templates_hotkeys = [];
+		}
+
+		// 添加不存在的模板路径
+		let addedCount = 0;
+		for (const templatePath of templatePaths) {
+			if (
+				!currentSettings.enabled_templates_hotkeys.includes(
+					templatePath
+				)
+			) {
+				currentSettings.enabled_templates_hotkeys.push(templatePath);
+				addedCount++;
+			}
+		}
+
+		if (addedCount > 0) {
+			// 保存设置
+			await templater.save_settings();
+			new Notice(
+				`${t("Added")} ${addedCount} ${t(
+					"template(s) to Templater hotkeys"
+				)}`
+			);
+		} else {
+			new Notice("All templates already exist in Templater hotkeys");
+		}
+	}
+
+	private async addIOTOHotkeys() {
+		// 定义要添加的热键映射
+		const hotkeyMappings = [
+			{
+				templatePath: `${t(
+					"0-Extras"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO-选择器-创建输入.md`,
+				hotkey: {
+					modifiers: ["Alt"],
+					key: "1",
+				},
+			},
+			{
+				templatePath: `${t(
+					"0-Extras"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO-选择器-创建输出.md`,
+				hotkey: {
+					modifiers: ["Alt"],
+					key: "2",
+				},
+			},
+			{
+				templatePath: `${t(
+					"0-Extras"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO-选择器-创建任务.md`,
+				hotkey: {
+					modifiers: ["Alt"],
+					key: "3",
+				},
+			},
+			{
+				templatePath: `${t(
+					"0-Extras"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO-选择器-创建成果.md`,
+				hotkey: {
+					modifiers: ["Alt"],
+					key: "4",
+				},
+			},
+			{
+				templatePath: `${t(
+					"0-Extras"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO-选择器-辅助工具.md`,
+				hotkey: {
+					modifiers: ["Alt"],
+					key: "5",
+				},
+			},
+			{
+				templatePath: `${t(
+					"0-Extras"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO同步模板/IOTO-OBSyncAirtable.md`,
+				hotkey: {
+					modifiers: ["Alt"],
+					key: "A",
+				},
+			},
+			{
+				templatePath: `${t(
+					"0-Extras"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO同步模板/IOTO-OBFetchAirtable.md`,
+				hotkey: {
+					modifiers: ["Alt", "Shift"],
+					key: "A",
+				},
+			},
+			{
+				templatePath: `${t(
+					"0-Extras"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO同步模板/IOTO-OBSyncVika.md`,
+				hotkey: {
+					modifiers: ["Alt"],
+					key: "V",
+				},
+			},
+			{
+				templatePath: `${t(
+					"0-Extras"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO同步模板/IOTO-OBFetchVika.md`,
+				hotkey: {
+					modifiers: ["Alt", "Shift"],
+					key: "V",
+				},
+			},
+			{
+				templatePath: `${t(
+					"0-Extras"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO同步模板/IOTO-OBSyncFeishu.md`,
+				hotkey: {
+					modifiers: ["Alt"],
+					key: "F",
+				},
+			},
+			{
+				templatePath: `${t(
+					"0-Extras"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO同步模板/IOTO-OBFetchFeishu.md`,
+				hotkey: {
+					modifiers: ["Alt", "Shift"],
+					key: "F",
+				},
+			},
+		];
+
+		// 提取所有模板路径到一个数组中
+		const templatePaths = hotkeyMappings.map(
+			(mapping) => mapping.templatePath
+		);
+
+		await this.addTemplaterHotkeys(templatePaths);
+
+		// 1. 确保模板存在
+		for (const mapping of hotkeyMappings) {
+			if (!this.templateExists(mapping.templatePath)) {
+				new Notice(
+					`${t("Template does not exist:")} ${mapping.templatePath}`
+				);
+				return;
+			}
+		}
+
+		// 2. 获取当前热键配置
+		const hotkeysPath = ".obsidian/hotkeys.json";
+		interface HotkeyConfig {
+			[key: string]: Array<{ modifiers: string[]; key: string }>;
+		}
+		let currentHotkeys: HotkeyConfig = {};
+
+		try {
+			const content = await this.app.vault.adapter.read(hotkeysPath);
+			currentHotkeys = JSON.parse(content || "{}");
+		} catch (e) {
+			console.error(t("Read hotkeys.json error:"), e);
+			// 如果文件不存在，创建空对象
+			currentHotkeys = {};
+		}
+
+		// 3. 添加新热键
+		let addedCount = 0;
+		for (const mapping of hotkeyMappings) {
+			const commandId = `templater-obsidian:${mapping.templatePath}`;
+			const newHotkey = mapping.hotkey;
+
+			// 初始化此命令的热键数组（如果不存在）
+			if (!currentHotkeys[commandId]) {
+				currentHotkeys[commandId] = [];
+			}
+
+			// 检查是否已存在相同的热键配置
+			const exists = currentHotkeys[commandId].some((existingHotkey) => {
+				return (
+					existingHotkey.key === newHotkey.key &&
+					JSON.stringify(existingHotkey.modifiers.sort()) ===
+						JSON.stringify(newHotkey.modifiers.sort())
+				);
+			});
+
+			if (!exists) {
+				currentHotkeys[commandId].push(newHotkey);
+				addedCount++;
+			}
+		}
+
+		// 4. 保存回hotkeys.json
+		try {
+			await this.app.vault.adapter.write(
+				hotkeysPath,
+				JSON.stringify(currentHotkeys, null, 2)
+			);
+			new Notice(
+				`${t("Successfully added")} ${addedCount} ${t(
+					"hotkeys to Obsidian"
+				)}`
+			);
+		} catch (e) {
+			console.error(t("Write to hotkeys.json error:"), e);
+			new Notice(t("Update hotkeys.json failed"));
+		}
+	}
+
+	// 检查模板文件是否存在
+	private templateExists(templatePath: string): boolean {
+		const file = this.app.vault.getAbstractFileByPath(templatePath);
+		return file instanceof TFile;
 	}
 
 	addStyle() {
@@ -445,18 +729,6 @@ class IOTOSettingTab extends PluginSettingTab {
 		const tabbedSettings = new TabbedSettings(containerEl);
 
 		tabbedSettings.addTab(t("IOTO_Basic_Settings"), (content) => {
-			new Setting(content)
-				.setName(t("USE_USER_TEMPLATE"))
-				.setDesc(t("TOGGLE_USE_USER_TEMPLATE"))
-				.addToggle((toggle) => {
-					toggle
-						.setValue(this.plugin.settings.useUserTemplate)
-						.onChange(async (useUT) => {
-							this.plugin.settings.useUserTemplate = useUT;
-							await this.plugin.saveSettings();
-						});
-				});
-
 			new Setting(content)
 				.setName(t("USE_USER_TEMPLATE"))
 				.setDesc(t("TOGGLE_USE_USER_TEMPLATE"))
