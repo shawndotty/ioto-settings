@@ -31,6 +31,7 @@ interface IOTOSettings {
 	outcomeFolder: string;
 	extraFolder: string;
 	IOTOFrameworkPath: string;
+	userTemplatePrefix: string;
 	LTDListInputSectionHeading: string;
 	LTDListOutputSectionHeading: string;
 	LTDListOutcomeSectionHeading: string;
@@ -92,6 +93,7 @@ const DEFAULT_SETTINGS: IOTOSettings = {
 	taskFolder: t("3-Tasks"),
 	outcomeFolder: t("4-Outcomes"),
 	extraFolder: t("0-Extras"),
+	userTemplatePrefix: "My",
 	IOTOFrameworkPath: t("0-Extras/IOTO"),
 	LTDListInputSectionHeading: t("Input (LEARN)"),
 	LTDListOutputSectionHeading: t("Output (THINK)"),
@@ -848,6 +850,17 @@ class IOTOSettingTab extends PluginSettingTab {
 						.setValue(this.plugin.settings.useUserTemplate)
 						.onChange(async (useUT) => {
 							this.plugin.settings.useUserTemplate = useUT;
+							await this.plugin.saveSettings();
+						});
+				});
+			new Setting(content)
+				.setName(t("USER_TEMPLATE_PREFIX"))
+				.setDesc(t("SET_USER_TEMPLATE_PREFIX"))
+				.addText((cb) => {
+					cb.setPlaceholder(t("USER_TEMPLATE_PREFIX_HINT"))
+						.setValue(this.plugin.settings.userTemplatePrefix)
+						.onChange(async (value) => {
+							this.plugin.settings.userTemplatePrefix = value;
 							await this.plugin.saveSettings();
 						});
 				});

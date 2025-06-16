@@ -188,4 +188,7 @@ export default {
 	"Create Default Projects": "創建默認項目",
 	"Create Default Input Sub Folders": "創建默認輸入子文件夾",
 	"Create Default Output Sub Folders": "創建默認輸出子文件夾",
+	USER_TEMPLATE_PREFIX: "用戶模板前綴",
+	SET_USER_TEMPLATE_PREFIX: "設置用戶模板前綴",
+	USER_TEMPLATE_PREFIX_HINT: "輸入用戶模板前綴",
 };

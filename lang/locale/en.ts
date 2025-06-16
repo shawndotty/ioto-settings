@@ -209,4 +209,7 @@ export default {
 	"Create Default Projects": "Create Default Projects",
 	"Create Default Input Sub Folders": "Create Default Input Sub Folders",
 	"Create Default Output Sub Folders": "Create Default Output Sub Folders",
+	USER_TEMPLATE_PREFIX: "User Template Prefix",
+	SET_USER_TEMPLATE_PREFIX: "Set The Prefix For Your User Templates",
+	USER_TEMPLATE_PREFIX_HINT: "Input The Prefix For Your User Templates",
 };
