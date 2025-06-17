@@ -1828,11 +1828,44 @@ class IOTOSettingTab extends PluginSettingTab {
 						})
 				);
 
+				new Setting(content)
+				.setName(t("IOTO_Utils_TemplateSnippetFolder"))
+				.setDesc(t("IOTO_Utils_TemplateSnippetFolder_HINT"))
+				.addText((text) =>
+					text
+						.setPlaceholder("")
+						.setValue(
+							this.plugin.settings.iotoUtilsTemplateSnippetFolder
+						)
+						.onChange(async (value) => {
+							this.plugin.settings.iotoUtilsTemplateSnippetFolder =
+								value;
+							await this.plugin.saveSettings();
+						})
+				);
+
+			new Setting(content)
+				.setName(t("IOTO_Utils_PropertyManagementFolder"))
+				.setDesc(t("IOTO_Utils_PropertyManagementFolder_HINT"))
+				.addText((text) =>
+					text
+						.setPlaceholder("")
+						.setValue(
+							this.plugin.settings
+								.iotoUtilsPropertyManagementFolder
+						)
+						.onChange(async (value) => {
+							this.plugin.settings.iotoUtilsPropertyManagementFolder =
+								value;
+							await this.plugin.saveSettings();
+						})
+				);
+
 			new Setting(content)
 				.setName(t("IOTO_Utils_QuickImageSize"))
 				.setDesc(t("IOTO_Utils_QuickImageSize_HINT"))
-				.addTextArea((text) =>
-					text
+				.addTextArea((textArea) =>
+					textArea
 						.setPlaceholder("")
 						.setValue(this.plugin.settings.iotoUtilsQuickImageSize)
 						.onChange(async (value) => {
@@ -1903,38 +1936,7 @@ class IOTOSettingTab extends PluginSettingTab {
 						});
 				});
 
-			new Setting(content)
-				.setName(t("IOTO_Utils_TemplateSnippetFolder"))
-				.setDesc(t("IOTO_Utils_TemplateSnippetFolder_HINT"))
-				.addText((text) =>
-					text
-						.setPlaceholder("")
-						.setValue(
-							this.plugin.settings.iotoUtilsTemplateSnippetFolder
-						)
-						.onChange(async (value) => {
-							this.plugin.settings.iotoUtilsTemplateSnippetFolder =
-								value;
-							await this.plugin.saveSettings();
-						})
-				);
-
-			new Setting(content)
-				.setName(t("IOTO_Utils_PropertyManagementFolder"))
-				.setDesc(t("IOTO_Utils_PropertyManagementFolder_HINT"))
-				.addText((text) =>
-					text
-						.setPlaceholder("")
-						.setValue(
-							this.plugin.settings
-								.iotoUtilsPropertyManagementFolder
-						)
-						.onChange(async (value) => {
-							this.plugin.settings.iotoUtilsPropertyManagementFolder =
-								value;
-							await this.plugin.saveSettings();
-						})
-				);
+			
 
 			content.createEl("h6", {
 				text: t("IOTO_Movie_Time_Tags_Settings"),
