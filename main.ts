@@ -85,6 +85,15 @@ interface IOTOSettings {
 	inputFolderDefaultSubFolders: string;
 	outputFolderDefaultSubFolders: string;
 	defaultProjects: string;
+	// 辅助工具设置
+	iotoUtilsSnRRulesFolder: string;
+	iotoUtilsQuickImageSize: string;
+	iotoUtilsQuickImageMask: boolean;
+	iotoUtilsTemplateSnippetFolder: string;
+	iotoUtilsPropertyManagementFolder: string;
+	iotoUtilsQuickBlockTypes: string;
+	iotoUtilsQuickBlockIdDateFormat: string;
+	iotoUtilsQuickBlockIdUseSingleLineAsSeparator: boolean;
 }
 
 const DEFAULT_SETTINGS: IOTOSettings = {
@@ -150,6 +159,14 @@ const DEFAULT_SETTINGS: IOTOSettings = {
 	inputFolderDefaultSubFolders: t("Resources\nQuickNotes"),
 	outputFolderDefaultSubFolders: t("FleetingNotes\nCardNotes"),
 	defaultProjects: t("LearnIOTO\nLearnAI"),
+	iotoUtilsSnRRulesFolder: t("SearchAndReplaceRules"),
+	iotoUtilsQuickImageSize: "1920x1080\n900x600\n600x400",
+	iotoUtilsQuickImageMask: true,
+	iotoUtilsTemplateSnippetFolder: t("TemplatesSnippets"),
+	iotoUtilsPropertyManagementFolder: t("PropertyManagement"),
+	iotoUtilsQuickBlockTypes: t("QuickBlockTypes"),
+	iotoUtilsQuickBlockIdDateFormat: "YYYY-MM-DD",
+	iotoUtilsQuickBlockIdUseSingleLineAsSeparator: true,
 };
 
 export class InputModal extends Modal {
@@ -1792,7 +1809,136 @@ class IOTOSettingTab extends PluginSettingTab {
 			}
 		);
 
-		tabbedSettings.addTab(t("IOTO_Movie_Time_Tags_Settings"), (content) => {
+		tabbedSettings.addTab(t("IOTO_Other_Settings"), (content) => {
+			content.createEl("h6", {
+				text: t("IOTO_Utils_Settings"),
+			});
+
+			new Setting(content)
+				.setName(t("IOTO_Utils_SnRRulesFolder"))
+				.setDesc(t("IOTO_Utils_SnRRulesFolder_HINT"))
+				.addText((text) =>
+					text
+						.setPlaceholder("")
+						.setValue(this.plugin.settings.iotoUtilsSnRRulesFolder)
+						.onChange(async (value) => {
+							this.plugin.settings.iotoUtilsSnRRulesFolder =
+								value;
+							await this.plugin.saveSettings();
+						})
+				);
+
+			new Setting(content)
+				.setName(t("IOTO_Utils_QuickImageSize"))
+				.setDesc(t("IOTO_Utils_QuickImageSize_HINT"))
+				.addTextArea((text) =>
+					text
+						.setPlaceholder("")
+						.setValue(this.plugin.settings.iotoUtilsQuickImageSize)
+						.onChange(async (value) => {
+							this.plugin.settings.iotoUtilsQuickImageSize =
+								value;
+							await this.plugin.saveSettings();
+						})
+				);
+
+			new Setting(content)
+				.setName(t("IOTO_Utils_QuickImageMask"))
+				.setDesc(t("IOTO_Utils_QuickImageMask_HINT"))
+				.addToggle((toggle) => {
+					toggle
+						.setValue(this.plugin.settings.iotoUtilsQuickImageMask)
+						.onChange(async (value) => {
+							this.plugin.settings.iotoUtilsQuickImageMask =
+								value;
+							await this.plugin.saveSettings();
+						});
+				});
+
+			new Setting(content)
+				.setName(t("IOTO_Utils_QuickBlockTypes"))
+				.setDesc(t("IOTO_Utils_QuickBlockTypes_HINT"))
+				.addTextArea((textArea) =>
+					textArea
+						.setPlaceholder("")
+						.setValue(this.plugin.settings.iotoUtilsQuickBlockTypes)
+						.onChange(async (value) => {
+							this.plugin.settings.iotoUtilsQuickBlockTypes =
+								value;
+							await this.plugin.saveSettings();
+						})
+				);
+
+			new Setting(content)
+				.setName(t("IOTO_Utils_QuickBlockIdDateFormat"))
+				.setDesc(t("IOTO_Utils_QuickBlockIdDateFormat_HINT"))
+				.addText((text) =>
+					text
+						.setPlaceholder("")
+						.setValue(
+							this.plugin.settings.iotoUtilsQuickBlockIdDateFormat
+						)
+						.onChange(async (value) => {
+							this.plugin.settings.iotoUtilsQuickBlockIdDateFormat =
+								value;
+							await this.plugin.saveSettings();
+						})
+				);
+
+			new Setting(content)
+				.setName(t("IOTO_Utils_QuickBlockIdUseSingleLineAsSeparator"))
+				.setDesc(
+					t("IOTO_Utils_QuickBlockIdUseSingleLineAsSeparator_HINT")
+				)
+				.addToggle((toggle) => {
+					toggle
+						.setValue(
+							this.plugin.settings
+								.iotoUtilsQuickBlockIdUseSingleLineAsSeparator
+						)
+						.onChange(async (value) => {
+							this.plugin.settings.iotoUtilsQuickBlockIdUseSingleLineAsSeparator =
+								value;
+							await this.plugin.saveSettings();
+						});
+				});
+
+			new Setting(content)
+				.setName(t("IOTO_Utils_TemplateSnippetFolder"))
+				.setDesc(t("IOTO_Utils_TemplateSnippetFolder_HINT"))
+				.addText((text) =>
+					text
+						.setPlaceholder("")
+						.setValue(
+							this.plugin.settings.iotoUtilsTemplateSnippetFolder
+						)
+						.onChange(async (value) => {
+							this.plugin.settings.iotoUtilsTemplateSnippetFolder =
+								value;
+							await this.plugin.saveSettings();
+						})
+				);
+
+			new Setting(content)
+				.setName(t("IOTO_Utils_PropertyManagementFolder"))
+				.setDesc(t("IOTO_Utils_PropertyManagementFolder_HINT"))
+				.addText((text) =>
+					text
+						.setPlaceholder("")
+						.setValue(
+							this.plugin.settings
+								.iotoUtilsPropertyManagementFolder
+						)
+						.onChange(async (value) => {
+							this.plugin.settings.iotoUtilsPropertyManagementFolder =
+								value;
+							await this.plugin.saveSettings();
+						})
+				);
+
+			content.createEl("h6", {
+				text: t("IOTO_Movie_Time_Tags_Settings"),
+			});
 			new Setting(content)
 				.setName(t("IOTO_MOVIE_TIME_TAGS"))
 				.setDesc(t("SET_IOTO_MOVIE_TIME_TAGS"))

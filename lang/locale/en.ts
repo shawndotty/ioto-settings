@@ -212,4 +212,30 @@ export default {
 	USER_TEMPLATE_PREFIX: "User Template Prefix",
 	SET_USER_TEMPLATE_PREFIX: "Set The Prefix For Your User Templates",
 	USER_TEMPLATE_PREFIX_HINT: "Input The Prefix For Your User Templates",
+	SearchAndReplaceRules: "SearchAndReplaceRules",
+	TemplatesSnippets: "TemplatesSnippets",
+	PropertyManagement: "PropertyManagement",
+	QuickBlockTypes: "Code\nTable",
+	IOTO_Other_Settings: "Other",
+	IOTO_Utils_Settings: "Utils Settings",
+	IOTO_Utils_SnRRulesFolder: "Search And Replace Rules Folder",
+	IOTO_Utils_SnRRulesFolder_HINT:
+		"Set The Folder Path For Your Search And Replace Rules",
+	IOTO_Utils_QuickImageSize: "Quick Image Sizes",
+	IOTO_Utils_QuickImageSize_HINT: "Set The Quick Image Sizes",
+	IOTO_Utils_QuickImageMask: "Quick Image Mask",
+	IOTO_Utils_QuickImageMask_HINT: "Set The Quick Image Mask",
+	IOTO_Utils_QuickBlockTypes: "Quick Block Types",
+	IOTO_Utils_QuickBlockTypes_HINT: "Set The Quick Block Types",
+	IOTO_Utils_QuickBlockIdDateFormat: "Quick Block ID DateFormat",
+	IOTO_Utils_QuickBlockIdDateFormat_HINT: "Set The Quick Block ID DateFormat",
+	IOTO_Utils_QuickBlockIdUseSingleLineAsSeparator:
+		"Quick Block ID Use Single Line As Separator",
+	IOTO_Utils_QuickBlockIdUseSingleLineAsSeparator_HINT:
+		"Set The Quick Block ID Use Single Line As Separator",
+	IOTO_Utils_TemplateSnippetFolder: "Template Snippet Folder",
+	IOTO_Utils_TemplateSnippetFolder_HINT: "Set The Template Snippet Folder",
+	IOTO_Utils_PropertyManagementFolder: "Property Management Folder",
+	IOTO_Utils_PropertyManagementFolder_HINT:
+		"Set The Property Management Templates Folder",
 };
