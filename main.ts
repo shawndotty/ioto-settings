@@ -564,7 +564,9 @@ export default class IOTO extends Plugin {
 			{
 				templatePath: `${t(
 					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO-选择器-创建输入.md`,
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO-${t("Selector")}-${t(
+					"CreateInput"
+				)}.md`,
 				hotkey: {
 					modifiers: ["Alt"],
 					key: "1",
@@ -573,7 +575,9 @@ export default class IOTO extends Plugin {
 			{
 				templatePath: `${t(
 					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO-选择器-创建输出.md`,
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO-${t("Selector")}-${t(
+					"CreateOutput"
+				)}.md`,
 				hotkey: {
 					modifiers: ["Alt"],
 					key: "2",
@@ -582,7 +586,9 @@ export default class IOTO extends Plugin {
 			{
 				templatePath: `${t(
 					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO-选择器-创建任务.md`,
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO-${t("Selector")}-${t(
+					"CreateTask"
+				)}.md`,
 				hotkey: {
 					modifiers: ["Alt"],
 					key: "3",
@@ -591,7 +597,9 @@ export default class IOTO extends Plugin {
 			{
 				templatePath: `${t(
 					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO-选择器-创建成果.md`,
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO-${t("Selector")}-${t(
+					"CreateOutcome"
+				)}.md`,
 				hotkey: {
 					modifiers: ["Alt"],
 					key: "4",
@@ -600,7 +608,9 @@ export default class IOTO extends Plugin {
 			{
 				templatePath: `${t(
 					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO-选择器-辅助工具.md`,
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO-${t("Selector")}-${t(
+					"Auxiliaries"
+				)}.md`,
 				hotkey: {
 					modifiers: ["Alt"],
 					key: "5",
@@ -609,7 +619,9 @@ export default class IOTO extends Plugin {
 			{
 				templatePath: `${t(
 					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO同步模板/IOTO-OBSyncAirtable.md`,
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO${t(
+					"SyncTemplates"
+				)}/IOTO-OBSyncAirtable.md`,
 				hotkey: {
 					modifiers: ["Alt"],
 					key: "A",
@@ -618,7 +630,9 @@ export default class IOTO extends Plugin {
 			{
 				templatePath: `${t(
 					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO同步模板/IOTO-OBFetchAirtable.md`,
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO${t(
+					"SyncTemplates"
+				)}/IOTO-OBFetchAirtable.md`,
 				hotkey: {
 					modifiers: ["Alt", "Shift"],
 					key: "A",
@@ -627,7 +641,9 @@ export default class IOTO extends Plugin {
 			{
 				templatePath: `${t(
 					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO同步模板/IOTO-OBSyncVika.md`,
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO${t(
+					"SyncTemplates"
+				)}/IOTO-OBSyncVika.md`,
 				hotkey: {
 					modifiers: ["Alt"],
 					key: "V",
@@ -636,7 +652,9 @@ export default class IOTO extends Plugin {
 			{
 				templatePath: `${t(
 					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO同步模板/IOTO-OBFetchVika.md`,
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO${t(
+					"SyncTemplates"
+				)}/IOTO-OBFetchVika.md`,
 				hotkey: {
 					modifiers: ["Alt", "Shift"],
 					key: "V",
@@ -645,7 +663,9 @@ export default class IOTO extends Plugin {
 			{
 				templatePath: `${t(
 					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO同步模板/IOTO-OBSyncFeishu.md`,
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO${t(
+					"SyncTemplates"
+				)}/IOTO-OBSyncFeishu.md`,
 				hotkey: {
 					modifiers: ["Alt"],
 					key: "F",
@@ -654,7 +674,9 @@ export default class IOTO extends Plugin {
 			{
 				templatePath: `${t(
 					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO同步模板/IOTO-OBFetchFeishu.md`,
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO${t(
+					"SyncTemplates"
+				)}/IOTO-OBFetchFeishu.md`,
 				hotkey: {
 					modifiers: ["Alt", "Shift"],
 					key: "F",

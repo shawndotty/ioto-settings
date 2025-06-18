@@ -216,4 +216,11 @@ export default {
 	IOTO_Utils_TemplateSnippetFolder_HINT: "设置模板片段文件夹路径",
 	IOTO_Utils_PropertyManagementFolder: "属性管理文件夹",
 	IOTO_Utils_PropertyManagementFolder_HINT: "设置属性管理模板文件夹路径",
+	Selector: "选择器",
+	CreateInput: "创建输入",
+	CreateOutput: "创建输出",
+	CreateTask: "创建任务",
+	CreateOutcome: "创建成果",
+	Auxiliaries: "辅助工具",
+	SyncTemplates: "同步模板",
 };

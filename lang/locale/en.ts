@@ -238,4 +238,11 @@ export default {
 	IOTO_Utils_PropertyManagementFolder: "Property Management Folder",
 	IOTO_Utils_PropertyManagementFolder_HINT:
 		"Set The Property Management Templates Folder",
+	Selector: "Selector",
+	CreateInput: "CreateInput",
+	CreateOutput: "CreateOutput",
+	CreateTask: "CreateTask",
+	CreateOutcome: "CreateOutcome",
+	Auxiliaries: "Auxiliaries",
+	SyncTemplates: "SyncTemplates",
 };
