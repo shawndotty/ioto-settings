@@ -212,4 +212,11 @@ export default {
 	USER_TEMPLATE_PREFIX: "User Template Prefix",
 	SET_USER_TEMPLATE_PREFIX: "Set The Prefix For Your User Templates",
 	USER_TEMPLATE_PREFIX_HINT: "Input The Prefix For Your User Templates",
+	Selector: "Selector",
+	CreateInput: "CreateInput",
+	CreateOutput: "CreateOutput",
+	CreateTask: "CreateTask",
+	CreateOutcome: "CreateOutcome",
+	Auxiliaries: "Auxiliaries",
+	SyncTemplates: "SyncTemplates",
 };

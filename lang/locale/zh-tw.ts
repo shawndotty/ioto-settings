@@ -191,4 +191,11 @@ export default {
 	USER_TEMPLATE_PREFIX: "用戶模板前綴",
 	SET_USER_TEMPLATE_PREFIX: "設置用戶模板前綴",
 	USER_TEMPLATE_PREFIX_HINT: "輸入用戶模板前綴",
+	Selector: "選擇器",
+	CreateInput: "創建輸入",
+	CreateOutput: "創建輸出",
+	CreateTask: "創建任務",
+	CreateOutcome: "創建成果",
+	Auxiliaries: "輔助工具",
+	SyncTemplates: "同步模板",
 };
