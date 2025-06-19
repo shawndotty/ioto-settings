@@ -4,26 +4,24 @@ import { moment } from "obsidian";
 
 import en from "./locale/en";
 import zhCN from "./locale/zh-cn";
-import zhTW from "./locale/zh-tw";
-
+//import zhTW from "./locale/zh-tw";
 
 const localeMap: { [k: string]: Partial<typeof en> } = {
-    en,
-    "zh-cn": zhCN,
-    "zh-tw": zhTW
+	en,
+	"zh-cn": zhCN,
+	//"zh-tw": zhTW
 };
 
 const locale = localeMap[moment.locale()];
 
-
 export function t(str: keyof typeof en): string {
-    if (!locale) {
-      console.dir({
-        where: "helpers.t",
-        message: "Error: IOTO locale not found",
-        locale: moment.locale(),
-      });
-    }
-  
-    return (locale && locale[str]) || en[str];
+	if (!locale) {
+		console.dir({
+			where: "helpers.t",
+			message: "Error: IOTO locale not found",
+			locale: moment.locale(),
+		});
+	}
+
+	return (locale && locale[str]) || en[str];
 }
