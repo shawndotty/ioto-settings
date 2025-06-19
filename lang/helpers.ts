@@ -4,12 +4,12 @@ import { moment } from "obsidian";
 
 import en from "./locale/en";
 import zhCN from "./locale/zh-cn";
-//import zhTW from "./locale/zh-tw";
+import zhTW from "./locale/zh-tw";
 
 const localeMap: { [k: string]: Partial<typeof en> } = {
 	en,
 	"zh-cn": zhCN,
-	//"zh-tw": zhTW
+	"zh-tw": zhTW,
 };
 
 const locale = localeMap[moment.locale()];
