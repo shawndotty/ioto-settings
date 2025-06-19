@@ -293,4 +293,26 @@ export default {
 	IOTO_FETCH_SETTINGS_Feishu_BASE_ID_HINT: "Set The Feishu Base ID",
 	IOTO_FETCH_SETTINGS_Feishu_TABLE_ID: "Table ID",
 	IOTO_FETCH_SETTINGS_Feishu_TABLE_ID_HINT: "Set The Feishu Table ID",
+	AirtableSyncTableTemplateURL:
+		"https://airtable.com/app9nXuAbxQ737chI/shrq8rfYKvnvP1AeW",
+	AirtableFetchTableTemplateURL:
+		"https://airtable.com/app9nXuAbxQ737chI/shrYEtSQc5rJtfGH4",
+	FeishuSyncTableTempalteURL:
+		"https://johnnylearns.feishu.cn/base/LonWbGll6aKvwEsRAMJcbH3Lnxg?from=from_copylink",
+	FeishuFetchTableTemplateURL:
+		"https://johnnylearns.feishu.cn/base/WC5ObjrGgahqbMsqkVgcJyBrn6d?from=from_copylink",
+	VikaSyncTableTemplateURL: "https://vika.cn/share/shrDP0k7ypmtMVx7w2fsj",
+	VikaFetchTableTemplateURL: "https://vika.cn/share/shrk9Hip28AsyTsPSdRSj",
+	YourAirtableSyncTable: "Your Airtable Sync Table",
+	AirtableSyncTemplate: "Airtable Sync Template",
+	YourVikaSyncTable: "Your Vika Sync Table",
+	VikaSyncTemplate: "Vika Sync Template",
+	YourFeishuSyncTable: "Your Feishu Sync Table",
+	FeishuSyncTemplate: "Feishu Sync Template",
+	YourAirtableFetchTable: "Your Airtable Fetch Table",
+	AirtableFetchTemplate: "Airtable Fetch Template",
+	YourVikaFetchTable: "Your Vika Fetch Table",
+	VikaFetchTemplate: "Vika Fetch Template",
+	YourFeishuFetchTable: "Your Feishu Fetch Table",
+	FeishuFetchTemplate: "Feishu Fetch Template",
 };

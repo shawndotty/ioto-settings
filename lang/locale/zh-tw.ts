@@ -270,4 +270,26 @@ export default {
 	IOTO_FETCH_SETTINGS_Feishu_BASE_ID_HINT: "設置飛書 Base ID",
 	IOTO_FETCH_SETTINGS_Feishu_TABLE_ID: "Table ID",
 	IOTO_FETCH_SETTINGS_Feishu_TABLE_ID_HINT: "設置飛書 Table ID",
+	AirtableSyncTableTemplateURL:
+		"https://airtable.com/app9nXuAbxQ737chI/shr8NlN4h0vua322H",
+	AirtableFetchTableTemplateURL:
+		"https://airtable.com/app9nXuAbxQ737chI/shrwgs7cLRICV6O8L",
+	FeishuSyncTableTempalteURL:
+		"https://johnnylearns.feishu.cn/base/S9KqbOnzNaf7qMsWBw4crmA8n0f?from=from_copylink",
+	FeishuFetchTableTemplateURL:
+		"https://johnnylearns.feishu.cn/base/O102bJLM5aecXis65mgcf1FtnJc?from=from_copylink",
+	VikaSyncTableTemplateURL: "https://vika.cn/share/shrpPPrmad5DPC2vhz3mG",
+	VikaFetchTableTemplateURL: "https://vika.cn/share/shrYQCq7c9hcNKESM8qDr",
+	YourAirtableSyncTable: "您的 Airtable 同步表",
+	AirtableSyncTemplate: "Airtable 同步模板",
+	YourVikaSyncTable: "您的 Vika 同步表",
+	VikaSyncTemplate: "Vika 同步模板",
+	YourFeishuSyncTable: "您的飛書同步表",
+	FeishuSyncTemplate: "飛書同步模板",
+	YourAirtableFetchTable: "您的 Airtable 獲取表",
+	AirtableFetchTemplate: "Airtable 獲取模板",
+	YourVikaFetchTable: "您的 Vika 獲取表",
+	VikaFetchTemplate: "Vika 獲取模板",
+	YourFeishuFetchTable: "您的飛書獲取表",
+	FeishuFetchTemplate: "飛書獲取模板",
 };

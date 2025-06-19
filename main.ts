@@ -1918,11 +1918,22 @@ class IOTOSettingTab extends PluginSettingTab {
 
 			const airtableSyncInfo = content.createEl("div");
 			const airtableSyncBaseLink = airtableSyncInfo.createEl("a", {
-				text: "Your Airtable Sync Table",
+				text: t("YourAirtableSyncTable"),
 				href: `https://airtable.com/${this.plugin.settings.airtableBaseIDForSync}/${this.plugin.settings.airtableTableIDForSync}`,
 			});
 			airtableSyncBaseLink.setAttr("target", "_blank");
 			airtableSyncBaseLink.setAttr("rel", "noopener noreferrer");
+
+			airtableSyncInfo.createEl("span", {
+				text: " | ",
+			});
+
+			const airtableSyncTemplateLink = airtableSyncInfo.createEl("a", {
+				text: t("AirtableSyncTemplate"),
+				href: t("AirtableSyncTableTemplateURL"),
+			});
+			airtableSyncTemplateLink.setAttr("target", "_blank");
+			airtableSyncTemplateLink.setAttr("rel", "noopener noreferrer");
 
 			content.createEl("h6", {
 				text: t("IOTO_SYNC_SETTINGS_Vika"),
@@ -1954,11 +1965,22 @@ class IOTOSettingTab extends PluginSettingTab {
 
 			const vikaSyncInfo = content.createEl("div");
 			const vikaSyncBaseLink = vikaSyncInfo.createEl("a", {
-				text: "Your Vika Sync Table",
+				text: t("YourVikaSyncTable"),
 				href: `https://vika.cn/workbench/${this.plugin.settings.vikaTableIDForSync}`,
 			});
 			vikaSyncBaseLink.setAttr("target", "_blank");
 			vikaSyncBaseLink.setAttr("rel", "noopener noreferrer");
+
+			vikaSyncInfo.createEl("span", {
+				text: " | ",
+			});
+
+			const vikaSyncTemplateLink = vikaSyncInfo.createEl("a", {
+				text: t("VikaSyncTemplate"),
+				href: t("VikaSyncTableTemplateURL"),
+			});
+			vikaSyncTemplateLink.setAttr("target", "_blank");
+			vikaSyncTemplateLink.setAttr("rel", "noopener noreferrer");
 
 			content.createEl("h6", {
 				text: t("IOTO_SYNC_SETTINGS_Feishu"),
@@ -2014,11 +2036,22 @@ class IOTOSettingTab extends PluginSettingTab {
 
 			const feishuSyncInfo = content.createEl("div");
 			const feishuSyncBaseLink = feishuSyncInfo.createEl("a", {
-				text: "Your Feishu Sync Table",
+				text: t("YourFeishuSyncTable"),
 				href: `https://feishu.cn/base/${this.plugin.settings.feishuBaseIDForSync}?table=${this.plugin.settings.feishuTableIDForSync}`,
 			});
 			feishuSyncBaseLink.setAttr("target", "_blank");
 			feishuSyncBaseLink.setAttr("rel", "noopener noreferrer");
+
+			feishuSyncInfo.createEl("span", {
+				text: " | ",
+			});
+
+			const feishuSyncTemplateLink = feishuSyncInfo.createEl("a", {
+				text: t("FeishuSyncTemplate"),
+				href: t("FeishuSyncTableTempalteURL"),
+			});
+			feishuSyncTemplateLink.setAttr("target", "_blank");
+			feishuSyncTemplateLink.setAttr("rel", "noopener noreferrer");
 		});
 
 		tabbedSettings.addTab(t("IOTO_FETCH_SETTINGS"), (content) => {
@@ -2065,11 +2098,22 @@ class IOTOSettingTab extends PluginSettingTab {
 
 			const airtableFetchInfo = content.createEl("div");
 			const airtableFetchBaseLink = airtableFetchInfo.createEl("a", {
-				text: "Your Airtable Fetch Table",
+				text: t("YourAirtableFetchTable"),
 				href: `https://airtable.com/${this.plugin.settings.airtableBaseIDForFetch}/${this.plugin.settings.airtableTableIDForFetch}`,
 			});
 			airtableFetchBaseLink.setAttr("target", "_blank");
 			airtableFetchBaseLink.setAttr("rel", "noopener noreferrer");
+
+			airtableFetchInfo.createEl("span", {
+				text: " | ",
+			});
+
+			const airtableFetchTemplateLink = airtableFetchInfo.createEl("a", {
+				text: t("AirtableFetchTemplate"),
+				href: t("AirtableFetchTableTemplateURL"),
+			});
+			airtableFetchTemplateLink.setAttr("target", "_blank");
+			airtableFetchTemplateLink.setAttr("rel", "noopener noreferrer");
 
 			content.createEl("h6", {
 				text: t("IOTO_FETCH_SETTINGS_Vika"),
@@ -2101,11 +2145,22 @@ class IOTOSettingTab extends PluginSettingTab {
 
 			const vikaFetchInfo = content.createEl("div");
 			const vikaFetchBaseLink = vikaFetchInfo.createEl("a", {
-				text: "Your Vika Fetch Table",
+				text: t("YourVikaFetchTable"),
 				href: `https://vika.cn/workbench/${this.plugin.settings.vikaTableIDForFetch}`,
 			});
 			vikaFetchBaseLink.setAttr("target", "_blank");
 			vikaFetchBaseLink.setAttr("rel", "noopener noreferrer");
+
+			vikaFetchInfo.createEl("span", {
+				text: " | ",
+			});
+
+			const vikaFetchTemplateLink = vikaFetchInfo.createEl("a", {
+				text: t("VikaFetchTemplate"),
+				href: t("VikaFetchTableTemplateURL"),
+			});
+			vikaFetchTemplateLink.setAttr("target", "_blank");
+			vikaFetchTemplateLink.setAttr("rel", "noopener noreferrer");
 
 			content.createEl("h6", {
 				text: t("IOTO_FETCH_SETTINGS_Feishu"),
@@ -2161,11 +2216,22 @@ class IOTOSettingTab extends PluginSettingTab {
 				});
 			const feishuFetchInfo = content.createEl("div");
 			const feishuFetchBaseLink = feishuFetchInfo.createEl("a", {
-				text: "Your Feishu Fetch Table",
+				text: t("YourFeishuFetchTable"),
 				href: `https://feishu.cn/base/${this.plugin.settings.feishuBaseIDForFetch}?table=${this.plugin.settings.feishuTableIDForFetch}`,
 			});
 			feishuFetchBaseLink.setAttr("target", "_blank");
 			feishuFetchBaseLink.setAttr("rel", "noopener noreferrer");
+
+			feishuFetchInfo.createEl("span", {
+				text: " | ",
+			});
+
+			const feishuFetchTemplateLink = feishuFetchInfo.createEl("a", {
+				text: t("FeishuFetchTemplate"),
+				href: t("FeishuFetchTableTemplateURL"),
+			});
+			feishuFetchTemplateLink.setAttr("target", "_blank");
+			feishuFetchTemplateLink.setAttr("rel", "noopener noreferrer");
 		});
 
 		tabbedSettings.addTab(t("IOTO_Other_Settings"), (content) => {
