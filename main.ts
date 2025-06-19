@@ -94,6 +94,30 @@ interface IOTOSettings {
 	iotoUtilsQuickBlockTypes: string;
 	iotoUtilsQuickBlockIdDateFormat: string;
 	iotoUtilsQuickBlockIdUseSingleLineAsSeparator: boolean;
+	// 同步设置
+	airtableAPIKeyForSync: string;
+	airtableBaseIDForSync: string;
+	airtableTableIDForSync: string;
+
+	airtableAPIKeyForFetch: string;
+	airtableBaseIDForFetch: string;
+	airtableTableIDForFetch: string;
+
+	vikaAPIKeyForSync: string;
+	vikaTableIDForSync: string;
+
+	vikaAPIKeyForFetch: string;
+	vikaTableIDForFetch: string;
+
+	feishuAppIDForSync: string;
+	feishuAppSecretForSync: string;
+	feishuBaseIDForSync: string;
+	feishuTableIDForSync: string;
+
+	feishuAppIDForFetch: string;
+	feishuAppSecretForFetch: string;
+	feishuBaseIDForFetch: string;
+	feishuTableIDForFetch: string;
 }
 
 const DEFAULT_SETTINGS: IOTOSettings = {
@@ -167,6 +191,29 @@ const DEFAULT_SETTINGS: IOTOSettings = {
 	iotoUtilsQuickBlockTypes: t("QuickBlockTypes"),
 	iotoUtilsQuickBlockIdDateFormat: "YYYY-MM-DD",
 	iotoUtilsQuickBlockIdUseSingleLineAsSeparator: true,
+	airtableAPIKeyForSync: "",
+	airtableBaseIDForSync: "",
+	airtableTableIDForSync: "",
+
+	airtableAPIKeyForFetch: "",
+	airtableBaseIDForFetch: "",
+	airtableTableIDForFetch: "",
+
+	vikaAPIKeyForSync: "",
+	vikaTableIDForSync: "",
+
+	vikaAPIKeyForFetch: "",
+	vikaTableIDForFetch: "",
+
+	feishuAppIDForSync: "",
+	feishuAppSecretForSync: "",
+	feishuBaseIDForSync: "",
+	feishuTableIDForSync: "",
+
+	feishuAppIDForFetch: "",
+	feishuAppSecretForFetch: "",
+	feishuBaseIDForFetch: "",
+	feishuTableIDForFetch: "",
 };
 
 export class InputModal extends Modal {
@@ -1831,6 +1878,249 @@ class IOTOSettingTab extends PluginSettingTab {
 			}
 		);
 
+		tabbedSettings.addTab(t("IOTO_SYNC_SETTINGS"), (content) => {
+			content.createEl("h6", {
+				text: t("IOTO_SYNC_SETTINGS_Airtable"),
+			});
+			new Setting(content)
+				.setName(t("IOTO_SYNC_SETTINGS_Airtable_API_KEY"))
+				.setDesc(t("IOTO_SYNC_SETTINGS_Airtable_API_KEY_HINT"))
+				.addText((text) => {
+					text.setPlaceholder("")
+						.setValue(this.plugin.settings.airtableAPIKeyForSync)
+						.onChange(async (value) => {
+							this.plugin.settings.airtableAPIKeyForSync = value;
+							await this.plugin.saveSettings();
+						});
+				});
+			new Setting(content)
+				.setName(t("IOTO_SYNC_SETTINGS_Airtable_BASE_ID"))
+				.setDesc(t("IOTO_SYNC_SETTINGS_Airtable_BASE_ID_HINT"))
+				.addText((text) => {
+					text.setPlaceholder("")
+						.setValue(this.plugin.settings.airtableBaseIDForSync)
+						.onChange(async (value) => {
+							this.plugin.settings.airtableBaseIDForSync = value;
+							await this.plugin.saveSettings();
+						});
+				});
+			new Setting(content)
+				.setName(t("IOTO_SYNC_SETTINGS_Airtable_TABLE_ID"))
+				.setDesc(t("IOTO_SYNC_SETTINGS_Airtable_TABLE_ID_HINT"))
+				.addText((text) => {
+					text.setPlaceholder("")
+						.setValue(this.plugin.settings.airtableTableIDForSync)
+						.onChange(async (value) => {
+							this.plugin.settings.airtableTableIDForSync = value;
+							await this.plugin.saveSettings();
+						});
+				});
+
+			content.createEl("h6", {
+				text: t("IOTO_SYNC_SETTINGS_Vika"),
+			});
+
+			new Setting(content)
+				.setName(t("IOTO_SYNC_SETTINGS_Vika_API_KEY"))
+				.setDesc(t("IOTO_SYNC_SETTINGS_Vika_API_KEY_HINT"))
+				.addText((text) => {
+					text.setPlaceholder("")
+						.setValue(this.plugin.settings.vikaAPIKeyForSync)
+						.onChange(async (value) => {
+							this.plugin.settings.vikaAPIKeyForSync = value;
+							await this.plugin.saveSettings();
+						});
+				});
+
+			new Setting(content)
+				.setName(t("IOTO_SYNC_SETTINGS_Vika_TABLE_ID"))
+				.setDesc(t("IOTO_SYNC_SETTINGS_Vika_TABLE_ID_HINT"))
+				.addText((text) => {
+					text.setPlaceholder("")
+						.setValue(this.plugin.settings.vikaTableIDForSync)
+						.onChange(async (value) => {
+							this.plugin.settings.vikaTableIDForSync = value;
+							await this.plugin.saveSettings();
+						});
+				});
+
+			content.createEl("h6", {
+				text: t("IOTO_SYNC_SETTINGS_Feishu"),
+			});
+
+			new Setting(content)
+				.setName(t("IOTO_SYNC_SETTINGS_Feishu_APP_ID"))
+				.setDesc(t("IOTO_SYNC_SETTINGS_Feishu_APP_ID_HINT"))
+				.addText((text) => {
+					text.setPlaceholder("")
+						.setValue(this.plugin.settings.feishuAppIDForSync)
+						.onChange(async (value) => {
+							this.plugin.settings.feishuAppIDForSync = value;
+							await this.plugin.saveSettings();
+						});
+				});
+
+			new Setting(content)
+				.setName(t("IOTO_SYNC_SETTINGS_Feishu_APP_SECRET"))
+				.setDesc(t("IOTO_SYNC_SETTINGS_Feishu_APP_SECRET_HINT"))
+				.addText((text) => {
+					text.setPlaceholder("")
+						.setValue(this.plugin.settings.feishuAppSecretForSync)
+						.onChange(async (value) => {
+							this.plugin.settings.feishuAppSecretForSync = value;
+							await this.plugin.saveSettings();
+						});
+				});
+
+			new Setting(content)
+				.setName(t("IOTO_SYNC_SETTINGS_Feishu_BASE_ID"))
+				.setDesc(t("IOTO_SYNC_SETTINGS_Feishu_BASE_ID_HINT"))
+				.addText((text) => {
+					text.setPlaceholder("")
+						.setValue(this.plugin.settings.feishuBaseIDForSync)
+						.onChange(async (value) => {
+							this.plugin.settings.feishuBaseIDForSync = value;
+							await this.plugin.saveSettings();
+						});
+				});
+
+			new Setting(content)
+				.setName(t("IOTO_SYNC_SETTINGS_Feishu_TABLE_ID"))
+				.setDesc(t("IOTO_SYNC_SETTINGS_Feishu_TABLE_ID_HINT"))
+				.addText((text) => {
+					text.setPlaceholder("")
+						.setValue(this.plugin.settings.feishuTableIDForSync)
+						.onChange(async (value) => {
+							this.plugin.settings.feishuTableIDForSync = value;
+							await this.plugin.saveSettings();
+						});
+				});
+		});
+
+		tabbedSettings.addTab(t("IOTO_FETCH_SETTINGS"), (content) => {
+			content.createEl("h6", {
+				text: t("IOTO_FETCH_SETTINGS_Airtable"),
+			});
+
+			new Setting(content)
+				.setName(t("IOTO_FETCH_SETTINGS_Airtable_API_KEY"))
+				.setDesc(t("IOTO_FETCH_SETTINGS_Airtable_API_KEY_HINT"))
+				.addText((text) => {
+					text.setPlaceholder("")
+						.setValue(this.plugin.settings.airtableAPIKeyForFetch)
+						.onChange(async (value) => {
+							this.plugin.settings.airtableAPIKeyForFetch = value;
+							await this.plugin.saveSettings();
+						});
+				});
+
+			new Setting(content)
+				.setName(t("IOTO_FETCH_SETTINGS_Airtable_BASE_ID"))
+				.setDesc(t("IOTO_FETCH_SETTINGS_Airtable_BASE_ID_HINT"))
+				.addText((text) => {
+					text.setPlaceholder("")
+						.setValue(this.plugin.settings.airtableBaseIDForFetch)
+						.onChange(async (value) => {
+							this.plugin.settings.airtableBaseIDForFetch = value;
+							await this.plugin.saveSettings();
+						});
+				});
+
+			new Setting(content)
+				.setName(t("IOTO_FETCH_SETTINGS_Airtable_TABLE_ID"))
+				.setDesc(t("IOTO_FETCH_SETTINGS_Airtable_TABLE_ID_HINT"))
+				.addText((text) => {
+					text.setPlaceholder("")
+						.setValue(this.plugin.settings.airtableTableIDForFetch)
+						.onChange(async (value) => {
+							this.plugin.settings.airtableTableIDForFetch =
+								value;
+							await this.plugin.saveSettings();
+						});
+				});
+
+			content.createEl("h6", {
+				text: t("IOTO_FETCH_SETTINGS_Vika"),
+			});
+
+			new Setting(content)
+				.setName(t("IOTO_FETCH_SETTINGS_Vika_API_KEY"))
+				.setDesc(t("IOTO_FETCH_SETTINGS_Vika_API_KEY_HINT"))
+				.addText((text) => {
+					text.setPlaceholder("")
+						.setValue(this.plugin.settings.vikaAPIKeyForFetch)
+						.onChange(async (value) => {
+							this.plugin.settings.vikaAPIKeyForFetch = value;
+							await this.plugin.saveSettings();
+						});
+				});
+
+			new Setting(content)
+				.setName(t("IOTO_FETCH_SETTINGS_Vika_TABLE_ID"))
+				.setDesc(t("IOTO_FETCH_SETTINGS_Vika_TABLE_ID_HINT"))
+				.addText((text) => {
+					text.setPlaceholder("")
+						.setValue(this.plugin.settings.vikaTableIDForFetch)
+						.onChange(async (value) => {
+							this.plugin.settings.vikaTableIDForFetch = value;
+							await this.plugin.saveSettings();
+						});
+				});
+
+			content.createEl("h6", {
+				text: t("IOTO_FETCH_SETTINGS_Feishu"),
+			});
+
+			new Setting(content)
+				.setName(t("IOTO_FETCH_SETTINGS_Feishu_APP_ID"))
+				.setDesc(t("IOTO_FETCH_SETTINGS_Feishu_APP_ID_HINT"))
+				.addText((text) => {
+					text.setPlaceholder("")
+						.setValue(this.plugin.settings.feishuAppIDForFetch)
+						.onChange(async (value) => {
+							this.plugin.settings.feishuAppIDForFetch = value;
+							await this.plugin.saveSettings();
+						});
+				});
+
+			new Setting(content)
+				.setName(t("IOTO_FETCH_SETTINGS_Feishu_APP_SECRET"))
+				.setDesc(t("IOTO_FETCH_SETTINGS_Feishu_APP_SECRET_HINT"))
+				.addText((text) => {
+					text.setPlaceholder("")
+						.setValue(this.plugin.settings.feishuAppSecretForFetch)
+						.onChange(async (value) => {
+							this.plugin.settings.feishuAppSecretForFetch =
+								value;
+							await this.plugin.saveSettings();
+						});
+				});
+
+			new Setting(content)
+				.setName(t("IOTO_FETCH_SETTINGS_Feishu_BASE_ID"))
+				.setDesc(t("IOTO_FETCH_SETTINGS_Feishu_BASE_ID_HINT"))
+				.addText((text) => {
+					text.setPlaceholder("")
+						.setValue(this.plugin.settings.feishuBaseIDForFetch)
+						.onChange(async (value) => {
+							this.plugin.settings.feishuBaseIDForFetch = value;
+							await this.plugin.saveSettings();
+						});
+				});
+
+			new Setting(content)
+				.setName(t("IOTO_FETCH_SETTINGS_Feishu_TABLE_ID"))
+				.setDesc(t("IOTO_FETCH_SETTINGS_Feishu_TABLE_ID_HINT"))
+				.addText((text) => {
+					text.setPlaceholder("")
+						.setValue(this.plugin.settings.feishuTableIDForFetch)
+						.onChange(async (value) => {
+							this.plugin.settings.feishuTableIDForFetch = value;
+							await this.plugin.saveSettings();
+						});
+				});
+		});
+
 		tabbedSettings.addTab(t("IOTO_Other_Settings"), (content) => {
 			content.createEl("h6", {
 				text: t("IOTO_Utils_Settings"),
@@ -1850,7 +2140,7 @@ class IOTOSettingTab extends PluginSettingTab {
 						})
 				);
 
-				new Setting(content)
+			new Setting(content)
 				.setName(t("IOTO_Utils_TemplateSnippetFolder"))
 				.setDesc(t("IOTO_Utils_TemplateSnippetFolder_HINT"))
 				.addText((text) =>
@@ -1957,8 +2247,6 @@ class IOTOSettingTab extends PluginSettingTab {
 							await this.plugin.saveSettings();
 						});
 				});
-
-			
 
 			content.createEl("h6", {
 				text: t("IOTO_Movie_Time_Tags_Settings"),
