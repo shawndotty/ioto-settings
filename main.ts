@@ -1916,6 +1916,14 @@ class IOTOSettingTab extends PluginSettingTab {
 						});
 				});
 
+			const airtableSyncInfo = content.createEl("div");
+			const airtableSyncBaseLink = airtableSyncInfo.createEl("a", {
+				text: "Your Airtable Sync Table",
+				href: `https://airtable.com/${this.plugin.settings.airtableBaseIDForSync}/${this.plugin.settings.airtableTableIDForSync}`,
+			});
+			airtableSyncBaseLink.setAttr("target", "_blank");
+			airtableSyncBaseLink.setAttr("rel", "noopener noreferrer");
+
 			content.createEl("h6", {
 				text: t("IOTO_SYNC_SETTINGS_Vika"),
 			});
@@ -1943,6 +1951,14 @@ class IOTOSettingTab extends PluginSettingTab {
 							await this.plugin.saveSettings();
 						});
 				});
+
+			const vikaSyncInfo = content.createEl("div");
+			const vikaSyncBaseLink = vikaSyncInfo.createEl("a", {
+				text: "Your Vika Sync Table",
+				href: `https://vika.cn/workbench/${this.plugin.settings.vikaTableIDForSync}`,
+			});
+			vikaSyncBaseLink.setAttr("target", "_blank");
+			vikaSyncBaseLink.setAttr("rel", "noopener noreferrer");
 
 			content.createEl("h6", {
 				text: t("IOTO_SYNC_SETTINGS_Feishu"),
@@ -1995,6 +2011,14 @@ class IOTOSettingTab extends PluginSettingTab {
 							await this.plugin.saveSettings();
 						});
 				});
+
+			const feishuSyncInfo = content.createEl("div");
+			const feishuSyncBaseLink = feishuSyncInfo.createEl("a", {
+				text: "Your Feishu Sync Table",
+				href: `https://feishu.cn/base/${this.plugin.settings.feishuBaseIDForSync}?table=${this.plugin.settings.feishuTableIDForSync}`,
+			});
+			feishuSyncBaseLink.setAttr("target", "_blank");
+			feishuSyncBaseLink.setAttr("rel", "noopener noreferrer");
 		});
 
 		tabbedSettings.addTab(t("IOTO_FETCH_SETTINGS"), (content) => {
@@ -2039,6 +2063,14 @@ class IOTOSettingTab extends PluginSettingTab {
 						});
 				});
 
+			const airtableFetchInfo = content.createEl("div");
+			const airtableFetchBaseLink = airtableFetchInfo.createEl("a", {
+				text: "Your Airtable Fetch Table",
+				href: `https://airtable.com/${this.plugin.settings.airtableBaseIDForFetch}/${this.plugin.settings.airtableTableIDForFetch}`,
+			});
+			airtableFetchBaseLink.setAttr("target", "_blank");
+			airtableFetchBaseLink.setAttr("rel", "noopener noreferrer");
+
 			content.createEl("h6", {
 				text: t("IOTO_FETCH_SETTINGS_Vika"),
 			});
@@ -2066,6 +2098,14 @@ class IOTOSettingTab extends PluginSettingTab {
 							await this.plugin.saveSettings();
 						});
 				});
+
+			const vikaFetchInfo = content.createEl("div");
+			const vikaFetchBaseLink = vikaFetchInfo.createEl("a", {
+				text: "Your Vika Fetch Table",
+				href: `https://vika.cn/workbench/${this.plugin.settings.vikaTableIDForFetch}`,
+			});
+			vikaFetchBaseLink.setAttr("target", "_blank");
+			vikaFetchBaseLink.setAttr("rel", "noopener noreferrer");
 
 			content.createEl("h6", {
 				text: t("IOTO_FETCH_SETTINGS_Feishu"),
@@ -2119,6 +2159,13 @@ class IOTOSettingTab extends PluginSettingTab {
 							await this.plugin.saveSettings();
 						});
 				});
+			const feishuFetchInfo = content.createEl("div");
+			const feishuFetchBaseLink = feishuFetchInfo.createEl("a", {
+				text: "Your Feishu Fetch Table",
+				href: `https://feishu.cn/base/${this.plugin.settings.feishuBaseIDForFetch}?table=${this.plugin.settings.feishuTableIDForFetch}`,
+			});
+			feishuFetchBaseLink.setAttr("target", "_blank");
+			feishuFetchBaseLink.setAttr("rel", "noopener noreferrer");
 		});
 
 		tabbedSettings.addTab(t("IOTO_Other_Settings"), (content) => {
