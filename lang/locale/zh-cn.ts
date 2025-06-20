@@ -156,7 +156,7 @@ export default {
 	"Create Input Notes In {{folder}}": "在 {{folder}} 中创建输入笔记",
 	"Create Output Notes In {{folder}}": "在 {{folder}} 中创建输出笔记",
 	"Create Outcome Notes In {{folder}}": "在 {{folder}} 中创建成果笔记",
-	"Create TDL In {{folder}}": "在 {{folder}} 中创建输入任务列表",
+	"Create TDL In {{folder}}": "在 {{folder}} 中创建任务列表",
 	"Articles\nSummary": "文章\n总结",
 	"Fleeting Notes": "闪念",
 	"Successfully added": "成功添加",

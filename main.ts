@@ -190,7 +190,7 @@ const DEFAULT_SETTINGS: IOTOSettings = {
 	iotoUtilsPropertyManagementFolder: t("PropertyManagement"),
 	iotoUtilsQuickBlockTypes: t("QuickBlockTypes"),
 	iotoUtilsQuickBlockIdDateFormat: "YYYY-MM-DD",
-	iotoUtilsQuickBlockIdUseSingleLineAsSeparator: true,
+	iotoUtilsQuickBlockIdUseSingleLineAsSeparator: false,
 	airtableAPIKeyForSync: "",
 	airtableBaseIDForSync: "",
 	airtableTableIDForSync: "",
