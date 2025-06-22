@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-ioto-setting",
-	"version": "1.9.1",
+	"version": "1.9.2",
 	"description": "This is a setting plugin for Obsidian IOTO Framework",
 	"main": "main.js",
 	"scripts": {
