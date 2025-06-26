@@ -9,7 +9,6 @@ import {
 	Setting,
 } from "obsidian";
 
-import { t } from "./lang/helpers";
 
 declare module "obsidian" {
 	interface App {
@@ -23,6 +22,8 @@ declare module "obsidian" {
 		};
 	}
 }
+
+import { t } from "./lang/helpers";
 
 interface IOTOSettings {
 	inputFolder: string;
@@ -318,11 +319,11 @@ export class InputModal extends Modal {
 
 export default class IOTO extends Plugin {
 	settings: IOTOSettings;
-
+	userIOTOLanguage: string;
 	async onload() {
 		this.addStyle();
 		await this.loadSettings();
-
+		
 		this.addCommand({
 			id: "ioto-init-setup",
 			name: t("Initialize IOTO"),
@@ -542,6 +543,11 @@ export default class IOTO extends Plugin {
 		}
 	}
 
+	private getPlugin(id : string) {
+		const plugin = this.app.plugins.plugins[id];
+		return plugin;
+	}
+
 	private getTemplater() {
 		// 获取Templater插件实例
 		// @ts-ignore
@@ -607,12 +613,14 @@ export default class IOTO extends Plugin {
 
 	private async addIOTOHotkeys() {
 		// 定义要添加的热键映射
+		const userLang = this.getPlugin("ioto-update").settings.iotoFrameworkLanguage || "auto";
+
+		console.log(userLang);
+
 		const hotkeyMappings = [
 			{
-				templatePath: `${t(
-					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO-${t("Selector")}-${t(
-					"CreateInput"
+				templatePath: `${t("0-Extras")}/IOTO/Templates/Templater/OBIOTO/IOTO-${t("Selector", userLang)}-${t(
+					"CreateInput", userLang
 				)}.md`,
 				hotkey: {
 					modifiers: ["Alt"],
@@ -622,8 +630,8 @@ export default class IOTO extends Plugin {
 			{
 				templatePath: `${t(
 					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO-${t("Selector")}-${t(
-					"CreateOutput"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO-${t("Selector", userLang)}-${t(
+					"CreateOutput", userLang
 				)}.md`,
 				hotkey: {
 					modifiers: ["Alt"],
@@ -633,8 +641,8 @@ export default class IOTO extends Plugin {
 			{
 				templatePath: `${t(
 					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO-${t("Selector")}-${t(
-					"CreateTask"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO-${t("Selector", userLang)}-${t(
+					"CreateTask", userLang
 				)}.md`,
 				hotkey: {
 					modifiers: ["Alt"],
@@ -644,8 +652,8 @@ export default class IOTO extends Plugin {
 			{
 				templatePath: `${t(
 					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO-${t("Selector")}-${t(
-					"CreateOutcome"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO-${t("Selector", userLang)}-${t(
+					"CreateOutcome", userLang
 				)}.md`,
 				hotkey: {
 					modifiers: ["Alt"],
@@ -655,8 +663,8 @@ export default class IOTO extends Plugin {
 			{
 				templatePath: `${t(
 					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO-${t("Selector")}-${t(
-					"Auxiliaries"
+				)}/IOTO/Templates/Templater/OBIOTO/IOTO-${t("Selector", userLang)}-${t(
+					"Auxiliaries", userLang
 				)}.md`,
 				hotkey: {
 					modifiers: ["Alt"],
@@ -667,7 +675,7 @@ export default class IOTO extends Plugin {
 				templatePath: `${t(
 					"0-Extras"
 				)}/IOTO/Templates/Templater/OBIOTO/IOTO${t(
-					"SyncTemplates"
+					"SyncTemplates", userLang
 				)}/IOTO-OBSyncAirtable.md`,
 				hotkey: {
 					modifiers: ["Alt"],
@@ -678,7 +686,7 @@ export default class IOTO extends Plugin {
 				templatePath: `${t(
 					"0-Extras"
 				)}/IOTO/Templates/Templater/OBIOTO/IOTO${t(
-					"SyncTemplates"
+					"SyncTemplates", userLang
 				)}/IOTO-OBFetchAirtable.md`,
 				hotkey: {
 					modifiers: ["Alt", "Shift"],
@@ -689,7 +697,7 @@ export default class IOTO extends Plugin {
 				templatePath: `${t(
 					"0-Extras"
 				)}/IOTO/Templates/Templater/OBIOTO/IOTO${t(
-					"SyncTemplates"
+					"SyncTemplates", userLang
 				)}/IOTO-OBSyncVika.md`,
 				hotkey: {
 					modifiers: ["Alt"],
@@ -700,7 +708,7 @@ export default class IOTO extends Plugin {
 				templatePath: `${t(
 					"0-Extras"
 				)}/IOTO/Templates/Templater/OBIOTO/IOTO${t(
-					"SyncTemplates"
+					"SyncTemplates", userLang
 				)}/IOTO-OBFetchVika.md`,
 				hotkey: {
 					modifiers: ["Alt", "Shift"],
@@ -711,7 +719,7 @@ export default class IOTO extends Plugin {
 				templatePath: `${t(
 					"0-Extras"
 				)}/IOTO/Templates/Templater/OBIOTO/IOTO${t(
-					"SyncTemplates"
+					"SyncTemplates", userLang
 				)}/IOTO-OBSyncFeishu.md`,
 				hotkey: {
 					modifiers: ["Alt"],
@@ -722,7 +730,7 @@ export default class IOTO extends Plugin {
 				templatePath: `${t(
 					"0-Extras"
 				)}/IOTO/Templates/Templater/OBIOTO/IOTO${t(
-					"SyncTemplates"
+					"SyncTemplates", userLang
 				)}/IOTO-OBFetchFeishu.md`,
 				hotkey: {
 					modifiers: ["Alt", "Shift"],
