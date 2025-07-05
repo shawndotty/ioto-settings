@@ -99,7 +99,7 @@ export class IOTOSettingTab extends PluginSettingTab {
 						}
 						await this.plugin.saveSettings();
 
-						await this.plugin.changeIOTOBaseFolder(
+						await this.plugin.folderService.changeIOTOBaseFolder(
 							newFolder,
 							oldFolder
 						);
@@ -118,7 +118,7 @@ export class IOTOSettingTab extends PluginSettingTab {
 							this.plugin.settings.outputFolder = newFolder;
 						}
 						await this.plugin.saveSettings();
-						await this.plugin.changeIOTOBaseFolder(
+						await this.plugin.folderService.changeIOTOBaseFolder(
 							newFolder,
 							oldFolder
 						);
@@ -137,10 +137,10 @@ export class IOTOSettingTab extends PluginSettingTab {
 							this.plugin.settings.taskFolder = newFolder;
 						}
 						await this.plugin.saveSettings();
-						await this.plugin.rebuildTaskDashboard(
+						await this.plugin.folderService.rebuildTaskDashboard(
 							newFolder ? newFolder : oldFolder
 						);
-						await this.plugin.changeIOTOBaseFolder(
+						await this.plugin.folderService.changeIOTOBaseFolder(
 							newFolder,
 							oldFolder
 						);
@@ -159,7 +159,7 @@ export class IOTOSettingTab extends PluginSettingTab {
 							this.plugin.settings.outcomeFolder = newFolder;
 						}
 						await this.plugin.saveSettings();
-						await this.plugin.changeIOTOBaseFolder(
+						await this.plugin.folderService.changeIOTOBaseFolder(
 							newFolder,
 							oldFolder
 						);
@@ -178,7 +178,7 @@ export class IOTOSettingTab extends PluginSettingTab {
 							this.plugin.settings.extraFolder = newFolder;
 						}
 						await this.plugin.saveSettings();
-						await this.plugin.changeIOTOBaseFolder(
+						await this.plugin.folderService.changeIOTOBaseFolder(
 							newFolder,
 							oldFolder
 						);
@@ -198,7 +198,7 @@ export class IOTOSettingTab extends PluginSettingTab {
 							this.plugin.settings.IOTOFrameworkPath = newFolder;
 						}
 						await this.plugin.saveSettings();
-						await this.plugin.changeIOTOBaseFolder(
+						await this.plugin.folderService.changeIOTOBaseFolder(
 							newFolder,
 							oldFolder
 						);

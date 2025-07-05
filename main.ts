@@ -10,10 +10,10 @@ import { t } from "./lang/helpers";
 
 export default class IOTO extends Plugin {
 	settings: IOTOSettings;
-	private settingsManager: SettingsManager;
-	private folderService: FolderService;
-	private templaterService: TemplaterService;
-	private hotkeyService: HotkeyService;
+	settingsManager: SettingsManager;
+	folderService: FolderService;
+	templaterService: TemplaterService;
+	hotkeyService: HotkeyService;
 
 	async onload() {
 		addStyles();
