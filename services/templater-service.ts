@@ -2,39 +2,62 @@ import { App, Notice } from "obsidian";
 import { t } from "../lang/helpers";
 import { IOTOSettings } from "../types";
 
+// 在文件顶部添加类型定义
+interface TemplaterPlugin {
+	settings: {
+		templates_folder?: string;
+		user_scripts_folder?: string;
+		enabled_templates_hotkeys?: string[];
+		[key: string]: any;
+	};
+	save_settings: () => Promise<void>;
+}
+
 export class TemplaterService {
 	constructor(private app: App, private settings: IOTOSettings) {}
 
-	private getTemplater() {
+	private getTemplater(): TemplaterPlugin | null {
 		// 获取Templater插件实例
-		// @ts-ignore
-		const templater = this.app.plugins.getPlugin("templater-obsidian");
+		const templater = this.app.plugins.plugins["templater-obsidian"] as
+			| TemplaterPlugin
+			| undefined;
 
 		if (!templater) {
 			new Notice(t("Templater plugin not found or not enabled"));
-			return;
+			return null;
 		}
 
 		// 获取当前配置
 		return templater;
 	}
 
-	async addTemplaterPaths() {
-		// 获取当前配置
+	private async getTemplaterSettings() {
 		const templater = this.getTemplater();
-		const currentSettings = templater.settings || {};
-		currentSettings.templates_folder = `${t(
-			"0-Extras"
-		)}/IOTO/Templates/Templater`;
-		currentSettings.user_scripts_folder = `${t("0-Extras")}/IOTO/Scripts`;
+		if (!templater) return null;
+
+		return templater.settings || {};
+	}
+
+	async addTemplaterPaths() {
+		const templater = this.getTemplater();
+		const settings = await this.getTemplaterSettings();
+		if (!settings) return false;
+
+		settings.templates_folder = `${t("0-Extras")}/IOTO/Templates/Templater`;
+		settings.user_scripts_folder = `${t("0-Extras")}/IOTO/Scripts`;
+
 		// 保存设置
-		await templater.save_settings();
+		if (templater) {
+			await templater.save_settings();
+		}
 		new Notice(t("Successfully add Templater paths"));
+		return true;
 	}
 
 	async addTemplaterHotkeys(templatePaths: Array<string> = []) {
 		// 获取当前配置
 		const templater = this.getTemplater();
+		if (!templater) return false;
 		const currentSettings = templater.settings || {};
 
 		// 初始化enabled_templates_hotkeys数组（如果不存在）
@@ -64,7 +87,7 @@ export class TemplaterService {
 				)}`
 			);
 		} else {
-			new Notice("All templates already exist in Templater hotkeys");
+			new Notice(t("All templates already exist in Templater hotkeys"));
 		}
 	}
 }

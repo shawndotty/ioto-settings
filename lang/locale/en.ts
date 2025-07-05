@@ -320,4 +320,6 @@ export default {
 		"Successfully removed %removedCount% IOTO hotkeys",
 	"Reset hotkeys error:": "Reset hotkeys error:",
 	"Reset hotkeys failed": "Reset hotkeys failed",
+	"All templates already exist in Templater hotkeys":
+		"All templates already exist in Templater hotkeys",
 };

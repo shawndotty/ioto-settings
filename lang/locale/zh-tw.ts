@@ -297,4 +297,6 @@ export default {
 		"成功移除 %removedCount% 個 IOTO 热键",
 	"Reset hotkeys error:": "重置热键失败:",
 	"Reset hotkeys failed": "重置热键失败",
+	"All templates already exist in Templater hotkeys":
+		"所有模板已存在于 Templater 热键中",
 };

@@ -8,9 +8,14 @@ export class FolderService {
 
 	async createPathIfNeeded(folderPath: string): Promise<void> {
 		const { vault } = this.app;
-		const directoryExists = await vault.adapter.exists(folderPath);
-		if (!directoryExists) {
-			await vault.createFolder(normalizePath(folderPath));
+		try {
+			const directoryExists = await vault.adapter.exists(folderPath);
+			if (!directoryExists) {
+				await vault.createFolder(normalizePath(folderPath));
+			}
+		} catch (error) {
+			console.error(`创建文件夹失败: ${folderPath}`, error);
+			throw new Error(`无法创建文件夹: ${folderPath}`);
 		}
 	}
 
@@ -31,11 +36,11 @@ export class FolderService {
 		await this.createPathIfNeeded(IOTOFrameworkPath);
 	}
 
-	async addIOTOProject(projectName: string | null = "") {
+	async addIOTOProject(projectName: string | null = ""): Promise<void> {
 		const { taskFolder, outcomeFolder, outcomeProjectDefaultSubFolders } =
 			this.settings;
+
 		if (!projectName) {
-			// 弹出对话框让用户输入项目名称
 			const modal = new InputModal(
 				this.app,
 				t("Please input project name"),
@@ -44,11 +49,13 @@ export class FolderService {
 			projectName = await modal.openAndGetValue();
 		}
 
-		if (!projectName) return;
+		if (!projectName?.trim()) return;
 
-		// 在任务和成果文件夹下创建项目文件夹
-		await this.createPathIfNeeded(`${taskFolder}/${projectName}`);
-		await this.createPathIfNeeded(`${outcomeFolder}/${projectName}`);
+		const sanitizedProjectName = projectName.trim();
+		await this.createPathIfNeeded(`${taskFolder}/${sanitizedProjectName}`);
+		await this.createPathIfNeeded(
+			`${outcomeFolder}/${sanitizedProjectName}`
+		);
 
 		// 如果配置了子文件夹,则创建子文件夹
 		if (outcomeProjectDefaultSubFolders) {
@@ -63,22 +70,32 @@ export class FolderService {
 		}
 	}
 
+	async createSubFolders(
+		baseFolder: string,
+		subFoldersString: string
+	): Promise<void> {
+		if (!subFoldersString?.trim()) return;
+
+		const subFolders = subFoldersString.trim().split("\n");
+		for (const folder of subFolders) {
+			const trimmedFolder = folder.trim();
+			if (trimmedFolder) {
+				await this.createPathIfNeeded(`${baseFolder}/${trimmedFolder}`);
+			}
+		}
+	}
+
 	async addIOTODefaultInputSubFolders() {
 		const { inputFolder, inputFolderDefaultSubFolders } = this.settings;
-		const subFolders = inputFolderDefaultSubFolders.trim().split("\n");
-		for (const subFolder of subFolders) {
-			await this.createPathIfNeeded(`${inputFolder}/${subFolder.trim()}`);
-		}
+		await this.createSubFolders(inputFolder, inputFolderDefaultSubFolders);
 	}
 
 	async addIOTODefaultOutputSubFolders() {
 		const { outputFolder, outputFolderDefaultSubFolders } = this.settings;
-		const subFolders = outputFolderDefaultSubFolders.trim().split("\n");
-		for (const subFolder of subFolders) {
-			await this.createPathIfNeeded(
-				`${outputFolder}/${subFolder.trim()}`
-			);
-		}
+		await this.createSubFolders(
+			outputFolder,
+			outputFolderDefaultSubFolders
+		);
 	}
 
 	async addIOTODefaultProjects() {
@@ -102,28 +119,31 @@ export class FolderService {
 		}
 	}
 
-	async changeIOTOBaseFolder(newFolder: string, oldFolder: string) {
+	async changeIOTOBaseFolder(
+		newFolder: string,
+		oldFolder: string
+	): Promise<void> {
+		if ("" === newFolder || newFolder === oldFolder) return;
+
 		const { templaterDataPath, hotkeysFile, workspacesFile } =
 			this.settings;
 		const configDir = this.app.vault.configDir;
 		const files = [
-			configDir + "/" + templaterDataPath,
-			configDir + "/" + hotkeysFile,
-			configDir + "/" + workspacesFile,
+			normalizePath(`${configDir}/${templaterDataPath}`),
+			normalizePath(`${configDir}/${hotkeysFile}`),
+			normalizePath(`${configDir}/${workspacesFile}`),
 		];
-		for (let index = 0; index < files.length; index++) {
-			const filePath = files[index];
-			if (
-				(await this.app.vault.adapter.exists(filePath)) &&
-				"" !== newFolder &&
-				newFolder !== oldFolder
-			) {
+
+		const fileOperations = files.map(async (filePath) => {
+			if (await this.app.vault.adapter.exists(filePath)) {
 				let content = await this.app.vault.adapter.read(filePath);
 				content = content
-					.replace(":" + oldFolder + "/", ":" + newFolder + "/")
-					.replace('"' + oldFolder + "/", '"' + newFolder + "/");
+					.replace(`:${oldFolder}/`, `:${newFolder}/`)
+					.replace(`"${oldFolder}/`, `"${newFolder}/`);
 				await this.app.vault.adapter.write(filePath, content);
 			}
-		}
+		});
+
+		await Promise.all(fileOperations);
 	}
 }
