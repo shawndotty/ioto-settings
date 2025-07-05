@@ -1,14 +1,10 @@
 import { App, Notice, TFile } from "obsidian";
 import { t } from "../lang/helpers";
-import { HotkeyConfig, IOTOSettings } from "../types";
+import { HotkeyConfig } from "../types";
 import { TemplaterService } from "./templater-service";
 
 export class HotkeyService {
-	settings: IOTOSettings;
-	private templaterService: TemplaterService;
-	constructor(private app: App) {
-		this.templaterService = new TemplaterService(this.app, this.settings);
-	}
+	constructor(private app: App, private templaterService: TemplaterService) {}
 
 	async addIOTOHotkeys() {
 		// 定义要添加的热键映射
