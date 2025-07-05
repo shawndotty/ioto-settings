@@ -3,248 +3,286 @@ import { t } from "../lang/helpers";
 import { HotkeyConfig, HotkeyMapping } from "../types";
 import { TemplaterService } from "./templater-service";
 
+// 热键配置接口
+interface HotkeyDefinition {
+	templatePath: string;
+	hotkey: {
+		modifiers: string[];
+		key: string;
+	};
+}
+
+// 同步服务配置
+interface SyncServiceConfig {
+	name: string;
+	key: string;
+}
+
 export class HotkeyService {
+	private readonly HOTKEYS_PATH = ".obsidian/hotkeys.json";
+	private readonly IOTO_TEMPLATE_PREFIX = "/IOTO/Templates/Templater/OBIOTO/";
+
+	// 热键配置数据
+	private readonly HOTKEY_DEFINITIONS: HotkeyDefinition[] = [
+		// 基础模板热键
+		...this.createBasicTemplateHotkeys(),
+		// 同步服务热键
+		...this.createSyncServiceHotkeys(),
+	];
+
 	constructor(private app: App, private templaterService: TemplaterService) {}
 
+	/**
+	 * 创建基础模板热键配置
+	 */
+	private createBasicTemplateHotkeys(): HotkeyDefinition[] {
+		const basicTemplates = [
+			{ name: t("CreateInput"), key: "1" },
+			{ name: t("CreateOutput"), key: "2" },
+			{ name: t("CreateTask"), key: "3" },
+			{ name: t("CreateOutcome"), key: "4" },
+			{ name: t("Auxiliaries"), key: "5" },
+		];
+
+		return basicTemplates.map(({ name, key }) => ({
+			templatePath: this.createTemplatePath(t("Selector"), name),
+			hotkey: {
+				modifiers: ["Alt"],
+				key,
+			},
+		}));
+	}
+
+	/**
+	 * 创建同步服务热键配置
+	 */
+	private createSyncServiceHotkeys(): HotkeyDefinition[] {
+		const syncServices: SyncServiceConfig[] = [
+			{ name: "Airtable", key: "A" },
+			{ name: "Vika", key: "V" },
+			{ name: "Feishu", key: "F" },
+		];
+
+		const hotkeys: HotkeyDefinition[] = [];
+
+		syncServices.forEach(({ name, key }) => {
+			// 同步热键
+			hotkeys.push({
+				templatePath: this.createSyncTemplatePath(`Sync${name}`, "OB"),
+				hotkey: {
+					modifiers: ["Alt"],
+					key,
+				},
+			});
+
+			// 获取热键
+			hotkeys.push({
+				templatePath: this.createSyncTemplatePath(`Fetch${name}`, "OB"),
+				hotkey: {
+					modifiers: ["Alt", "Shift"],
+					key,
+				},
+			});
+		});
+
+		return hotkeys;
+	}
+
+	/**
+	 * 创建模板路径
+	 */
 	private createTemplatePath(type: string, name: string): string {
 		return `${t(
 			"0-Extras"
 		)}/IOTO/Templates/Templater/OBIOTO/IOTO-${type}-${name}.md`;
 	}
 
+	/**
+	 * 创建同步模板路径
+	 */
 	private createSyncTemplatePath(action: string, platform: string): string {
 		return `${t("0-Extras")}/IOTO/Templates/Templater/OBIOTO/IOTO${t(
 			"SyncTemplates"
 		)}/IOTO-OB${action}${platform}.md`;
 	}
 
-	async addIOTOHotkeys() {
-		// 定义要添加的热键映射
-		const hotkeyMappings = [
-			{
-				templatePath: this.createTemplatePath(
-					t("Selector"),
-					t("CreateInput")
-				),
-				hotkey: {
-					modifiers: ["Alt"],
-					key: "1",
-				},
-			},
-			{
-				templatePath: this.createTemplatePath(
-					t("Selector"),
-					t("CreateOutput")
-				),
-				hotkey: {
-					modifiers: ["Alt"],
-					key: "2",
-				},
-			},
-			{
-				templatePath: this.createTemplatePath(
-					t("Selector"),
-					t("CreateTask")
-				),
-				hotkey: {
-					modifiers: ["Alt"],
-					key: "3",
-				},
-			},
-			{
-				templatePath: this.createTemplatePath(
-					t("Selector"),
-					t("CreateOutcome")
-				),
-				hotkey: {
-					modifiers: ["Alt"],
-					key: "4",
-				},
-			},
-			{
-				templatePath: this.createTemplatePath(
-					t("Selector"),
-					t("Auxiliaries")
-				),
-				hotkey: {
-					modifiers: ["Alt"],
-					key: "5",
-				},
-			},
-			{
-				templatePath: this.createSyncTemplatePath("SyncAirtable", "OB"),
-				hotkey: {
-					modifiers: ["Alt"],
-					key: "A",
-				},
-			},
-			{
-				templatePath: this.createSyncTemplatePath(
-					"FetchAirtable",
-					"OB"
-				),
-				hotkey: {
-					modifiers: ["Alt", "Shift"],
-					key: "A",
-				},
-			},
-			{
-				templatePath: this.createSyncTemplatePath("SyncVika", "OB"),
-				hotkey: {
-					modifiers: ["Alt"],
-					key: "V",
-				},
-			},
-			{
-				templatePath: this.createSyncTemplatePath("FetchVika", "OB"),
-				hotkey: {
-					modifiers: ["Alt", "Shift"],
-					key: "V",
-				},
-			},
-			{
-				templatePath: this.createSyncTemplatePath("SyncFeishu", "OB"),
-				hotkey: {
-					modifiers: ["Alt"],
-					key: "F",
-				},
-			},
-			{
-				templatePath: this.createSyncTemplatePath("FetchFeishu", "OB"),
-				hotkey: {
-					modifiers: ["Alt", "Shift"],
-					key: "F",
-				},
-			},
-		];
-
-		// 提取所有模板路径到一个数组中
-		const templatePaths = hotkeyMappings.map(
-			(mapping) => mapping.templatePath
-		);
-
-		await this.templaterService.addTemplaterHotkeys(templatePaths);
-
-		// 1. 确保模板存在
-		const missingTemplates: string[] = [];
-		for (const mapping of hotkeyMappings) {
-			if (!this.templateExists(mapping.templatePath)) {
-				missingTemplates.push(mapping.templatePath);
-			}
-		}
-
-		if (missingTemplates.length > 0) {
-			new Notice(
-				`${t("Templates do not exist:")}\n${missingTemplates.join(
-					"\n"
-				)}`
-			);
-			return;
-		}
-
-		// 2. 获取当前热键配置
-		const hotkeysPath = ".obsidian/hotkeys.json";
-		let currentHotkeys: HotkeyConfig = {};
-
+	/**
+	 * 添加IOTO热键
+	 */
+	async addIOTOHotkeys(): Promise<void> {
 		try {
-			const content = await this.app.vault.adapter.read(hotkeysPath);
-			currentHotkeys = JSON.parse(content || "{}");
-		} catch (e) {
-			console.error(t("Read hotkeys.json error:"), e);
-			// 如果文件不存在，创建空对象
-			currentHotkeys = {};
-		}
+			// 验证模板存在性
+			await this.validateTemplates();
 
-		// 3. 添加新热键
-		let addedCount = 0;
-		for (const mapping of hotkeyMappings) {
-			const commandId = `templater-obsidian:${mapping.templatePath}`;
-			const newHotkey = mapping.hotkey;
+			// 添加Templater热键
+			await this.addTemplaterHotkeys();
 
-			// 初始化此命令的热键数组（如果不存在）
-			if (!currentHotkeys[commandId]) {
-				currentHotkeys[commandId] = [];
-			}
-
-			// 检查是否已存在相同的热键配置
-			const exists = currentHotkeys[commandId].some((existingHotkey) => {
-				return (
-					existingHotkey.key === newHotkey.key &&
-					JSON.stringify(existingHotkey.modifiers.sort()) ===
-						JSON.stringify(newHotkey.modifiers.sort())
-				);
-			});
-
-			if (!exists) {
-				currentHotkeys[commandId].push(newHotkey);
-				addedCount++;
-			}
-		}
-
-		// 4. 保存回hotkeys.json
-		try {
-			await this.app.vault.adapter.write(
-				hotkeysPath,
-				JSON.stringify(currentHotkeys, null, 2)
-			);
-			new Notice(
-				`${t("Successfully added")} ${addedCount} ${t(
-					"hotkeys to Obsidian"
-				)}`
-			);
-		} catch (e) {
-			console.error(t("Write to hotkeys.json error:"), e);
+			// 更新Obsidian热键配置
+			await this.updateObsidianHotkeys();
+		} catch (error) {
+			console.error("添加热键时发生错误:", error);
 			new Notice(t("Update hotkeys.json failed"));
 		}
 	}
 
-	// 检查模板文件是否存在
+	/**
+	 * 验证所有模板是否存在
+	 */
+	private async validateTemplates(): Promise<void> {
+		const missingTemplates = this.HOTKEY_DEFINITIONS.map(
+			(def) => def.templatePath
+		).filter((path) => !this.templateExists(path));
+
+		if (missingTemplates.length > 0) {
+			throw new Error(
+				`${t("Templates do not exist:")}\n${missingTemplates.join(
+					"\n"
+				)}`
+			);
+		}
+	}
+
+	/**
+	 * 添加Templater热键
+	 */
+	private async addTemplaterHotkeys(): Promise<void> {
+		const templatePaths = this.HOTKEY_DEFINITIONS.map(
+			(def) => def.templatePath
+		);
+		await this.templaterService.addTemplaterHotkeys(templatePaths);
+	}
+
+	/**
+	 * 更新Obsidian热键配置
+	 */
+	private async updateObsidianHotkeys(): Promise<void> {
+		const currentHotkeys = await this.loadHotkeysConfig();
+		const addedCount = this.addHotkeysToConfig(currentHotkeys);
+		await this.saveHotkeysConfig(currentHotkeys);
+
+		new Notice(
+			`${t("Successfully added")} ${addedCount} ${t(
+				"hotkeys to Obsidian"
+			)}`
+		);
+	}
+
+	/**
+	 * 加载热键配置
+	 */
+	private async loadHotkeysConfig(): Promise<HotkeyConfig> {
+		try {
+			const content = await this.app.vault.adapter.read(
+				this.HOTKEYS_PATH
+			);
+			return JSON.parse(content || "{}");
+		} catch (error) {
+			console.error(t("Read hotkeys.json error:"), error);
+			return {};
+		}
+	}
+
+	/**
+	 * 保存热键配置
+	 */
+	private async saveHotkeysConfig(hotkeys: HotkeyConfig): Promise<void> {
+		try {
+			await this.app.vault.adapter.write(
+				this.HOTKEYS_PATH,
+				JSON.stringify(hotkeys, null, 2)
+			);
+		} catch (error) {
+			console.error(t("Write to hotkeys.json error:"), error);
+			throw new Error(t("Update hotkeys.json failed"));
+		}
+	}
+
+	/**
+	 * 将热键添加到配置中
+	 */
+	private addHotkeysToConfig(currentHotkeys: HotkeyConfig): number {
+		let addedCount = 0;
+
+		for (const definition of this.HOTKEY_DEFINITIONS) {
+			const commandId = `templater-obsidian:${definition.templatePath}`;
+
+			if (!currentHotkeys[commandId]) {
+				currentHotkeys[commandId] = [];
+			}
+
+			if (
+				!this.hotkeyExists(currentHotkeys[commandId], definition.hotkey)
+			) {
+				currentHotkeys[commandId].push(definition.hotkey);
+				addedCount++;
+			}
+		}
+
+		return addedCount;
+	}
+
+	/**
+	 * 检查热键是否已存在
+	 */
+	private hotkeyExists(existingHotkeys: any[], newHotkey: any): boolean {
+		return existingHotkeys.some(
+			(existing) =>
+				existing.key === newHotkey.key &&
+				JSON.stringify(existing.modifiers.sort()) ===
+					JSON.stringify(newHotkey.modifiers.sort())
+		);
+	}
+
+	/**
+	 * 检查模板文件是否存在
+	 */
 	templateExists(templatePath: string): boolean {
 		const file = this.app.vault.getAbstractFileByPath(templatePath);
 		return file instanceof TFile;
 	}
 
-	// 添加重置热键的方法
-	async resetIOTOHotkeys() {
-		const hotkeysPath = ".obsidian/hotkeys.json";
-		let currentHotkeys: HotkeyConfig = {};
-
+	/**
+	 * 重置IOTO热键
+	 */
+	async resetIOTOHotkeys(): Promise<void> {
 		try {
-			const content = await this.app.vault.adapter.read(hotkeysPath);
-			currentHotkeys = JSON.parse(content || "{}");
-
-			// 获取所有IOTO相关的命令ID
-			const iotoCommandIds = Object.keys(currentHotkeys).filter(
-				(id) =>
-					id.includes("templater-obsidian:") &&
-					id.includes("/IOTO/Templates/Templater/OBIOTO/")
-			);
-
-			// 移除这些命令的热键
-			let removedCount = 0;
-			for (const id of iotoCommandIds) {
-				delete currentHotkeys[id];
-				removedCount++;
-			}
-
-			// 保存回文件
-			await this.app.vault.adapter.write(
-				hotkeysPath,
-				JSON.stringify(currentHotkeys, null, 2)
-			);
+			const currentHotkeys = await this.loadHotkeysConfig();
+			const removedCount = this.removeIOTOHotkeys(currentHotkeys);
+			await this.saveHotkeysConfig(currentHotkeys);
 
 			new Notice(
 				`${t("Successfully removed %removedCount% IOTO hotkeys", {
 					removedCount: removedCount.toString(),
 				})}`
 			);
-		} catch (e) {
-			console.error(t("Reset hotkeys error:"), e);
+		} catch (error) {
+			console.error(t("Reset hotkeys error:"), error);
 			new Notice(t("Reset hotkeys failed"));
 		}
 	}
 
-	// 检查热键冲突
+	/**
+	 * 移除IOTO热键
+	 */
+	private removeIOTOHotkeys(currentHotkeys: HotkeyConfig): number {
+		const iotoCommandIds = Object.keys(currentHotkeys).filter(
+			(id) =>
+				id.includes("templater-obsidian:") &&
+				id.includes(this.IOTO_TEMPLATE_PREFIX)
+		);
+
+		let removedCount = 0;
+		for (const id of iotoCommandIds) {
+			delete currentHotkeys[id];
+			removedCount++;
+		}
+
+		return removedCount;
+	}
+
+	/**
+	 * 检查热键冲突
+	 */
 	private checkHotkeyConflicts(mappings: HotkeyMapping[]): {
 		conflicting: boolean;
 		conflicts: string[];
@@ -253,9 +291,7 @@ export class HotkeyService {
 		const conflicts: string[] = [];
 
 		for (const mapping of mappings) {
-			const hotkeyString = `${mapping.hotkey.modifiers
-				.sort()
-				.join("+")}+${mapping.hotkey.key}`;
+			const hotkeyString = this.createHotkeyString(mapping.hotkey);
 
 			if (hotkeyMap.has(hotkeyString)) {
 				conflicts.push(
@@ -272,5 +308,15 @@ export class HotkeyService {
 			conflicting: conflicts.length > 0,
 			conflicts,
 		};
+	}
+
+	/**
+	 * 创建热键字符串表示
+	 */
+	private createHotkeyString(hotkey: {
+		modifiers: string[];
+		key: string;
+	}): string {
+		return `${hotkey.modifiers.sort().join("+")}+${hotkey.key}`;
 	}
 }
