@@ -120,3 +120,29 @@ export interface HotkeyMapping {
 export interface HotkeyConfig {
 	[key: string]: Array<{ modifiers: string[]; key: string }>;
 }
+
+// 设置项配置接口
+export interface SettingConfig {
+	name: string;
+	desc: string;
+	placeholder?: string;
+	value: any;
+	onChange: (value: any) => Promise<void>;
+}
+
+// 第三方服务配置接口
+export interface ThirdPartyServiceConfig {
+	serviceName: string;
+	apiKeySetting: string;
+	apiKeyHint: string;
+	baseIdSetting?: string;
+	baseIdHint?: string;
+	tableIdSetting: string;
+	tableIdHint: string;
+	appSecretSetting?: string;
+	appSecretHint?: string;
+	baseUrl: string;
+	templateUrl: string;
+	yourTableText: string;
+	templateText: string;
+}

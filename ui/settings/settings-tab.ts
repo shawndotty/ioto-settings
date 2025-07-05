@@ -2,6 +2,7 @@ import { App, PluginSettingTab, Setting } from "obsidian";
 import IOTO from "../../main";
 import { TabbedSettings } from "./tabbed-settings";
 import { t } from "../../lang/helpers";
+import { SettingConfig, ThirdPartyServiceConfig } from "../../types";
 
 export class IOTOSettingTab extends PluginSettingTab {
 	plugin: IOTO;
@@ -61,1334 +62,949 @@ export class IOTOSettingTab extends PluginSettingTab {
 		});
 	}
 
-	private renderBasicSettings(content: HTMLElement) {
-		// 基本设置选项卡的内容
+	// 通用方法：创建文本设置项
+	private createTextSetting(
+		content: HTMLElement,
+		config: SettingConfig
+	): void {
 		new Setting(content)
-			.setName(t("USE_USER_TEMPLATE"))
-			.setDesc(t("TOGGLE_USE_USER_TEMPLATE"))
-			.addToggle((toggle) => {
-				toggle
-					.setValue(this.plugin.settings.useUserTemplate)
-					.onChange(async (useUT) => {
-						this.plugin.settings.useUserTemplate = useUT;
-						await this.plugin.saveSettings();
-					});
+			.setName(t(config.name as any))
+			.setDesc(t(config.desc as any))
+			.addText((text) => {
+				if (config.placeholder) {
+					text.setPlaceholder(t(config.placeholder as any));
+				}
+				text.setValue(config.value).onChange(config.onChange);
 			});
-		new Setting(content)
-			.setName(t("USER_TEMPLATE_PREFIX"))
-			.setDesc(t("SET_USER_TEMPLATE_PREFIX"))
-			.addText((cb) => {
-				cb.setPlaceholder(t("USER_TEMPLATE_PREFIX_HINT"))
-					.setValue(this.plugin.settings.userTemplatePrefix)
-					.onChange(async (value) => {
-						this.plugin.settings.userTemplatePrefix = value;
-						await this.plugin.saveSettings();
-					});
-			});
-		new Setting(content)
-			.setName(t("INPUT_FOLDER"))
-			.setDesc(t("SET_INPUT_FOLDER"))
-			.addText((cb) => {
-				//new FolderSuggest(cb.inputEl);
-				cb.setPlaceholder(t("SET_INPUT_FOLDER_HINT"))
-					.setValue(this.plugin.settings.inputFolder)
-					.onChange(async (newFolder) => {
-						const oldFolder = this.plugin.settings.inputFolder;
-						if (newFolder) {
-							this.plugin.settings.inputFolder = newFolder;
-						}
-						await this.plugin.saveSettings();
+	}
 
-						await this.plugin.folderService.changeIOTOBaseFolder(
-							newFolder,
-							oldFolder
-						);
-					});
-			});
+	// 通用方法：创建文本区域设置项
+	private createTextAreaSetting(
+		content: HTMLElement,
+		config: SettingConfig
+	): void {
 		new Setting(content)
-			.setName(t("OUTPUT_FOLDER"))
-			.setDesc(t("SET_OUTPUT_FOLDER"))
-			.addText((cb) => {
-				//new FolderSuggest(cb.inputEl);
-				cb.setPlaceholder(t("SET_OUTPUT_FOLDER_HINT"))
-					.setValue(this.plugin.settings.outputFolder)
-					.onChange(async (newFolder) => {
-						const oldFolder = this.plugin.settings.outputFolder;
-						if (newFolder) {
-							this.plugin.settings.outputFolder = newFolder;
-						}
-						await this.plugin.saveSettings();
-						await this.plugin.folderService.changeIOTOBaseFolder(
-							newFolder,
-							oldFolder
-						);
-					});
+			.setName(t(config.name as any))
+			.setDesc(t(config.desc as any))
+			.addTextArea((textArea) => {
+				if (config.placeholder) {
+					textArea.setPlaceholder(t(config.placeholder as any));
+				}
+				textArea.setValue(config.value).onChange(config.onChange);
 			});
+	}
+
+	// 通用方法：创建切换设置项
+	private createToggleSetting(
+		content: HTMLElement,
+		config: SettingConfig
+	): void {
 		new Setting(content)
-			.setName(t("TASK_FOLDER"))
-			.setDesc(t("SET_TASK_FOLDER"))
-			.addText((cb) => {
-				//new FolderSuggest(cb.inputEl);
-				cb.setPlaceholder(t("SET_TASK_FOLDER_HINT"))
-					.setValue(this.plugin.settings.taskFolder)
-					.onChange(async (newFolder) => {
-						const oldFolder = this.plugin.settings.taskFolder;
-						if (newFolder) {
-							this.plugin.settings.taskFolder = newFolder;
-						}
-						await this.plugin.saveSettings();
-						await this.plugin.folderService.rebuildTaskDashboard(
-							newFolder ? newFolder : oldFolder
-						);
-						await this.plugin.folderService.changeIOTOBaseFolder(
-							newFolder,
-							oldFolder
-						);
-					});
+			.setName(t(config.name as any))
+			.setDesc(t(config.desc as any))
+			.addToggle((toggle) => {
+				toggle.setValue(config.value).onChange(config.onChange);
 			});
+	}
+
+	// 通用方法：创建下拉选择设置项
+	private createDropdownSetting(
+		content: HTMLElement,
+		config: SettingConfig,
+		options: Array<{ value: string; label: string }>
+	): void {
 		new Setting(content)
-			.setName(t("OUTCOME_FOLDER"))
-			.setDesc(t("SET_OUTCOME_FOLDER"))
-			.addText((cb) => {
-				//new FolderSuggest(cb.inputEl);
-				cb.setPlaceholder(t("SET_OUTCOME_FOLDER_HINT"))
-					.setValue(this.plugin.settings.outcomeFolder)
-					.onChange(async (newFolder) => {
-						const oldFolder = this.plugin.settings.outcomeFolder;
-						if (newFolder) {
-							this.plugin.settings.outcomeFolder = newFolder;
-						}
-						await this.plugin.saveSettings();
-						await this.plugin.folderService.changeIOTOBaseFolder(
-							newFolder,
-							oldFolder
-						);
-					});
+			.setName(t(config.name as any))
+			.setDesc(t(config.desc as any))
+			.addDropdown((dropdown) => {
+				options.forEach((option) => {
+					dropdown.addOption(option.value, t(option.label as any));
+				});
+				dropdown.setValue(config.value).onChange(config.onChange);
 			});
+	}
+
+	// 通用方法：创建文件夹设置项
+	private createFolderSetting(
+		content: HTMLElement,
+		nameKey: string,
+		descKey: string,
+		placeholderKey: string,
+		value: string,
+		onChange: (newFolder: string, oldFolder: string) => Promise<void>
+	): void {
 		new Setting(content)
-			.setName(t("EXTRA_FOLDER"))
-			.setDesc(t("SET_EXTRA_FOLDER"))
-			.addText((cb) => {
-				//new FolderSuggest(cb.inputEl);
-				cb.setPlaceholder(t("SET_EXTRA_FOLDER_HINT"))
-					.setValue(this.plugin.settings.extraFolder)
+			.setName(t(nameKey as any))
+			.setDesc(t(descKey as any))
+			.addText((text) => {
+				text.setPlaceholder(t(placeholderKey as any))
+					.setValue(value)
 					.onChange(async (newFolder) => {
-						const oldFolder = this.plugin.settings.extraFolder;
+						const oldFolder = value;
 						if (newFolder) {
-							this.plugin.settings.extraFolder = newFolder;
+							await onChange(newFolder, oldFolder);
 						}
-						await this.plugin.saveSettings();
-						await this.plugin.folderService.changeIOTOBaseFolder(
-							newFolder,
-							oldFolder
-						);
 					});
 			});
-		new Setting(content)
-			.setName(t("IOTO_FRAMEWORK_PATH"))
-			.setDesc(t("SET_IOTO_FRAMEWORK_PATH"))
-			.addText((cb) => {
-				//new FolderSuggest(cb.inputEl);
-				cb.setPlaceholder(t("SET_IOTO_FRAMEWORK_PATH_HINT"))
-					.setValue(this.plugin.settings.IOTOFrameworkPath)
-					.onChange(async (newFolder) => {
-						const oldFolder =
-							this.plugin.settings.IOTOFrameworkPath;
-						if (newFolder) {
-							this.plugin.settings.IOTOFrameworkPath = newFolder;
-						}
-						await this.plugin.saveSettings();
-						await this.plugin.folderService.changeIOTOBaseFolder(
-							newFolder,
-							oldFolder
-						);
-					});
+	}
+
+	// 通用方法：创建第三方服务设置
+	private createThirdPartyServiceSettings(
+		content: HTMLElement,
+		config: ThirdPartyServiceConfig,
+		settings: any
+	): void {
+		content.createEl("h6", {
+			text: t(`IOTO_${config.serviceName.toUpperCase()}_SETTINGS` as any),
+		});
+
+		// API Key 设置
+		this.createTextSetting(content, {
+			name: `IOTO_${config.serviceName.toUpperCase()}_API_KEY`,
+			desc: config.apiKeyHint,
+			value: settings[config.apiKeySetting],
+			onChange: async (value) => {
+				settings[config.apiKeySetting] = value;
+				await this.plugin.saveSettings();
+			},
+		});
+
+		// App Secret 设置（如果存在）
+		if (config.appSecretSetting && config.appSecretHint) {
+			this.createTextSetting(content, {
+				name: `IOTO_${config.serviceName.toUpperCase()}_APP_SECRET`,
+				desc: config.appSecretHint,
+				value: settings[config.appSecretSetting],
+				onChange: async (value) => {
+					(settings as any)[config.appSecretSetting!] = value;
+					await this.plugin.saveSettings();
+				},
 			});
+		}
+
+		// Base ID 设置（如果存在）
+		if (config.baseIdSetting && config.baseIdHint) {
+			this.createTextSetting(content, {
+				name: `IOTO_${config.serviceName.toUpperCase()}_BASE_ID`,
+				desc: config.baseIdHint,
+				value: settings[config.baseIdSetting],
+				onChange: async (value) => {
+					(settings as any)[config.baseIdSetting!] = value;
+					await this.plugin.saveSettings();
+				},
+			});
+		}
+
+		// Table ID 设置
+		this.createTextSetting(content, {
+			name: `IOTO_${config.serviceName.toUpperCase()}_TABLE_ID`,
+			desc: config.tableIdHint,
+			value: settings[config.tableIdSetting],
+			onChange: async (value) => {
+				settings[config.tableIdSetting] = value;
+				await this.plugin.saveSettings();
+			},
+		});
+
+		// 创建链接信息
+		this.createServiceLinks(content, config, settings);
+	}
+
+	// 通用方法：创建服务链接
+	private createServiceLinks(
+		content: HTMLElement,
+		config: ThirdPartyServiceConfig,
+		settings: any
+	): void {
+		const serviceInfo = content.createEl("div");
+
+		// 构建链接URL
+		let linkUrl = config.baseUrl;
+		if (config.baseIdSetting && settings[config.baseIdSetting]) {
+			linkUrl = linkUrl.replace(
+				"{baseId}",
+				settings[config.baseIdSetting]
+			);
+		}
+		if (settings[config.tableIdSetting]) {
+			linkUrl = linkUrl.replace(
+				"{tableId}",
+				settings[config.tableIdSetting]
+			);
+		}
+
+		const baseLink = serviceInfo.createEl("a", {
+			text: t(config.yourTableText as any),
+			href: linkUrl,
+		});
+		baseLink.setAttr("target", "_blank");
+		baseLink.setAttr("rel", "noopener noreferrer");
+
+		serviceInfo.createEl("span", { text: " | " });
+
+		const templateLink = serviceInfo.createEl("a", {
+			text: t(config.templateText as any),
+			href: t(config.templateUrl as any),
+		});
+		templateLink.setAttr("target", "_blank");
+		templateLink.setAttr("rel", "noopener noreferrer");
+	}
+
+	// 通用方法：创建选择器设置
+	private createSelectorSettings(
+		content: HTMLElement,
+		prefix: string,
+		settings: any
+	): void {
+		content.createEl("h6", {
+			text: t(
+				`IOTO_${prefix.toUpperCase()}_SELECTOR_FOLDER_OPTION_SETTINGS` as any
+			),
+		});
+
+		// 排除路径设置
+		this.createTextAreaSetting(content, {
+			name: `${prefix.toUpperCase()}_SELECTOR_EXCLUDES_PATHS`,
+			desc: `${prefix.toUpperCase()}_SELECTOR_EXCLUDES_PATHS_HINT`,
+			value: settings[`${prefix}SelectorExcludesPaths`],
+			onChange: async (value) => {
+				settings[`${prefix}SelectorExcludesPaths`] = value;
+				await this.plugin.saveSettings();
+			},
+		});
+
+		// 显示选项顺序设置
+		this.createToggleSetting(content, {
+			name: "SHOW_OPTION_ORDER",
+			desc: "SHOW_OPTION_ORDER_HINT",
+			value: settings[`${prefix}SelectorShowOptionOrder`],
+			onChange: async (value) => {
+				settings[`${prefix}SelectorShowOptionOrder`] = value;
+				await this.plugin.saveSettings();
+			},
+		});
+
+		// 显示基础路径设置
+		this.createToggleSetting(content, {
+			name: "SHOW_BASE_PATH",
+			desc: "SHOW_BASE_PATH_HINT",
+			value: settings[`${prefix}SelectorShowBasePath`],
+			onChange: async (value) => {
+				settings[`${prefix}SelectorShowBasePath`] = value;
+				await this.plugin.saveSettings();
+			},
+		});
+
+		// 文件夹选项模板设置
+		this.createTextSetting(content, {
+			name: "SELECTOR_FOLDER_OPTION_TEMPLATE",
+			desc: "SELECTOR_FOLDER_OPTION_TEMPLATE_HINT",
+			value: settings[`${prefix}SelectorFolderOptionTemplate`],
+			onChange: async (value) => {
+				settings[`${prefix}SelectorFolderOptionTemplate`] = value;
+				await this.plugin.saveSettings();
+			},
+		});
+	}
+
+	// 通用方法：创建笔记选项设置
+	private createNoteOptionSettings(
+		content: HTMLElement,
+		prefix: string,
+		settings: any
+	): void {
+		content.createEl("h6", {
+			text: t(
+				`IOTO_${prefix.toUpperCase()}_SELECTOR_NOTE_OPTION_SETTINGS` as any
+			),
+		});
+
+		// 默认新笔记后续操作
+		this.createDropdownSetting(
+			content,
+			{
+				name: "DEFAULT_NEW_NOTE_FOLLOW_UP_ACTION",
+				desc: "DEFAULT_NEW_NOTE_FOLLOW_UP_ACTION_HINT",
+				value: settings[
+					`new${
+						prefix.charAt(0).toUpperCase() + prefix.slice(1)
+					}NoteFollowUpAction`
+				],
+				onChange: async (value) => {
+					settings[
+						`new${
+							prefix.charAt(0).toUpperCase() + prefix.slice(1)
+						}NoteFollowUpAction`
+					] = value;
+					await this.plugin.saveSettings();
+				},
+			},
+			[
+				{ value: "0", label: "FOLLOW_UP_ACTION_0" },
+				{ value: "1", label: "FOLLOW_UP_ACTION_1" },
+				{ value: "2", label: "FOLLOW_UP_ACTION_2" },
+				{ value: "3", label: "FOLLOW_UP_ACTION_3" },
+				{ value: "4", label: "FOLLOW_UP_ACTION_4" },
+			]
+		);
+
+		// 笔记名称前缀
+		this.createTextSetting(content, {
+			name: "NOTE_NAME_PREFIX",
+			desc: "NOTE_NAME_PREFIX_HINT",
+			value: settings[`${prefix}NoteNamePrefix`],
+			onChange: async (value) => {
+				settings[`${prefix}NoteNamePrefix`] = value;
+				await this.plugin.saveSettings();
+			},
+		});
+
+		// 笔记名称后缀
+		this.createTextSetting(content, {
+			name: "NOTE_NAME_POSTFIX",
+			desc: "NOTE_NAME_POSTFIX_HINT",
+			value: settings[`${prefix}NoteNamePostfix`],
+			onChange: async (value) => {
+				settings[`${prefix}NoteNamePostfix`] = value;
+				await this.plugin.saveSettings();
+			},
+		});
+
+		// 默认Excalidraw模板
+		this.createTextSetting(content, {
+			name: "DEFAULT_EXCALIDRAW_TEMPLATE",
+			desc: "DEFAULT_EXCALIDRAW_TEMPLATE_HINT",
+			value: settings[`${prefix}NoteDefaultExcalidrawTemplate`],
+			onChange: async (value) => {
+				settings[`${prefix}NoteDefaultExcalidrawTemplate`] = value;
+				await this.plugin.saveSettings();
+			},
+		});
+	}
+
+	private renderBasicSettings(content: HTMLElement) {
+		// 用户模板设置
+		this.createToggleSetting(content, {
+			name: "USE_USER_TEMPLATE",
+			desc: "TOGGLE_USE_USER_TEMPLATE",
+			value: this.plugin.settings.useUserTemplate,
+			onChange: async (value) => {
+				this.plugin.settings.useUserTemplate = value;
+				await this.plugin.saveSettings();
+			},
+		});
+
+		this.createTextSetting(content, {
+			name: "USER_TEMPLATE_PREFIX",
+			desc: "SET_USER_TEMPLATE_PREFIX",
+			placeholder: "USER_TEMPLATE_PREFIX_HINT",
+			value: this.plugin.settings.userTemplatePrefix,
+			onChange: async (value) => {
+				this.plugin.settings.userTemplatePrefix = value;
+				await this.plugin.saveSettings();
+			},
+		});
+
+		// 文件夹设置
+		const folderSettings = [
+			{
+				nameKey: "INPUT_FOLDER",
+				descKey: "SET_INPUT_FOLDER",
+				placeholderKey: "SET_INPUT_FOLDER_HINT",
+				value: this.plugin.settings.inputFolder,
+				onChange: async (newFolder: string, oldFolder: string) => {
+					this.plugin.settings.inputFolder = newFolder;
+					await this.plugin.saveSettings();
+					await this.plugin.folderService.changeIOTOBaseFolder(
+						newFolder,
+						oldFolder
+					);
+				},
+			},
+			{
+				nameKey: "OUTPUT_FOLDER",
+				descKey: "SET_OUTPUT_FOLDER",
+				placeholderKey: "SET_OUTPUT_FOLDER_HINT",
+				value: this.plugin.settings.outputFolder,
+				onChange: async (newFolder: string, oldFolder: string) => {
+					this.plugin.settings.outputFolder = newFolder;
+					await this.plugin.saveSettings();
+					await this.plugin.folderService.changeIOTOBaseFolder(
+						newFolder,
+						oldFolder
+					);
+				},
+			},
+			{
+				nameKey: "TASK_FOLDER",
+				descKey: "SET_TASK_FOLDER",
+				placeholderKey: "SET_TASK_FOLDER_HINT",
+				value: this.plugin.settings.taskFolder,
+				onChange: async (newFolder: string, oldFolder: string) => {
+					this.plugin.settings.taskFolder = newFolder;
+					await this.plugin.saveSettings();
+					await this.plugin.folderService.rebuildTaskDashboard(
+						newFolder || oldFolder
+					);
+					await this.plugin.folderService.changeIOTOBaseFolder(
+						newFolder,
+						oldFolder
+					);
+				},
+			},
+			{
+				nameKey: "OUTCOME_FOLDER",
+				descKey: "SET_OUTCOME_FOLDER",
+				placeholderKey: "SET_OUTCOME_FOLDER_HINT",
+				value: this.plugin.settings.outcomeFolder,
+				onChange: async (newFolder: string, oldFolder: string) => {
+					this.plugin.settings.outcomeFolder = newFolder;
+					await this.plugin.saveSettings();
+					await this.plugin.folderService.changeIOTOBaseFolder(
+						newFolder,
+						oldFolder
+					);
+				},
+			},
+			{
+				nameKey: "EXTRA_FOLDER",
+				descKey: "SET_EXTRA_FOLDER",
+				placeholderKey: "SET_EXTRA_FOLDER_HINT",
+				value: this.plugin.settings.extraFolder,
+				onChange: async (newFolder: string, oldFolder: string) => {
+					this.plugin.settings.extraFolder = newFolder;
+					await this.plugin.saveSettings();
+					await this.plugin.folderService.changeIOTOBaseFolder(
+						newFolder,
+						oldFolder
+					);
+				},
+			},
+			{
+				nameKey: "IOTO_FRAMEWORK_PATH",
+				descKey: "SET_IOTO_FRAMEWORK_PATH",
+				placeholderKey: "SET_IOTO_FRAMEWORK_PATH_HINT",
+				value: this.plugin.settings.IOTOFrameworkPath,
+				onChange: async (newFolder: string, oldFolder: string) => {
+					this.plugin.settings.IOTOFrameworkPath = newFolder;
+					await this.plugin.saveSettings();
+					await this.plugin.folderService.changeIOTOBaseFolder(
+						newFolder,
+						oldFolder
+					);
+				},
+			},
+		];
+
+		folderSettings.forEach((setting) => {
+			this.createFolderSetting(
+				content,
+				setting.nameKey,
+				setting.descKey,
+				setting.placeholderKey,
+				setting.value,
+				setting.onChange
+			);
+		});
 	}
 
 	private renderProjectSettings(content: HTMLElement) {
-		new Setting(content)
-			.setName(t("Setup Your Default Porjects"))
-			.setDesc(t("Please Input Your Default Projects"))
-			.addTextArea((textArea) =>
-				textArea
-					.setPlaceholder("")
-					.setValue(this.plugin.settings.defaultProjects)
-					.onChange(async (value) => {
-						this.plugin.settings.defaultProjects = value;
+		// 默认项目设置
+		this.createTextAreaSetting(content, {
+			name: "Setup Your Default Porjects",
+			desc: "Please Input Your Default Projects",
+			value: this.plugin.settings.defaultProjects,
+			onChange: async (value) => {
+				this.plugin.settings.defaultProjects = value;
+				await this.plugin.saveSettings();
+			},
+		});
+
+		// 项目名称来源
+		this.createDropdownSetting(
+			content,
+			{
+				name: "PROJECT_NAME_SOURCE",
+				desc: "PROJECT_NAME_SOURCE_HINT",
+				value: this.plugin.settings.projectNameSource,
+				onChange: async (value) => {
+					this.plugin.settings.projectNameSource = value;
+					await this.plugin.saveSettings();
+				},
+			},
+			[
+				{ value: "first", label: "PROJECT_NAME_SOURCE_1" },
+				{ value: "last", label: "PROJECT_NAME_SOURCE_2" },
+			]
+		);
+
+		// 项目名称格式
+		this.createDropdownSetting(
+			content,
+			{
+				name: "PROJECT_NAME_FORMAT",
+				desc: "PROJECT_NAME_FORMAT_HINT",
+				value: this.plugin.settings.projectNameFormat,
+				onChange: async (value) => {
+					this.plugin.settings.projectNameFormat = value;
+					await this.plugin.saveSettings();
+				},
+			},
+			[
+				{ value: "lastDash", label: "Project_NAME_FORMAT_1" },
+				{ value: "firstDash", label: "Project_NAME_FORMAT_2" },
+				{ value: "wholeFolderName", label: "Project_NAME_FORMAT_3" },
+			]
+		);
+
+		// LTD列表设置
+		this.createTextSetting(content, {
+			name: "LTD_LIST_DATE_FORMAT",
+			desc: "LTD_LIST_DATE_FORMAT_HINT",
+			placeholder: "LTD_LIST_DATE_FORMAT_PLACE_HOLDER",
+			value: this.plugin.settings.defaultTDLDateFormat,
+			onChange: async (value) => {
+				this.plugin.settings.defaultTDLDateFormat = value;
+				await this.plugin.saveSettings();
+			},
+		});
+
+		// LTD列表标题设置
+		const ltdHeadings = [
+			{
+				key: "LTDListInputSectionHeading",
+				name: "LTD_LIST_INPUT_HEADING",
+				desc: "SET_LTD_LIST_INPUT_HEADING",
+				hint: "LTD_LIST_INPUT_HEADING_HINT",
+			},
+			{
+				key: "LTDListOutputSectionHeading",
+				name: "LTD_LIST_OUTPUT_HEADING",
+				desc: "SET_LTD_LIST_OUTPUT_HEADING",
+				hint: "LTD_LIST_OUTPUT_HEADING_HINT",
+			},
+			{
+				key: "LTDListOutcomeSectionHeading",
+				name: "LTD_LIST_OUTCOME_HEADING",
+				desc: "SET_LTD_LIST_OUTCOME_HEADING",
+				hint: "LTD_LIST_OUTCOME_HEADING_HINT",
+			},
+		];
+
+		ltdHeadings.forEach((heading) => {
+			this.createTextSetting(content, {
+				name: heading.name,
+				desc: heading.desc,
+				placeholder: heading.hint,
+				value: (this.plugin.settings as any)[heading.key],
+				onChange: async (value) => {
+					(this.plugin.settings as any)[heading.key] = value;
+					await this.plugin.saveSettings();
+				},
+			});
+		});
+
+		// 默认TDL标题级别
+		this.createDropdownSetting(
+			content,
+			{
+				name: "DEFAULT_TDL_HEADING_LEVEL",
+				desc: "DEFAULT_TDL_HEADING_LEVEL_HINT",
+				value: this.plugin.settings.defaultTDLHeadingLevel,
+				onChange: async (value) => {
+					this.plugin.settings.defaultTDLHeadingLevel = value;
+					await this.plugin.saveSettings();
+				},
+			},
+			[
+				{ value: "#", label: "HEADING_LEVEL_1" },
+				{ value: "##", label: "HEADING_LEVEL_2" },
+				{ value: "###", label: "HEADING_LEVEL_3" },
+			]
+		);
+
+		// 自定义TDL名称
+		this.createToggleSetting(content, {
+			name: "USE_CUSTOM_TDL_NAMES",
+			desc: "USE_CUSTOM_TDL_NAMES_HINT",
+			value: this.plugin.settings.taskSelectorUseCustomTdlNames,
+			onChange: async (value) => {
+				this.plugin.settings.taskSelectorUseCustomTdlNames = value;
+				await this.plugin.saveSettings();
+			},
+		});
+
+		// 添加当前TDL链接
+		this.createToggleSetting(content, {
+			name: "ADD_LINK_TO_CURRENT_TDL",
+			desc: "ADD_LINK_TO_CURRENT_TDL_HINT",
+			value: this.plugin.settings.addLinkToCurrentTDL,
+			onChange: async (value) => {
+				this.plugin.settings.addLinkToCurrentTDL = value;
+				await this.plugin.saveSettings();
+			},
+		});
+
+		// 后续操作设置
+		const followUpActions = [
+			{
+				key: "newInputNoteAddedToTDLFollowUpAction",
+				name: "DEFAULT_INPUT_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION",
+				desc: "DEFAULT_INPUT_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION_HINT",
+			},
+			{
+				key: "newOutputNoteAddedToTDLFollowUpAction",
+				name: "DEFAULT_OUTPUT_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION",
+				desc: "DEFAULT_OUTPUT_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION_HINT",
+			},
+			{
+				key: "newOutcomeNoteAddedToTDLFollowUpAction",
+				name: "DEFAULT_OUTCOME_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION",
+				desc: "DEFAULT_OUTCOME_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION_HINT",
+			},
+		];
+
+		followUpActions.forEach((action) => {
+			this.createDropdownSetting(
+				content,
+				{
+					name: action.name,
+					desc: action.desc,
+					value: (this.plugin.settings as any)[action.key],
+					onChange: async (value) => {
+						(this.plugin.settings as any)[action.key] = value;
 						await this.plugin.saveSettings();
-					})
+					},
+				},
+				[
+					{ value: "0", label: "ADDED_TO_TDL_FOLLOW_UP_ACTION_0" },
+					{ value: "1", label: "ADDED_TO_TDL_FOLLOW_UP_ACTION_1" },
+					{ value: "2", label: "ADDED_TO_TDL_FOLLOW_UP_ACTION_2" },
+				]
 			);
-		new Setting(content)
-			.setName(t("PROJECT_NAME_SOURCE"))
-			.setDesc(t("PROJECT_NAME_SOURCE_HINT"))
-			.addDropdown((cb) => {
-				cb.addOption("first", t("PROJECT_NAME_SOURCE_1"))
-					.addOption("last", t("PROJECT_NAME_SOURCE_2"))
-					.setValue(this.plugin.settings.projectNameSource)
-					.onChange(async (value) => {
-						this.plugin.settings.projectNameSource = value;
-						await this.plugin.saveSettings();
-					});
-			});
-		new Setting(content)
-			.setName(t("PROJECT_NAME_FORMAT"))
-			.setDesc(t("PROJECT_NAME_FORMAT_HINT"))
-			.addDropdown((cb) => {
-				cb.addOption("lastDash", t("Project_NAME_FORMAT_1"))
-					.addOption("firstDash", t("Project_NAME_FORMAT_2"))
-					.addOption("wholeFolderName", t("Project_NAME_FORMAT_3"))
-					.setValue(this.plugin.settings.projectNameFormat)
-					.onChange(async (value) => {
-						this.plugin.settings.projectNameFormat = value;
-						await this.plugin.saveSettings();
-					});
-			});
-		new Setting(content)
-			.setName(t("LTD_LIST_DATE_FORMAT"))
-			.setDesc(t("LTD_LIST_DATE_FORMAT_HINT"))
-			.addText((text) =>
-				text
-					.setPlaceholder(t("LTD_LIST_DATE_FORMAT_PLACE_HOLDER"))
-					.setValue(this.plugin.settings.defaultTDLDateFormat)
-					.onChange(async (value) => {
-						this.plugin.settings.defaultTDLDateFormat = value;
-						await this.plugin.saveSettings();
-					})
-			);
-		new Setting(content)
-			.setName(t("LTD_LIST_INPUT_HEADING"))
-			.setDesc(t("SET_LTD_LIST_INPUT_HEADING"))
-			.addText((text) =>
-				text
-					.setPlaceholder(t("LTD_LIST_INPUT_HEADING_HINT"))
-					.setValue(this.plugin.settings.LTDListInputSectionHeading)
-					.onChange(async (value) => {
-						this.plugin.settings.LTDListInputSectionHeading = value;
-						await this.plugin.saveSettings();
-					})
-			);
-		new Setting(content)
-			.setName(t("LTD_LIST_OUTPUT_HEADING"))
-			.setDesc(t("SET_LTD_LIST_OUTPUT_HEADING"))
-			.addText((text) =>
-				text
-					.setPlaceholder(t("LTD_LIST_OUTPUT_HEADING_HINT"))
-					.setValue(this.plugin.settings.LTDListOutputSectionHeading)
-					.onChange(async (value) => {
-						this.plugin.settings.LTDListOutputSectionHeading =
-							value;
-						await this.plugin.saveSettings();
-					})
-			);
-		new Setting(content)
-			.setName(t("LTD_LIST_OUTCOME_HEADING"))
-			.setDesc(t("SET_LTD_LIST_OUTCOME_HEADING"))
-			.addText((text) =>
-				text
-					.setPlaceholder(t("LTD_LIST_OUTCOME_HEADING_HINT"))
-					.setValue(this.plugin.settings.LTDListOutcomeSectionHeading)
-					.onChange(async (value) => {
-						this.plugin.settings.LTDListOutcomeSectionHeading =
-							value;
-						await this.plugin.saveSettings();
-					})
-			);
-		new Setting(content)
-			.setName(t("DEFAULT_TDL_HEADING_LEVEL"))
-			.setDesc(t("DEFAULT_TDL_HEADING_LEVEL_HINT"))
-			.addDropdown((cb) =>
-				cb
-					.addOption("#", t("HEADING_LEVEL_1"))
-					.addOption("##", t("HEADING_LEVEL_2"))
-					.addOption("###", t("HEADING_LEVEL_3"))
-					.setValue(this.plugin.settings.defaultTDLHeadingLevel)
-					.onChange(async (value) => {
-						this.plugin.settings.defaultTDLHeadingLevel = value;
-						await this.plugin.saveSettings();
-					})
-			);
-		new Setting(content)
-			.setName(t("USE_CUSTOM_TDL_NAMES"))
-			.setDesc(t("USE_CUSTOM_TDL_NAMES_HINT"))
-			.addToggle((toggle) => {
-				toggle
-					.setValue(
-						this.plugin.settings.taskSelectorUseCustomTdlNames
-					)
-					.onChange(async (on) => {
-						this.plugin.settings.taskSelectorUseCustomTdlNames = on;
-						await this.plugin.saveSettings();
-					});
-			});
-		new Setting(content)
-			.setName(t("ADD_LINK_TO_CURRENT_TDL"))
-			.setDesc(t("ADD_LINK_TO_CURRENT_TDL_HINT"))
-			.addToggle((toggle) => {
-				toggle
-					.setValue(this.plugin.settings.addLinkToCurrentTDL)
-					.onChange(async (addLToTDL) => {
-						this.plugin.settings.addLinkToCurrentTDL = addLToTDL;
-						await this.plugin.saveSettings();
-					});
-			});
-		new Setting(content)
-			.setName(t("DEFAULT_INPUT_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION"))
-			.setDesc(t("DEFAULT_INPUT_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION_HINT"))
-			.addDropdown((cb) => {
-				cb.addOption("0", t("ADDED_TO_TDL_FOLLOW_UP_ACTION_0"))
-					.addOption("1", t("ADDED_TO_TDL_FOLLOW_UP_ACTION_1"))
-					.addOption("2", t("ADDED_TO_TDL_FOLLOW_UP_ACTION_2"))
-					.setValue(
-						this.plugin.settings
-							.newInputNoteAddedToTDLFollowUpAction
-					)
-					.onChange(async (value) => {
-						this.plugin.settings.newInputNoteAddedToTDLFollowUpAction =
-							value;
-						await this.plugin.saveSettings();
-					});
-			});
-		new Setting(content)
-			.setName(t("DEFAULT_OUTPUT_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION"))
-			.setDesc(
-				t("DEFAULT_OUTPUT_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION_HINT")
-			)
-			.addDropdown((cb) => {
-				cb.addOption("0", t("ADDED_TO_TDL_FOLLOW_UP_ACTION_0"))
-					.addOption("1", t("ADDED_TO_TDL_FOLLOW_UP_ACTION_1"))
-					.addOption("2", t("ADDED_TO_TDL_FOLLOW_UP_ACTION_2"))
-					.setValue(
-						this.plugin.settings
-							.newOutputNoteAddedToTDLFollowUpAction
-					)
-					.onChange(async (value) => {
-						this.plugin.settings.newOutputNoteAddedToTDLFollowUpAction =
-							value;
-						await this.plugin.saveSettings();
-					});
-			});
-		new Setting(content)
-			.setName(t("DEFAULT_OUTCOME_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION"))
-			.setDesc(
-				t("DEFAULT_OUTCOME_NOTE_ADDED_TO_TDL_FOLLOW_UP_ACTION_HINT")
-			)
-			.addDropdown((cb) => {
-				cb.addOption("0", t("ADDED_TO_TDL_FOLLOW_UP_ACTION_0"))
-					.addOption("1", t("ADDED_TO_TDL_FOLLOW_UP_ACTION_1"))
-					.addOption("2", t("ADDED_TO_TDL_FOLLOW_UP_ACTION_2"))
-					.setValue(
-						this.plugin.settings
-							.newOutcomeNoteAddedToTDLFollowUpAction
-					)
-					.onChange(async (value) => {
-						this.plugin.settings.newOutcomeNoteAddedToTDLFollowUpAction =
-							value;
-						await this.plugin.saveSettings();
-					});
-			});
+		});
 	}
 
 	private renderInputSettings(content: HTMLElement) {
-		content.createEl("h6", {
-			text: t("IOTO_INPUT_SELECTOR_FOLDER_OPTION_SETTINGS"),
-		});
-		new Setting(content)
-			.setName(t("INPUT_SELECTOR_EXCLUDES_PATHS"))
-			.setDesc(t("INPUT_SELECTOR_EXCLUDES_PATHS_HINT"))
-			.addTextArea((textArea) =>
-				textArea
-					.setPlaceholder("")
-					.setValue(this.plugin.settings.inputSelectorExcludesPaths)
-					.onChange(async (value) => {
-						this.plugin.settings.inputSelectorExcludesPaths = value;
-						await this.plugin.saveSettings();
-					})
-			);
-		new Setting(content)
-			.setName(t("SHOW_OPTION_ORDER"))
-			.setDesc(t("SHOW_OPTION_ORDER_HINT"))
-			.addToggle((toggle) => {
-				toggle
-					.setValue(this.plugin.settings.inputSelectorShowOptionOrder)
-					.onChange(async (show) => {
-						this.plugin.settings.inputSelectorShowOptionOrder =
-							show;
-						await this.plugin.saveSettings();
-					});
-			});
-		new Setting(content)
-			.setName(t("SHOW_BASE_PATH"))
-			.setDesc(t("SHOW_BASE_PATH_HINT"))
-			.addToggle((toggle) => {
-				toggle
-					.setValue(this.plugin.settings.inputSelectorShowBasePath)
-					.onChange(async (show) => {
-						this.plugin.settings.inputSelectorShowBasePath = show;
-						await this.plugin.saveSettings();
-					});
-			});
-		new Setting(content)
-			.setName(t("SELECTOR_FOLDER_OPTION_TEMPLATE"))
-			.setDesc(t("SELECTOR_FOLDER_OPTION_TEMPLATE_HINT"))
-			.addText((text) =>
-				text
-					.setPlaceholder("")
-					.setValue(
-						this.plugin.settings.inputSelectorFolderOptionTemplate
-					)
-					.onChange(async (value) => {
-						this.plugin.settings.inputSelectorFolderOptionTemplate =
-							value;
-						await this.plugin.saveSettings();
-					})
-			);
-		content.createEl("h6", {
-			text: t("IOTO_INPUT_SELECTOR_NOTE_OPTION_SETTINGS"),
-		});
-		new Setting(content)
-			.setName(t("DEFAULT_NEW_NOTE_FOLLOW_UP_ACTION"))
-			.setDesc(t("DEFAULT_NEW_NOTE_FOLLOW_UP_ACTION_HINT"))
-			.addDropdown((cb) => {
-				cb.addOption("0", t("FOLLOW_UP_ACTION_0"))
-					.addOption("1", t("FOLLOW_UP_ACTION_1"))
-					.addOption("2", t("FOLLOW_UP_ACTION_2"))
-					.addOption("3", t("FOLLOW_UP_ACTION_3"))
-					.addOption("4", t("FOLLOW_UP_ACTION_4"))
-					.setValue(this.plugin.settings.newInputNoteFollowUpAction)
-					.onChange(async (value) => {
-						this.plugin.settings.newInputNoteFollowUpAction = value;
-						await this.plugin.saveSettings();
-					});
-			});
-		new Setting(content)
-			.setName(t("NOTE_NAME_PREFIX"))
-			.setDesc(t("NOTE_NAME_PREFIX_HINT"))
-			.addText((text) =>
-				text
-					.setPlaceholder("")
-					.setValue(this.plugin.settings.inputNoteNamePrefix)
-					.onChange(async (value) => {
-						this.plugin.settings.inputNoteNamePrefix = value;
-						await this.plugin.saveSettings();
-					})
-			);
-		new Setting(content)
-			.setName(t("NOTE_NAME_POSTFIX"))
-			.setDesc(t("NOTE_NAME_POSTFIX_HINT"))
-			.addText((text) =>
-				text
-					.setPlaceholder("")
-					.setValue(this.plugin.settings.inputNoteNamePostfix)
-					.onChange(async (value) => {
-						this.plugin.settings.inputNoteNamePostfix = value;
-						await this.plugin.saveSettings();
-					})
-			);
-		new Setting(content)
-			.setName(t("DEFAULT_EXCALIDRAW_TEMPLATE"))
-			.setDesc(t("DEFAULT_EXCALIDRAW_TEMPLATE_HINT"))
-			.addText((text) =>
-				text
-					.setPlaceholder("")
-					.setValue(
-						this.plugin.settings.inputNoteDefaultExcalidrawTemplate
-					)
-					.onChange(async (value) => {
-						this.plugin.settings.inputNoteDefaultExcalidrawTemplate =
-							value;
-						await this.plugin.saveSettings();
-					})
-			);
+		// 选择器设置
+		this.createSelectorSettings(content, "input", this.plugin.settings);
 
-		content.createEl("h6", {
-			text: t("Default Input Sub Folders"),
-		});
+		// 笔记选项设置
+		this.createNoteOptionSettings(content, "input", this.plugin.settings);
 
-		new Setting(content)
-			.setName(t("Setup Your Default Input Sub Folders"))
-			.setDesc(t("Please Input Your Default Input Sub Folders"))
-			.addTextArea((textArea) =>
-				textArea
-					.setPlaceholder("")
-					.setValue(this.plugin.settings.inputFolderDefaultSubFolders)
-					.onChange(async (value) => {
-						this.plugin.settings.inputFolderDefaultSubFolders =
-							value;
-						await this.plugin.saveSettings();
-					})
-			);
+		// 默认输入子文件夹
+		content.createEl("h6", { text: t("Default Input Sub Folders") });
+
+		this.createTextAreaSetting(content, {
+			name: "Setup Your Default Input Sub Folders",
+			desc: "Please Input Your Default Input Sub Folders",
+			value: this.plugin.settings.inputFolderDefaultSubFolders,
+			onChange: async (value) => {
+				this.plugin.settings.inputFolderDefaultSubFolders = value;
+				await this.plugin.saveSettings();
+			},
+		});
 	}
 
 	private renderOutputSettings(content: HTMLElement) {
-		content.createEl("h6", {
-			text: t("IOTO_OUTPUT_SELECTOR_FOLDER_OPTION_SETTINGS"),
-		});
-		new Setting(content)
-			.setName(t("OUTPUT_SELECTOR_EXCLUDES_PATHS"))
-			.setDesc(t("OUTPUT_SELECTOR_EXCLUDES_PATHS_HINT"))
-			.addTextArea((textArea) =>
-				textArea
-					.setPlaceholder("")
-					.setValue(this.plugin.settings.outputSelectorExcludesPaths)
-					.onChange(async (value) => {
-						this.plugin.settings.outputSelectorExcludesPaths =
-							value;
-						await this.plugin.saveSettings();
-					})
-			);
-		new Setting(content)
-			.setName(t("SHOW_OPTION_ORDER"))
-			.setDesc(t("SHOW_OPTION_ORDER_HINT"))
-			.addToggle((toggle) => {
-				toggle
-					.setValue(
-						this.plugin.settings.outputSelectorShowOptionOrder
-					)
-					.onChange(async (show) => {
-						this.plugin.settings.outputSelectorShowOptionOrder =
-							show;
-						await this.plugin.saveSettings();
-					});
-			});
-		new Setting(content)
-			.setName(t("SHOW_BASE_PATH"))
-			.setDesc(t("SHOW_BASE_PATH_HINT"))
-			.addToggle((toggle) => {
-				toggle
-					.setValue(this.plugin.settings.outputSelectorShowBasePath)
-					.onChange(async (show) => {
-						this.plugin.settings.outputSelectorShowBasePath = show;
-						await this.plugin.saveSettings();
-					});
-			});
-		new Setting(content)
-			.setName(t("SELECTOR_FOLDER_OPTION_TEMPLATE"))
-			.setDesc(t("SELECTOR_FOLDER_OPTION_TEMPLATE_HINT"))
-			.addText((text) =>
-				text
-					.setPlaceholder("")
-					.setValue(
-						this.plugin.settings.outputSelectorFolderOptionTemplate
-					)
-					.onChange(async (value) => {
-						this.plugin.settings.outputSelectorFolderOptionTemplate =
-							value;
-						await this.plugin.saveSettings();
-					})
-			);
-		content.createEl("h6", {
-			text: t("IOTO_OUTPUT_SELECTOR_NOTE_OPTION_SETTINGS"),
-		});
-		new Setting(content)
-			.setName(t("DEFAULT_NEW_NOTE_FOLLOW_UP_ACTION"))
-			.setDesc(t("DEFAULT_NEW_NOTE_FOLLOW_UP_ACTION_HINT"))
-			.addDropdown((cb) => {
-				cb.addOption("0", t("FOLLOW_UP_ACTION_0"))
-					.addOption("1", t("FOLLOW_UP_ACTION_1"))
-					.addOption("2", t("FOLLOW_UP_ACTION_2"))
-					.addOption("3", t("FOLLOW_UP_ACTION_3"))
-					.addOption("4", t("FOLLOW_UP_ACTION_4"))
-					.setValue(this.plugin.settings.newOutputNoteFollowUpAction)
-					.onChange(async (value) => {
-						this.plugin.settings.newOutputNoteFollowUpAction =
-							value;
-						await this.plugin.saveSettings();
-					});
-			});
-		new Setting(content)
-			.setName(t("NOTE_NAME_PREFIX"))
-			.setDesc(t("NOTE_NAME_PREFIX_HINT"))
-			.addText((text) =>
-				text
-					.setPlaceholder("")
-					.setValue(this.plugin.settings.outputNoteNamePrefix)
-					.onChange(async (value) => {
-						this.plugin.settings.outputNoteNamePrefix = value;
-						await this.plugin.saveSettings();
-					})
-			);
-		new Setting(content)
-			.setName(t("NOTE_NAME_POSTFIX"))
-			.setDesc(t("NOTE_NAME_POSTFIX_HINT"))
-			.addText((text) =>
-				text
-					.setPlaceholder("")
-					.setValue(this.plugin.settings.outputNoteNamePostfix)
-					.onChange(async (value) => {
-						this.plugin.settings.outputNoteNamePostfix = value;
-						await this.plugin.saveSettings();
-					})
-			);
-		new Setting(content)
-			.setName(t("DEFAULT_EXCALIDRAW_TEMPLATE"))
-			.setDesc(t("DEFAULT_EXCALIDRAW_TEMPLATE_HINT"))
-			.addText((text) =>
-				text
-					.setPlaceholder("")
-					.setValue(
-						this.plugin.settings.outputNoteDefaultExcalidrawTemplate
-					)
-					.onChange(async (value) => {
-						this.plugin.settings.outputNoteDefaultExcalidrawTemplate =
-							value;
-						await this.plugin.saveSettings();
-					})
-			);
-		new Setting(content)
-			.setName(t("FLEETING_NOTE_PREFIX"))
-			.setDesc(t("FLEETING_NOTE_PREFIX_HINT"))
-			.addText((text) =>
-				text
-					.setPlaceholder("")
-					.setValue(this.plugin.settings.fleetingNotePrefix)
-					.onChange(async (value) => {
-						this.plugin.settings.fleetingNotePrefix = value;
-						await this.plugin.saveSettings();
-					})
-			);
-		new Setting(content)
-			.setName(t("FLEETING_NOTE_DATE_FORMAT"))
-			.setDesc(t("FLEETING_NOTE_DATE_FORMAT_HINT"))
-			.addText((text) =>
-				text
-					.setPlaceholder("")
-					.setValue(this.plugin.settings.fleetingNoteDateFormat)
-					.onChange(async (value) => {
-						this.plugin.settings.fleetingNoteDateFormat = value;
-						await this.plugin.saveSettings();
-					})
-			);
+		// 选择器设置
+		this.createSelectorSettings(content, "output", this.plugin.settings);
 
-		content.createEl("h6", {
-			text: t("Default Output Sub Folders"),
+		// 笔记选项设置
+		this.createNoteOptionSettings(content, "output", this.plugin.settings);
+
+		// 闪念笔记设置
+		this.createTextSetting(content, {
+			name: "FLEETING_NOTE_PREFIX",
+			desc: "FLEETING_NOTE_PREFIX_HINT",
+			value: this.plugin.settings.fleetingNotePrefix,
+			onChange: async (value) => {
+				this.plugin.settings.fleetingNotePrefix = value;
+				await this.plugin.saveSettings();
+			},
 		});
 
-		new Setting(content)
-			.setName(t("Setup Your Default Output Sub Folders"))
-			.setDesc(t("Please Input Your Default Output Sub Folders"))
-			.addTextArea((textArea) =>
-				textArea
-					.setPlaceholder("")
-					.setValue(
-						this.plugin.settings.outputFolderDefaultSubFolders
-					)
-					.onChange(async (value) => {
-						this.plugin.settings.outputFolderDefaultSubFolders =
-							value;
-						await this.plugin.saveSettings();
-					})
-			);
+		this.createTextSetting(content, {
+			name: "FLEETING_NOTE_DATE_FORMAT",
+			desc: "FLEETING_NOTE_DATE_FORMAT_HINT",
+			value: this.plugin.settings.fleetingNoteDateFormat,
+			onChange: async (value) => {
+				this.plugin.settings.fleetingNoteDateFormat = value;
+				await this.plugin.saveSettings();
+			},
+		});
+
+		// 默认输出子文件夹
+		content.createEl("h6", { text: t("Default Output Sub Folders") });
+
+		this.createTextAreaSetting(content, {
+			name: "Setup Your Default Output Sub Folders",
+			desc: "Please Input Your Default Output Sub Folders",
+			value: this.plugin.settings.outputFolderDefaultSubFolders,
+			onChange: async (value) => {
+				this.plugin.settings.outputFolderDefaultSubFolders = value;
+				await this.plugin.saveSettings();
+			},
+		});
 	}
 
 	private renderTaskSettings(content: HTMLElement) {
-		content.createEl("h6", {
-			text: t("IOTO_TASK_SELECTOR_FOLDER_OPTION_SETTINGS"),
-		});
-		new Setting(content)
-			.setName(t("TASK_SELECTOR_EXCLUDES_PATHS"))
-			.setDesc(t("TASK_SELECTOR_EXCLUDES_PATHS_HINT"))
-			.addTextArea((textArea) =>
-				textArea
-					.setPlaceholder("")
-					.setValue(this.plugin.settings.taskSelectorExcludesPaths)
-					.onChange(async (value) => {
-						this.plugin.settings.taskSelectorExcludesPaths = value;
-						await this.plugin.saveSettings();
-					})
-			);
-		new Setting(content)
-			.setName(t("SHOW_OPTION_ORDER"))
-			.setDesc(t("SHOW_OPTION_ORDER_HINT"))
-			.addToggle((toggle) => {
-				toggle
-					.setValue(this.plugin.settings.taskSelectorShowOptionOrder)
-					.onChange(async (show) => {
-						this.plugin.settings.taskSelectorShowOptionOrder = show;
-						await this.plugin.saveSettings();
-					});
-			});
-		new Setting(content)
-			.setName(t("SHOW_BASE_PATH"))
-			.setDesc(t("SHOW_BASE_PATH_HINT"))
-			.addToggle((toggle) => {
-				toggle
-					.setValue(this.plugin.settings.taskSelectorShowBasePath)
-					.onChange(async (show) => {
-						this.plugin.settings.taskSelectorShowBasePath = show;
-						await this.plugin.saveSettings();
-					});
-			});
-		new Setting(content)
-			.setName(t("SELECTOR_FOLDER_OPTION_TEMPLATE"))
-			.setDesc(t("SELECTOR_FOLDER_OPTION_TEMPLATE_HINT"))
-			.addText((text) =>
-				text
-					.setPlaceholder("")
-					.setValue(
-						this.plugin.settings.taskSelectorFolderOptionTemplate
-					)
-					.onChange(async (value) => {
-						this.plugin.settings.taskSelectorFolderOptionTemplate =
-							value;
-						await this.plugin.saveSettings();
-					})
-			);
+		// 选择器设置
+		this.createSelectorSettings(content, "task", this.plugin.settings);
+
+		// 其他选项设置
 		content.createEl("h6", {
 			text: t("IOTO_TASK_SELECTOR_OTHER_OPTION_SETTINGS"),
 		});
-		new Setting(content)
-			.setName(t("ENABLE_FUTURE_DAYS_CHOICES"))
-			.setDesc(t("ENABLE_FUTURE_DAYS_CHOICES_HINT"))
-			.addToggle((toggle) => {
-				toggle
-					.setValue(
-						this.plugin.settings.taskSelectorEnableFutureDaysChoices
-					)
-					.onChange(async (on) => {
-						this.plugin.settings.taskSelectorEnableFutureDaysChoices =
-							on;
-						await this.plugin.saveSettings();
-					});
-			});
+
+		this.createToggleSetting(content, {
+			name: "ENABLE_FUTURE_DAYS_CHOICES",
+			desc: "ENABLE_FUTURE_DAYS_CHOICES_HINT",
+			value: this.plugin.settings.taskSelectorEnableFutureDaysChoices,
+			onChange: async (value) => {
+				this.plugin.settings.taskSelectorEnableFutureDaysChoices =
+					value;
+				await this.plugin.saveSettings();
+			},
+		});
 	}
 
 	private renderOutcomeSettings(content: HTMLElement) {
-		content.createEl("h6", {
-			text: t("IOTO_OUTCOME_SELECTOR_FOLDER_OPTION_SETTINGS"),
-		});
-		new Setting(content)
-			.setName(t("OUTCOME_SELECTOR_EXCLUDES_PATHS"))
-			.setDesc(t("OUTCOME_SELECTOR_EXCLUDES_PATHS_HINT"))
-			.addTextArea((textArea) =>
-				textArea
-					.setPlaceholder("")
-					.setValue(this.plugin.settings.outcomeSelectorExcludesPaths)
-					.onChange(async (value) => {
-						this.plugin.settings.outcomeSelectorExcludesPaths =
-							value;
-						await this.plugin.saveSettings();
-					})
-			);
-		new Setting(content)
-			.setName(t("SHOW_OPTION_ORDER"))
-			.setDesc(t("SHOW_OPTION_ORDER_HINT"))
-			.addToggle((toggle) => {
-				toggle
-					.setValue(
-						this.plugin.settings.outcomeSelectorShowOptionOrder
-					)
-					.onChange(async (show) => {
-						this.plugin.settings.outcomeSelectorShowOptionOrder =
-							show;
-						await this.plugin.saveSettings();
-					});
-			});
-		new Setting(content)
-			.setName(t("SHOW_BASE_PATH"))
-			.setDesc(t("SHOW_BASE_PATH_HINT"))
-			.addToggle((toggle) => {
-				toggle
-					.setValue(this.plugin.settings.outcomeSelectorShowBasePath)
-					.onChange(async (show) => {
-						this.plugin.settings.outcomeSelectorShowBasePath = show;
-						await this.plugin.saveSettings();
-					});
-			});
-		new Setting(content)
-			.setName(t("SELECTOR_FOLDER_OPTION_TEMPLATE"))
-			.setDesc(t("SELECTOR_FOLDER_OPTION_TEMPLATE_HINT"))
-			.addText((text) =>
-				text
-					.setPlaceholder("")
-					.setValue(
-						this.plugin.settings.outcomeSelectorFolderOptionTemplate
-					)
-					.onChange(async (value) => {
-						this.plugin.settings.outcomeSelectorFolderOptionTemplate =
-							value;
-						await this.plugin.saveSettings();
-					})
-			);
-		new Setting(content)
-			.setName(t("INCLUDE_PARENT_FOLDER"))
-			.setDesc(t("INCLUDE_PARENT_FOLDER_HINT"))
-			.addToggle((toggle) => {
-				toggle
-					.setValue(
-						this.plugin.settings.outcomeSelectorIncludeParentFolder
-					)
-					.onChange(async (show) => {
-						this.plugin.settings.outcomeSelectorIncludeParentFolder =
-							show;
-						await this.plugin.saveSettings();
-					});
-			});
-		new Setting(content)
-			.setName(t("OUTCOME_PROJECT_DEFAULT_SUBFOLDERS"))
-			.setDesc(t("OUTCOME_PROJECT_DEFAULT_SUBFOLDERS_HINT"))
-			.addTextArea((textArea) =>
-				textArea
-					.setPlaceholder("")
-					.setValue(
-						this.plugin.settings.outcomeProjectDefaultSubFolders
-					)
-					.onChange(async (value) => {
-						this.plugin.settings.outcomeProjectDefaultSubFolders =
-							value;
-						await this.plugin.saveSettings();
-					})
-			);
+		// 选择器设置
+		this.createSelectorSettings(content, "outcome", this.plugin.settings);
 
-		content.createEl("h6", {
-			text: t("IOTO_OUTCOME_SELECTOR_NOTE_OPTION_SETTINGS"),
+		// 包含父文件夹设置
+		this.createToggleSetting(content, {
+			name: "INCLUDE_PARENT_FOLDER",
+			desc: "INCLUDE_PARENT_FOLDER_HINT",
+			value: this.plugin.settings.outcomeSelectorIncludeParentFolder,
+			onChange: async (value) => {
+				this.plugin.settings.outcomeSelectorIncludeParentFolder = value;
+				await this.plugin.saveSettings();
+			},
 		});
-		new Setting(content)
-			.setName(t("DEFAULT_NEW_NOTE_FOLLOW_UP_ACTION"))
-			.setDesc(t("DEFAULT_NEW_NOTE_FOLLOW_UP_ACTION_HINT"))
-			.addDropdown((cb) => {
-				cb.addOption("0", t("FOLLOW_UP_ACTION_0"))
-					.addOption("1", t("FOLLOW_UP_ACTION_1"))
-					.addOption("2", t("FOLLOW_UP_ACTION_2"))
-					.addOption("3", t("FOLLOW_UP_ACTION_3"))
-					.addOption("4", t("FOLLOW_UP_ACTION_4"))
-					.setValue(this.plugin.settings.newOutcomeNoteFollowUpAction)
-					.onChange(async (value) => {
-						this.plugin.settings.newOutcomeNoteFollowUpAction =
-							value;
-						await this.plugin.saveSettings();
-					});
-			});
-		new Setting(content)
-			.setName(t("NOTE_NAME_PREFIX"))
-			.setDesc(t("NOTE_NAME_PREFIX_HINT"))
-			.addText((text) =>
-				text
-					.setPlaceholder("")
-					.setValue(this.plugin.settings.outcomeNoteNamePrefix)
-					.onChange(async (value) => {
-						this.plugin.settings.outcomeNoteNamePrefix = value;
-						await this.plugin.saveSettings();
-					})
-			);
-		new Setting(content)
-			.setName(t("NOTE_NAME_POSTFIX"))
-			.setDesc(t("NOTE_NAME_POSTFIX_HINT"))
-			.addText((text) =>
-				text
-					.setPlaceholder("")
-					.setValue(this.plugin.settings.outcomeNoteNamePostfix)
-					.onChange(async (value) => {
-						this.plugin.settings.outcomeNoteNamePostfix = value;
-						await this.plugin.saveSettings();
-					})
-			);
-		new Setting(content)
-			.setName(t("DEFAULT_EXCALIDRAW_TEMPLATE"))
-			.setDesc(t("DEFAULT_EXCALIDRAW_TEMPLATE_HINT"))
-			.addText((text) =>
-				text
-					.setPlaceholder("")
-					.setValue(
-						this.plugin.settings
-							.outcomeNoteDefaultExcalidrawTemplate
-					)
-					.onChange(async (value) => {
-						this.plugin.settings.outcomeNoteDefaultExcalidrawTemplate =
-							value;
-						await this.plugin.saveSettings();
-					})
-			);
+
+		// 结果项目默认子文件夹
+		this.createTextAreaSetting(content, {
+			name: "OUTCOME_PROJECT_DEFAULT_SUBFOLDERS",
+			desc: "OUTCOME_PROJECT_DEFAULT_SUBFOLDERS_HINT",
+			value: this.plugin.settings.outcomeProjectDefaultSubFolders,
+			onChange: async (value) => {
+				this.plugin.settings.outcomeProjectDefaultSubFolders = value;
+				await this.plugin.saveSettings();
+			},
+		});
+
+		// 笔记选项设置
+		this.createNoteOptionSettings(content, "outcome", this.plugin.settings);
 	}
 
 	private renderSyncSettings(content: HTMLElement) {
-		content.createEl("h6", {
-			text: t("IOTO_SYNC_SETTINGS_Airtable"),
+		// 第三方服务配置
+		const syncServices: ThirdPartyServiceConfig[] = [
+			{
+				serviceName: "Airtable",
+				apiKeySetting: "airtableAPIKeyForSync",
+				apiKeyHint: "IOTO_SYNC_SETTINGS_Airtable_API_KEY_HINT",
+				baseIdSetting: "airtableBaseIDForSync",
+				baseIdHint: "IOTO_SYNC_SETTINGS_Airtable_BASE_ID_HINT",
+				tableIdSetting: "airtableTableIDForSync",
+				tableIdHint: "IOTO_SYNC_SETTINGS_Airtable_TABLE_ID_HINT",
+				baseUrl: "https://airtable.com/{baseId}/{tableId}",
+				templateUrl: "AirtableSyncTableTemplateURL",
+				yourTableText: "YourAirtableSyncTable",
+				templateText: "AirtableSyncTemplate",
+			},
+			{
+				serviceName: "Vika",
+				apiKeySetting: "vikaAPIKeyForSync",
+				apiKeyHint: "IOTO_SYNC_SETTINGS_Vika_API_KEY_HINT",
+				tableIdSetting: "vikaTableIDForSync",
+				tableIdHint: "IOTO_SYNC_SETTINGS_Vika_TABLE_ID_HINT",
+				baseUrl: "https://vika.cn/workbench/{tableId}",
+				templateUrl: "VikaSyncTableTemplateURL",
+				yourTableText: "YourVikaSyncTable",
+				templateText: "VikaSyncTemplate",
+			},
+			{
+				serviceName: "Feishu",
+				apiKeySetting: "feishuAppIDForSync",
+				apiKeyHint: "IOTO_SYNC_SETTINGS_Feishu_APP_ID_HINT",
+				appSecretSetting: "feishuAppSecretForSync",
+				appSecretHint: "IOTO_SYNC_SETTINGS_Feishu_APP_SECRET_HINT",
+				baseIdSetting: "feishuBaseIDForSync",
+				baseIdHint: "IOTO_SYNC_SETTINGS_Feishu_BASE_ID_HINT",
+				tableIdSetting: "feishuTableIDForSync",
+				tableIdHint: "IOTO_SYNC_SETTINGS_Feishu_TABLE_ID_HINT",
+				baseUrl: "https://feishu.cn/base/{baseId}?table={tableId}",
+				templateUrl: "FeishuSyncTableTempalteURL",
+				yourTableText: "YourFeishuSyncTable",
+				templateText: "FeishuSyncTemplate",
+			},
+		];
+
+		syncServices.forEach((service) => {
+			this.createThirdPartyServiceSettings(
+				content,
+				service,
+				this.plugin.settings
+			);
 		});
-		new Setting(content)
-			.setName(t("IOTO_SYNC_SETTINGS_Airtable_API_KEY"))
-			.setDesc(t("IOTO_SYNC_SETTINGS_Airtable_API_KEY_HINT"))
-			.addText((text) => {
-				text.setPlaceholder("")
-					.setValue(this.plugin.settings.airtableAPIKeyForSync)
-					.onChange(async (value) => {
-						this.plugin.settings.airtableAPIKeyForSync = value;
-						await this.plugin.saveSettings();
-					});
-			});
-		new Setting(content)
-			.setName(t("IOTO_SYNC_SETTINGS_Airtable_BASE_ID"))
-			.setDesc(t("IOTO_SYNC_SETTINGS_Airtable_BASE_ID_HINT"))
-			.addText((text) => {
-				text.setPlaceholder("")
-					.setValue(this.plugin.settings.airtableBaseIDForSync)
-					.onChange(async (value) => {
-						this.plugin.settings.airtableBaseIDForSync = value;
-						await this.plugin.saveSettings();
-					});
-			});
-		new Setting(content)
-			.setName(t("IOTO_SYNC_SETTINGS_Airtable_TABLE_ID"))
-			.setDesc(t("IOTO_SYNC_SETTINGS_Airtable_TABLE_ID_HINT"))
-			.addText((text) => {
-				text.setPlaceholder("")
-					.setValue(this.plugin.settings.airtableTableIDForSync)
-					.onChange(async (value) => {
-						this.plugin.settings.airtableTableIDForSync = value;
-						await this.plugin.saveSettings();
-					});
-			});
-
-		const airtableSyncInfo = content.createEl("div");
-		const airtableSyncBaseLink = airtableSyncInfo.createEl("a", {
-			text: t("YourAirtableSyncTable"),
-			href: `https://airtable.com/${this.plugin.settings.airtableBaseIDForSync}/${this.plugin.settings.airtableTableIDForSync}`,
-		});
-		airtableSyncBaseLink.setAttr("target", "_blank");
-		airtableSyncBaseLink.setAttr("rel", "noopener noreferrer");
-
-		airtableSyncInfo.createEl("span", {
-			text: " | ",
-		});
-
-		const airtableSyncTemplateLink = airtableSyncInfo.createEl("a", {
-			text: t("AirtableSyncTemplate"),
-			href: t("AirtableSyncTableTemplateURL"),
-		});
-		airtableSyncTemplateLink.setAttr("target", "_blank");
-		airtableSyncTemplateLink.setAttr("rel", "noopener noreferrer");
-
-		content.createEl("h6", {
-			text: t("IOTO_SYNC_SETTINGS_Vika"),
-		});
-
-		new Setting(content)
-			.setName(t("IOTO_SYNC_SETTINGS_Vika_API_KEY"))
-			.setDesc(t("IOTO_SYNC_SETTINGS_Vika_API_KEY_HINT"))
-			.addText((text) => {
-				text.setPlaceholder("")
-					.setValue(this.plugin.settings.vikaAPIKeyForSync)
-					.onChange(async (value) => {
-						this.plugin.settings.vikaAPIKeyForSync = value;
-						await this.plugin.saveSettings();
-					});
-			});
-
-		new Setting(content)
-			.setName(t("IOTO_SYNC_SETTINGS_Vika_TABLE_ID"))
-			.setDesc(t("IOTO_SYNC_SETTINGS_Vika_TABLE_ID_HINT"))
-			.addText((text) => {
-				text.setPlaceholder("")
-					.setValue(this.plugin.settings.vikaTableIDForSync)
-					.onChange(async (value) => {
-						this.plugin.settings.vikaTableIDForSync = value;
-						await this.plugin.saveSettings();
-					});
-			});
-
-		const vikaSyncInfo = content.createEl("div");
-		const vikaSyncBaseLink = vikaSyncInfo.createEl("a", {
-			text: t("YourVikaSyncTable"),
-			href: `https://vika.cn/workbench/${this.plugin.settings.vikaTableIDForSync}`,
-		});
-		vikaSyncBaseLink.setAttr("target", "_blank");
-		vikaSyncBaseLink.setAttr("rel", "noopener noreferrer");
-
-		vikaSyncInfo.createEl("span", {
-			text: " | ",
-		});
-
-		const vikaSyncTemplateLink = vikaSyncInfo.createEl("a", {
-			text: t("VikaSyncTemplate"),
-			href: t("VikaSyncTableTemplateURL"),
-		});
-		vikaSyncTemplateLink.setAttr("target", "_blank");
-		vikaSyncTemplateLink.setAttr("rel", "noopener noreferrer");
-
-		content.createEl("h6", {
-			text: t("IOTO_SYNC_SETTINGS_Feishu"),
-		});
-
-		new Setting(content)
-			.setName(t("IOTO_SYNC_SETTINGS_Feishu_APP_ID"))
-			.setDesc(t("IOTO_SYNC_SETTINGS_Feishu_APP_ID_HINT"))
-			.addText((text) => {
-				text.setPlaceholder("")
-					.setValue(this.plugin.settings.feishuAppIDForSync)
-					.onChange(async (value) => {
-						this.plugin.settings.feishuAppIDForSync = value;
-						await this.plugin.saveSettings();
-					});
-			});
-
-		new Setting(content)
-			.setName(t("IOTO_SYNC_SETTINGS_Feishu_APP_SECRET"))
-			.setDesc(t("IOTO_SYNC_SETTINGS_Feishu_APP_SECRET_HINT"))
-			.addText((text) => {
-				text.setPlaceholder("")
-					.setValue(this.plugin.settings.feishuAppSecretForSync)
-					.onChange(async (value) => {
-						this.plugin.settings.feishuAppSecretForSync = value;
-						await this.plugin.saveSettings();
-					});
-			});
-
-		new Setting(content)
-			.setName(t("IOTO_SYNC_SETTINGS_Feishu_BASE_ID"))
-			.setDesc(t("IOTO_SYNC_SETTINGS_Feishu_BASE_ID_HINT"))
-			.addText((text) => {
-				text.setPlaceholder("")
-					.setValue(this.plugin.settings.feishuBaseIDForSync)
-					.onChange(async (value) => {
-						this.plugin.settings.feishuBaseIDForSync = value;
-						await this.plugin.saveSettings();
-					});
-			});
-
-		new Setting(content)
-			.setName(t("IOTO_SYNC_SETTINGS_Feishu_TABLE_ID"))
-			.setDesc(t("IOTO_SYNC_SETTINGS_Feishu_TABLE_ID_HINT"))
-			.addText((text) => {
-				text.setPlaceholder("")
-					.setValue(this.plugin.settings.feishuTableIDForSync)
-					.onChange(async (value) => {
-						this.plugin.settings.feishuTableIDForSync = value;
-						await this.plugin.saveSettings();
-					});
-			});
-
-		const feishuSyncInfo = content.createEl("div");
-		const feishuSyncBaseLink = feishuSyncInfo.createEl("a", {
-			text: t("YourFeishuSyncTable"),
-			href: `https://feishu.cn/base/${this.plugin.settings.feishuBaseIDForSync}?table=${this.plugin.settings.feishuTableIDForSync}`,
-		});
-		feishuSyncBaseLink.setAttr("target", "_blank");
-		feishuSyncBaseLink.setAttr("rel", "noopener noreferrer");
-
-		feishuSyncInfo.createEl("span", {
-			text: " | ",
-		});
-
-		const feishuSyncTemplateLink = feishuSyncInfo.createEl("a", {
-			text: t("FeishuSyncTemplate"),
-			href: t("FeishuSyncTableTempalteURL"),
-		});
-		feishuSyncTemplateLink.setAttr("target", "_blank");
-		feishuSyncTemplateLink.setAttr("rel", "noopener noreferrer");
 	}
 
 	private renderFetchSettings(content: HTMLElement) {
-		content.createEl("h6", {
-			text: t("IOTO_FETCH_SETTINGS_Airtable"),
+		// 第三方服务配置
+		const fetchServices: ThirdPartyServiceConfig[] = [
+			{
+				serviceName: "Airtable",
+				apiKeySetting: "airtableAPIKeyForFetch",
+				apiKeyHint: "IOTO_FETCH_SETTINGS_Airtable_API_KEY_HINT",
+				baseIdSetting: "airtableBaseIDForFetch",
+				baseIdHint: "IOTO_FETCH_SETTINGS_Airtable_BASE_ID_HINT",
+				tableIdSetting: "airtableTableIDForFetch",
+				tableIdHint: "IOTO_FETCH_SETTINGS_Airtable_TABLE_ID_HINT",
+				baseUrl: "https://airtable.com/{baseId}/{tableId}",
+				templateUrl: "AirtableFetchTableTemplateURL",
+				yourTableText: "YourAirtableFetchTable",
+				templateText: "AirtableFetchTemplate",
+			},
+			{
+				serviceName: "Vika",
+				apiKeySetting: "vikaAPIKeyForFetch",
+				apiKeyHint: "IOTO_FETCH_SETTINGS_Vika_API_KEY_HINT",
+				tableIdSetting: "vikaTableIDForFetch",
+				tableIdHint: "IOTO_FETCH_SETTINGS_Vika_TABLE_ID_HINT",
+				baseUrl: "https://vika.cn/workbench/{tableId}",
+				templateUrl: "VikaFetchTableTemplateURL",
+				yourTableText: "YourVikaFetchTable",
+				templateText: "VikaFetchTemplate",
+			},
+			{
+				serviceName: "Feishu",
+				apiKeySetting: "feishuAppIDForFetch",
+				apiKeyHint: "IOTO_FETCH_SETTINGS_Feishu_APP_ID_HINT",
+				appSecretSetting: "feishuAppSecretForFetch",
+				appSecretHint: "IOTO_FETCH_SETTINGS_Feishu_APP_SECRET_HINT",
+				baseIdSetting: "feishuBaseIDForFetch",
+				baseIdHint: "IOTO_FETCH_SETTINGS_Feishu_BASE_ID_HINT",
+				tableIdSetting: "feishuTableIDForFetch",
+				tableIdHint: "IOTO_FETCH_SETTINGS_Feishu_TABLE_ID_HINT",
+				baseUrl: "https://feishu.cn/base/{baseId}?table={tableId}",
+				templateUrl: "FeishuFetchTableTemplateURL",
+				yourTableText: "YourFeishuFetchTable",
+				templateText: "FeishuFetchTemplate",
+			},
+		];
+
+		fetchServices.forEach((service) => {
+			this.createThirdPartyServiceSettings(
+				content,
+				service,
+				this.plugin.settings
+			);
 		});
-
-		new Setting(content)
-			.setName(t("IOTO_FETCH_SETTINGS_Airtable_API_KEY"))
-			.setDesc(t("IOTO_FETCH_SETTINGS_Airtable_API_KEY_HINT"))
-			.addText((text) => {
-				text.setPlaceholder("")
-					.setValue(this.plugin.settings.airtableAPIKeyForFetch)
-					.onChange(async (value) => {
-						this.plugin.settings.airtableAPIKeyForFetch = value;
-						await this.plugin.saveSettings();
-					});
-			});
-
-		new Setting(content)
-			.setName(t("IOTO_FETCH_SETTINGS_Airtable_BASE_ID"))
-			.setDesc(t("IOTO_FETCH_SETTINGS_Airtable_BASE_ID_HINT"))
-			.addText((text) => {
-				text.setPlaceholder("")
-					.setValue(this.plugin.settings.airtableBaseIDForFetch)
-					.onChange(async (value) => {
-						this.plugin.settings.airtableBaseIDForFetch = value;
-						await this.plugin.saveSettings();
-					});
-			});
-
-		new Setting(content)
-			.setName(t("IOTO_FETCH_SETTINGS_Airtable_TABLE_ID"))
-			.setDesc(t("IOTO_FETCH_SETTINGS_Airtable_TABLE_ID_HINT"))
-			.addText((text) => {
-				text.setPlaceholder("")
-					.setValue(this.plugin.settings.airtableTableIDForFetch)
-					.onChange(async (value) => {
-						this.plugin.settings.airtableTableIDForFetch = value;
-						await this.plugin.saveSettings();
-					});
-			});
-
-		const airtableFetchInfo = content.createEl("div");
-		const airtableFetchBaseLink = airtableFetchInfo.createEl("a", {
-			text: t("YourAirtableFetchTable"),
-			href: `https://airtable.com/${this.plugin.settings.airtableBaseIDForFetch}/${this.plugin.settings.airtableTableIDForFetch}`,
-		});
-		airtableFetchBaseLink.setAttr("target", "_blank");
-		airtableFetchBaseLink.setAttr("rel", "noopener noreferrer");
-
-		airtableFetchInfo.createEl("span", {
-			text: " | ",
-		});
-
-		const airtableFetchTemplateLink = airtableFetchInfo.createEl("a", {
-			text: t("AirtableFetchTemplate"),
-			href: t("AirtableFetchTableTemplateURL"),
-		});
-		airtableFetchTemplateLink.setAttr("target", "_blank");
-		airtableFetchTemplateLink.setAttr("rel", "noopener noreferrer");
-
-		content.createEl("h6", {
-			text: t("IOTO_FETCH_SETTINGS_Vika"),
-		});
-
-		new Setting(content)
-			.setName(t("IOTO_FETCH_SETTINGS_Vika_API_KEY"))
-			.setDesc(t("IOTO_FETCH_SETTINGS_Vika_API_KEY_HINT"))
-			.addText((text) => {
-				text.setPlaceholder("")
-					.setValue(this.plugin.settings.vikaAPIKeyForFetch)
-					.onChange(async (value) => {
-						this.plugin.settings.vikaAPIKeyForFetch = value;
-						await this.plugin.saveSettings();
-					});
-			});
-
-		new Setting(content)
-			.setName(t("IOTO_FETCH_SETTINGS_Vika_TABLE_ID"))
-			.setDesc(t("IOTO_FETCH_SETTINGS_Vika_TABLE_ID_HINT"))
-			.addText((text) => {
-				text.setPlaceholder("")
-					.setValue(this.plugin.settings.vikaTableIDForFetch)
-					.onChange(async (value) => {
-						this.plugin.settings.vikaTableIDForFetch = value;
-						await this.plugin.saveSettings();
-					});
-			});
-
-		const vikaFetchInfo = content.createEl("div");
-		const vikaFetchBaseLink = vikaFetchInfo.createEl("a", {
-			text: t("YourVikaFetchTable"),
-			href: `https://vika.cn/workbench/${this.plugin.settings.vikaTableIDForFetch}`,
-		});
-		vikaFetchBaseLink.setAttr("target", "_blank");
-		vikaFetchBaseLink.setAttr("rel", "noopener noreferrer");
-
-		vikaFetchInfo.createEl("span", {
-			text: " | ",
-		});
-
-		const vikaFetchTemplateLink = vikaFetchInfo.createEl("a", {
-			text: t("VikaFetchTemplate"),
-			href: t("VikaFetchTableTemplateURL"),
-		});
-		vikaFetchTemplateLink.setAttr("target", "_blank");
-		vikaFetchTemplateLink.setAttr("rel", "noopener noreferrer");
-
-		content.createEl("h6", {
-			text: t("IOTO_FETCH_SETTINGS_Feishu"),
-		});
-
-		new Setting(content)
-			.setName(t("IOTO_FETCH_SETTINGS_Feishu_APP_ID"))
-			.setDesc(t("IOTO_FETCH_SETTINGS_Feishu_APP_ID_HINT"))
-			.addText((text) => {
-				text.setPlaceholder("")
-					.setValue(this.plugin.settings.feishuAppIDForFetch)
-					.onChange(async (value) => {
-						this.plugin.settings.feishuAppIDForFetch = value;
-						await this.plugin.saveSettings();
-					});
-			});
-
-		new Setting(content)
-			.setName(t("IOTO_FETCH_SETTINGS_Feishu_APP_SECRET"))
-			.setDesc(t("IOTO_FETCH_SETTINGS_Feishu_APP_SECRET_HINT"))
-			.addText((text) => {
-				text.setPlaceholder("")
-					.setValue(this.plugin.settings.feishuAppSecretForFetch)
-					.onChange(async (value) => {
-						this.plugin.settings.feishuAppSecretForFetch = value;
-						await this.plugin.saveSettings();
-					});
-			});
-
-		new Setting(content)
-			.setName(t("IOTO_FETCH_SETTINGS_Feishu_BASE_ID"))
-			.setDesc(t("IOTO_FETCH_SETTINGS_Feishu_BASE_ID_HINT"))
-			.addText((text) => {
-				text.setPlaceholder("")
-					.setValue(this.plugin.settings.feishuBaseIDForFetch)
-					.onChange(async (value) => {
-						this.plugin.settings.feishuBaseIDForFetch = value;
-						await this.plugin.saveSettings();
-					});
-			});
-
-		new Setting(content)
-			.setName(t("IOTO_FETCH_SETTINGS_Feishu_TABLE_ID"))
-			.setDesc(t("IOTO_FETCH_SETTINGS_Feishu_TABLE_ID_HINT"))
-			.addText((text) => {
-				text.setPlaceholder("")
-					.setValue(this.plugin.settings.feishuTableIDForFetch)
-					.onChange(async (value) => {
-						this.plugin.settings.feishuTableIDForFetch = value;
-						await this.plugin.saveSettings();
-					});
-			});
-		const feishuFetchInfo = content.createEl("div");
-		const feishuFetchBaseLink = feishuFetchInfo.createEl("a", {
-			text: t("YourFeishuFetchTable"),
-			href: `https://feishu.cn/base/${this.plugin.settings.feishuBaseIDForFetch}?table=${this.plugin.settings.feishuTableIDForFetch}`,
-		});
-		feishuFetchBaseLink.setAttr("target", "_blank");
-		feishuFetchBaseLink.setAttr("rel", "noopener noreferrer");
-
-		feishuFetchInfo.createEl("span", {
-			text: " | ",
-		});
-
-		const feishuFetchTemplateLink = feishuFetchInfo.createEl("a", {
-			text: t("FeishuFetchTemplate"),
-			href: t("FeishuFetchTableTemplateURL"),
-		});
-		feishuFetchTemplateLink.setAttr("target", "_blank");
-		feishuFetchTemplateLink.setAttr("rel", "noopener noreferrer");
 	}
 
 	private renderOtherSettings(content: HTMLElement) {
-		content.createEl("h6", {
-			text: t("IOTO_Utils_Settings"),
+		// IOTO工具设置
+		content.createEl("h6", { text: t("IOTO_Utils_Settings") });
+
+		const utilsSettings = [
+			{
+				key: "iotoUtilsSnRRulesFolder",
+				name: "IOTO_Utils_SnRRulesFolder",
+				desc: "IOTO_Utils_SnRRulesFolder_HINT",
+			},
+			{
+				key: "iotoUtilsTemplateSnippetFolder",
+				name: "IOTO_Utils_TemplateSnippetFolder",
+				desc: "IOTO_Utils_TemplateSnippetFolder_HINT",
+			},
+			{
+				key: "iotoUtilsPropertyManagementFolder",
+				name: "IOTO_Utils_PropertyManagementFolder",
+				desc: "IOTO_Utils_PropertyManagementFolder_HINT",
+			},
+		];
+
+		utilsSettings.forEach((setting) => {
+			this.createTextSetting(content, {
+				name: setting.name,
+				desc: setting.desc,
+				value: (this.plugin.settings as any)[setting.key],
+				onChange: async (value) => {
+					(this.plugin.settings as any)[setting.key] = value;
+					await this.plugin.saveSettings();
+				},
+			});
 		});
 
-		new Setting(content)
-			.setName(t("IOTO_Utils_SnRRulesFolder"))
-			.setDesc(t("IOTO_Utils_SnRRulesFolder_HINT"))
-			.addText((text) =>
-				text
-					.setPlaceholder("")
-					.setValue(this.plugin.settings.iotoUtilsSnRRulesFolder)
-					.onChange(async (value) => {
-						this.plugin.settings.iotoUtilsSnRRulesFolder = value;
-						await this.plugin.saveSettings();
-					})
-			);
-
-		new Setting(content)
-			.setName(t("IOTO_Utils_TemplateSnippetFolder"))
-			.setDesc(t("IOTO_Utils_TemplateSnippetFolder_HINT"))
-			.addText((text) =>
-				text
-					.setPlaceholder("")
-					.setValue(
-						this.plugin.settings.iotoUtilsTemplateSnippetFolder
-					)
-					.onChange(async (value) => {
-						this.plugin.settings.iotoUtilsTemplateSnippetFolder =
-							value;
-						await this.plugin.saveSettings();
-					})
-			);
-
-		new Setting(content)
-			.setName(t("IOTO_Utils_PropertyManagementFolder"))
-			.setDesc(t("IOTO_Utils_PropertyManagementFolder_HINT"))
-			.addText((text) =>
-				text
-					.setPlaceholder("")
-					.setValue(
-						this.plugin.settings.iotoUtilsPropertyManagementFolder
-					)
-					.onChange(async (value) => {
-						this.plugin.settings.iotoUtilsPropertyManagementFolder =
-							value;
-						await this.plugin.saveSettings();
-					})
-			);
-
-		new Setting(content)
-			.setName(t("IOTO_Utils_QuickImageSize"))
-			.setDesc(t("IOTO_Utils_QuickImageSize_HINT"))
-			.addTextArea((textArea) =>
-				textArea
-					.setPlaceholder("")
-					.setValue(this.plugin.settings.iotoUtilsQuickImageSize)
-					.onChange(async (value) => {
-						this.plugin.settings.iotoUtilsQuickImageSize = value;
-						await this.plugin.saveSettings();
-					})
-			);
-
-		new Setting(content)
-			.setName(t("IOTO_Utils_QuickImageMask"))
-			.setDesc(t("IOTO_Utils_QuickImageMask_HINT"))
-			.addToggle((toggle) => {
-				toggle
-					.setValue(this.plugin.settings.iotoUtilsQuickImageMask)
-					.onChange(async (value) => {
-						this.plugin.settings.iotoUtilsQuickImageMask = value;
-						await this.plugin.saveSettings();
-					});
-			});
-
-		new Setting(content)
-			.setName(t("IOTO_Utils_QuickBlockTypes"))
-			.setDesc(t("IOTO_Utils_QuickBlockTypes_HINT"))
-			.addTextArea((textArea) =>
-				textArea
-					.setPlaceholder("")
-					.setValue(this.plugin.settings.iotoUtilsQuickBlockTypes)
-					.onChange(async (value) => {
-						this.plugin.settings.iotoUtilsQuickBlockTypes = value;
-						await this.plugin.saveSettings();
-					})
-			);
-
-		new Setting(content)
-			.setName(t("IOTO_Utils_QuickBlockIdDateFormat"))
-			.setDesc(t("IOTO_Utils_QuickBlockIdDateFormat_HINT"))
-			.addText((text) =>
-				text
-					.setPlaceholder("")
-					.setValue(
-						this.plugin.settings.iotoUtilsQuickBlockIdDateFormat
-					)
-					.onChange(async (value) => {
-						this.plugin.settings.iotoUtilsQuickBlockIdDateFormat =
-							value;
-						await this.plugin.saveSettings();
-					})
-			);
-
-		new Setting(content)
-			.setName(t("IOTO_Utils_QuickBlockIdUseSingleLineAsSeparator"))
-			.setDesc(t("IOTO_Utils_QuickBlockIdUseSingleLineAsSeparator_HINT"))
-			.addToggle((toggle) => {
-				toggle
-					.setValue(
-						this.plugin.settings
-							.iotoUtilsQuickBlockIdUseSingleLineAsSeparator
-					)
-					.onChange(async (value) => {
-						this.plugin.settings.iotoUtilsQuickBlockIdUseSingleLineAsSeparator =
-							value;
-						await this.plugin.saveSettings();
-					});
-			});
-
-		content.createEl("h6", {
-			text: t("IOTO_Movie_Time_Tags_Settings"),
+		// 快速图片设置
+		this.createTextAreaSetting(content, {
+			name: "IOTO_Utils_QuickImageSize",
+			desc: "IOTO_Utils_QuickImageSize_HINT",
+			value: this.plugin.settings.iotoUtilsQuickImageSize,
+			onChange: async (value) => {
+				this.plugin.settings.iotoUtilsQuickImageSize = value;
+				await this.plugin.saveSettings();
+			},
 		});
-		new Setting(content)
-			.setName(t("IOTO_MOVIE_TIME_TAGS"))
-			.setDesc(t("SET_IOTO_MOVIE_TIME_TAGS"))
-			.addText((text) =>
-				text
-					.setPlaceholder(t("IOTO_MOVIE_TIME_TAGS_HINT"))
-					.setValue(this.plugin.settings.IOTOMovieTimeTags)
-					.onChange(async (value) => {
-						this.plugin.settings.IOTOMovieTimeTags = value;
-						await this.plugin.saveSettings();
-					})
-			);
+
+		this.createToggleSetting(content, {
+			name: "IOTO_Utils_QuickImageMask",
+			desc: "IOTO_Utils_QuickImageMask_HINT",
+			value: this.plugin.settings.iotoUtilsQuickImageMask,
+			onChange: async (value) => {
+				this.plugin.settings.iotoUtilsQuickImageMask = value;
+				await this.plugin.saveSettings();
+			},
+		});
+
+		// 快速块设置
+		this.createTextAreaSetting(content, {
+			name: "IOTO_Utils_QuickBlockTypes",
+			desc: "IOTO_Utils_QuickBlockTypes_HINT",
+			value: this.plugin.settings.iotoUtilsQuickBlockTypes,
+			onChange: async (value) => {
+				this.plugin.settings.iotoUtilsQuickBlockTypes = value;
+				await this.plugin.saveSettings();
+			},
+		});
+
+		this.createTextSetting(content, {
+			name: "IOTO_Utils_QuickBlockIdDateFormat",
+			desc: "IOTO_Utils_QuickBlockIdDateFormat_HINT",
+			value: this.plugin.settings.iotoUtilsQuickBlockIdDateFormat,
+			onChange: async (value) => {
+				this.plugin.settings.iotoUtilsQuickBlockIdDateFormat = value;
+				await this.plugin.saveSettings();
+			},
+		});
+
+		this.createToggleSetting(content, {
+			name: "IOTO_Utils_QuickBlockIdUseSingleLineAsSeparator",
+			desc: "IOTO_Utils_QuickBlockIdUseSingleLineAsSeparator_HINT",
+			value: this.plugin.settings
+				.iotoUtilsQuickBlockIdUseSingleLineAsSeparator,
+			onChange: async (value) => {
+				this.plugin.settings.iotoUtilsQuickBlockIdUseSingleLineAsSeparator =
+					value;
+				await this.plugin.saveSettings();
+			},
+		});
+
+		// 电影时间标签设置
+		content.createEl("h6", { text: t("IOTO_Movie_Time_Tags_Settings") });
+
+		this.createTextSetting(content, {
+			name: "IOTO_MOVIE_TIME_TAGS",
+			desc: "SET_IOTO_MOVIE_TIME_TAGS",
+			placeholder: "IOTO_MOVIE_TIME_TAGS_HINT",
+			value: this.plugin.settings.IOTOMovieTimeTags,
+			onChange: async (value) => {
+				this.plugin.settings.IOTOMovieTimeTags = value;
+				await this.plugin.saveSettings();
+			},
+		});
 	}
 }
