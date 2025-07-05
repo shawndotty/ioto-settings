@@ -1,130 +1,116 @@
 import { App, Notice, TFile } from "obsidian";
 import { t } from "../lang/helpers";
-import { HotkeyConfig } from "../types";
+import { HotkeyConfig, HotkeyMapping } from "../types";
 import { TemplaterService } from "./templater-service";
 
 export class HotkeyService {
 	constructor(private app: App, private templaterService: TemplaterService) {}
 
+	private createTemplatePath(type: string, name: string): string {
+		return `${t(
+			"0-Extras"
+		)}/IOTO/Templates/Templater/OBIOTO/IOTO-${type}-${name}.md`;
+	}
+
+	private createSyncTemplatePath(action: string, platform: string): string {
+		return `${t("0-Extras")}/IOTO/Templates/Templater/OBIOTO/IOTO${t(
+			"SyncTemplates"
+		)}/IOTO-OB${action}${platform}.md`;
+	}
+
 	async addIOTOHotkeys() {
 		// 定义要添加的热键映射
 		const hotkeyMappings = [
 			{
-				templatePath: `${t(
-					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO-${t("Selector")}-${t(
-					"CreateInput"
-				)}.md`,
+				templatePath: this.createTemplatePath(
+					t("Selector"),
+					t("CreateInput")
+				),
 				hotkey: {
 					modifiers: ["Alt"],
 					key: "1",
 				},
 			},
 			{
-				templatePath: `${t(
-					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO-${t("Selector")}-${t(
-					"CreateOutput"
-				)}.md`,
+				templatePath: this.createTemplatePath(
+					t("Selector"),
+					t("CreateOutput")
+				),
 				hotkey: {
 					modifiers: ["Alt"],
 					key: "2",
 				},
 			},
 			{
-				templatePath: `${t(
-					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO-${t("Selector")}-${t(
-					"CreateTask"
-				)}.md`,
+				templatePath: this.createTemplatePath(
+					t("Selector"),
+					t("CreateTask")
+				),
 				hotkey: {
 					modifiers: ["Alt"],
 					key: "3",
 				},
 			},
 			{
-				templatePath: `${t(
-					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO-${t("Selector")}-${t(
-					"CreateOutcome"
-				)}.md`,
+				templatePath: this.createTemplatePath(
+					t("Selector"),
+					t("CreateOutcome")
+				),
 				hotkey: {
 					modifiers: ["Alt"],
 					key: "4",
 				},
 			},
 			{
-				templatePath: `${t(
-					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO-${t("Selector")}-${t(
-					"Auxiliaries"
-				)}.md`,
+				templatePath: this.createTemplatePath(
+					t("Selector"),
+					t("Auxiliaries")
+				),
 				hotkey: {
 					modifiers: ["Alt"],
 					key: "5",
 				},
 			},
 			{
-				templatePath: `${t(
-					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO${t(
-					"SyncTemplates"
-				)}/IOTO-OBSyncAirtable.md`,
+				templatePath: this.createSyncTemplatePath("SyncAirtable", "OB"),
 				hotkey: {
 					modifiers: ["Alt"],
 					key: "A",
 				},
 			},
 			{
-				templatePath: `${t(
-					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO${t(
-					"SyncTemplates"
-				)}/IOTO-OBFetchAirtable.md`,
+				templatePath: this.createSyncTemplatePath(
+					"FetchAirtable",
+					"OB"
+				),
 				hotkey: {
 					modifiers: ["Alt", "Shift"],
 					key: "A",
 				},
 			},
 			{
-				templatePath: `${t(
-					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO${t(
-					"SyncTemplates"
-				)}/IOTO-OBSyncVika.md`,
+				templatePath: this.createSyncTemplatePath("SyncVika", "OB"),
 				hotkey: {
 					modifiers: ["Alt"],
 					key: "V",
 				},
 			},
 			{
-				templatePath: `${t(
-					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO${t(
-					"SyncTemplates"
-				)}/IOTO-OBFetchVika.md`,
+				templatePath: this.createSyncTemplatePath("FetchVika", "OB"),
 				hotkey: {
 					modifiers: ["Alt", "Shift"],
 					key: "V",
 				},
 			},
 			{
-				templatePath: `${t(
-					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO${t(
-					"SyncTemplates"
-				)}/IOTO-OBSyncFeishu.md`,
+				templatePath: this.createSyncTemplatePath("SyncFeishu", "OB"),
 				hotkey: {
 					modifiers: ["Alt"],
 					key: "F",
 				},
 			},
 			{
-				templatePath: `${t(
-					"0-Extras"
-				)}/IOTO/Templates/Templater/OBIOTO/IOTO${t(
-					"SyncTemplates"
-				)}/IOTO-OBFetchFeishu.md`,
+				templatePath: this.createSyncTemplatePath("FetchFeishu", "OB"),
 				hotkey: {
 					modifiers: ["Alt", "Shift"],
 					key: "F",
@@ -140,13 +126,20 @@ export class HotkeyService {
 		await this.templaterService.addTemplaterHotkeys(templatePaths);
 
 		// 1. 确保模板存在
+		const missingTemplates: string[] = [];
 		for (const mapping of hotkeyMappings) {
 			if (!this.templateExists(mapping.templatePath)) {
-				new Notice(
-					`${t("Template does not exist:")} ${mapping.templatePath}`
-				);
-				return;
+				missingTemplates.push(mapping.templatePath);
 			}
+		}
+
+		if (missingTemplates.length > 0) {
+			new Notice(
+				`${t("Templates do not exist:")}\n${missingTemplates.join(
+					"\n"
+				)}`
+			);
+			return;
 		}
 
 		// 2. 获取当前热键配置
@@ -209,5 +202,75 @@ export class HotkeyService {
 	templateExists(templatePath: string): boolean {
 		const file = this.app.vault.getAbstractFileByPath(templatePath);
 		return file instanceof TFile;
+	}
+
+	// 添加重置热键的方法
+	async resetIOTOHotkeys() {
+		const hotkeysPath = ".obsidian/hotkeys.json";
+		let currentHotkeys: HotkeyConfig = {};
+
+		try {
+			const content = await this.app.vault.adapter.read(hotkeysPath);
+			currentHotkeys = JSON.parse(content || "{}");
+
+			// 获取所有IOTO相关的命令ID
+			const iotoCommandIds = Object.keys(currentHotkeys).filter(
+				(id) =>
+					id.includes("templater-obsidian:") &&
+					id.includes("/IOTO/Templates/Templater/OBIOTO/")
+			);
+
+			// 移除这些命令的热键
+			let removedCount = 0;
+			for (const id of iotoCommandIds) {
+				delete currentHotkeys[id];
+				removedCount++;
+			}
+
+			// 保存回文件
+			await this.app.vault.adapter.write(
+				hotkeysPath,
+				JSON.stringify(currentHotkeys, null, 2)
+			);
+
+			new Notice(
+				`${t("Successfully removed %removedCount% IOTO hotkeys", {
+					removedCount: removedCount.toString(),
+				})}`
+			);
+		} catch (e) {
+			console.error(t("Reset hotkeys error:"), e);
+			new Notice(t("Reset hotkeys failed"));
+		}
+	}
+
+	// 检查热键冲突
+	private checkHotkeyConflicts(mappings: HotkeyMapping[]): {
+		conflicting: boolean;
+		conflicts: string[];
+	} {
+		const hotkeyMap = new Map<string, string>();
+		const conflicts: string[] = [];
+
+		for (const mapping of mappings) {
+			const hotkeyString = `${mapping.hotkey.modifiers
+				.sort()
+				.join("+")}+${mapping.hotkey.key}`;
+
+			if (hotkeyMap.has(hotkeyString)) {
+				conflicts.push(
+					`${hotkeyString}: ${hotkeyMap.get(hotkeyString)} 和 ${
+						mapping.templatePath
+					}`
+				);
+			} else {
+				hotkeyMap.set(hotkeyString, mapping.templatePath);
+			}
+		}
+
+		return {
+			conflicting: conflicts.length > 0,
+			conflicts,
+		};
 	}
 }

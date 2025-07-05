@@ -292,4 +292,9 @@ export default {
 	VikaFetchTemplate: "Vika 獲取模板",
 	YourFeishuFetchTable: "您的飛書獲取表",
 	FeishuFetchTemplate: "飛書獲取模板",
+	"Templates do not exist:": "模板不存在:",
+	"Successfully removed %removedCount% IOTO hotkeys":
+		"成功移除 %removedCount% 個 IOTO 热键",
+	"Reset hotkeys error:": "重置热键失败:",
+	"Reset hotkeys failed": "重置热键失败",
 };

@@ -293,4 +293,9 @@ export default {
 	VikaFetchTemplate: "Vika 获取模板",
 	YourFeishuFetchTable: "您的飞书获取表",
 	FeishuFetchTemplate: "飞书获取模板",
+	"Templates do not exist:": "模板不存在:",
+	"Successfully removed %removedCount% IOTO hotkeys":
+		"成功移除 %removedCount% 个 IOTO 热键",
+	"Reset hotkeys error:": "重置热键失败:",
+	"Reset hotkeys failed": "重置热键失败",
 };

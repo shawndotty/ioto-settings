@@ -109,6 +109,14 @@ export interface IOTOSettings {
 	feishuTableIDForFetch: string;
 }
 
+export interface HotkeyMapping {
+	templatePath: string;
+	hotkey: {
+		modifiers: string[];
+		key: string;
+	};
+}
+
 export interface HotkeyConfig {
 	[key: string]: Array<{ modifiers: string[]; key: string }>;
 }

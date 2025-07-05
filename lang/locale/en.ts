@@ -315,4 +315,9 @@ export default {
 	VikaFetchTemplate: "Vika Fetch Template",
 	YourFeishuFetchTable: "Your Feishu Fetch Table",
 	FeishuFetchTemplate: "Feishu Fetch Template",
+	"Templates do not exist:": "Templates do not exist:",
+	"Successfully removed %removedCount% IOTO hotkeys":
+		"Successfully removed %removedCount% IOTO hotkeys",
+	"Reset hotkeys error:": "Reset hotkeys error:",
+	"Reset hotkeys failed": "Reset hotkeys failed",
 };
