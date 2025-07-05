@@ -1,0 +1,95 @@
+export function addStyles() {
+	const style = document.createElement("style");
+	style.textContent = `
+            .settings-tabs {
+                display: flex;
+                border-bottom: 1px solid var(--background-modifier-border);
+                margin-bottom: 1em;
+            }
+            
+            .settings-tab {
+                padding: 8px 16px;
+                cursor: pointer;
+                border-bottom: 2px solid transparent;
+            }
+            
+            .settings-tab.active {
+                border-bottom-color: var(--interactive-accent);
+                color: var(--interactive-accent);
+            }
+            
+            .settings-tab:hover {
+                color: var(--text-accent);
+            }
+
+            .ioto-input-modal {
+                padding: 20px;
+                border-radius: 8px;
+                background: var(--background-primary);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .ioto-input-modal-title {
+                margin: 0 0 20px 0;
+                color: var(--text-normal);
+                font-size: 1.2em;
+                font-weight: 600;
+            }
+
+            .ioto-input-container {
+                margin-bottom: 20px;
+            }
+
+            .ioto-input {
+                width: 100%;
+                padding: 8px 12px;
+                border: 1px solid var(--background-modifier-border);
+                border-radius: 4px;
+                background: var(--background-primary);
+                color: var(--text-normal);
+                font-size: 14px;
+                transition: all 0.3s ease;
+            }
+
+            .ioto-input:focus {
+                outline: none;
+                border-color: var(--interactive-accent);
+                box-shadow: 0 0 0 2px rgba(var(--interactive-accent-rgb), 0.2);
+            }
+
+            .ioto-button-container {
+                display: flex;
+                justify-content: flex-end;
+                gap: 10px;
+            }
+
+            .ioto-button {
+                padding: 8px 16px;
+                border: none;
+                border-radius: 4px;
+                font-size: 14px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .ioto-button-cancel {
+                background: var(--background-modifier-border);
+                color: var(--text-muted);
+            }
+
+            .ioto-button-cancel:hover {
+                background: var(--background-modifier-border-hover);
+            }
+
+            .ioto-button-confirm {
+                background: var(--interactive-accent);
+                color: var(--text-on-accent);
+            }
+
+            .ioto-button-confirm:hover {
+                background: var(--interactive-accent-hover);
+            }
+        `;
+	document.head.appendChild(style);
+}
