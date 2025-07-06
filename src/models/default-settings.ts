@@ -1,4 +1,4 @@
-import { IOTOSettings } from "../src/types";
+import { IOTOSettings } from "../types";
 import { t } from "../lang/helpers";
 
 export const DEFAULT_SETTINGS: IOTOSettings = {
