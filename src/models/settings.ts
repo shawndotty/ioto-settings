@@ -1,4 +1,4 @@
-import { IOTOSettings } from "../types";
+import { IOTOSettings } from "../src/types";
 import { DEFAULT_SETTINGS } from "./default-settings";
 
 export class SettingsManager {

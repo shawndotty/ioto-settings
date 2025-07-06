@@ -1,7 +1,7 @@
-import { t } from "../src/lang/helpers";
+import { t } from "../lang/helpers";
 import { InputModal } from "../ui/modals/input-modal";
 import { App, normalizePath, TFile } from "obsidian";
-import { IOTOSettings } from "../src/types";
+import { IOTOSettings } from "../types";
 
 export class FolderService {
 	constructor(private app: App, private settings: IOTOSettings) {}
