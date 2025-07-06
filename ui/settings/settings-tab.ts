@@ -19,46 +19,58 @@ export class IOTOSettingTab extends PluginSettingTab {
 
 		const tabbedSettings = new TabbedSettings(containerEl);
 
-		tabbedSettings.addTab(t("IOTO_Basic_Settings"), (content) => {
-			this.renderBasicSettings(content);
-		});
+		// 定义标签页配置
+		const tabConfigs = [
+			{
+				title: "IOTO_Basic_Settings",
+				renderMethod: (content: HTMLElement) =>
+					this.renderBasicSettings(content),
+			},
+			{
+				title: "IOTO_PROJECT_AND_LTD_List_Settings",
+				renderMethod: (content: HTMLElement) =>
+					this.renderProjectSettings(content),
+			},
+			{
+				title: "IOTO_INPUT_SELECTOR_SETTINGS",
+				renderMethod: (content: HTMLElement) =>
+					this.renderInputSettings(content),
+			},
+			{
+				title: "IOTO_OUTPUT_SELECTOR_SETTINGS",
+				renderMethod: (content: HTMLElement) =>
+					this.renderOutputSettings(content),
+			},
+			{
+				title: "IOTO_TASK_SELECTOR_SETTINGS",
+				renderMethod: (content: HTMLElement) =>
+					this.renderTaskSettings(content),
+			},
+			{
+				title: "IOTO_OUTCOME_SELECTOR_SETTINGS",
+				renderMethod: (content: HTMLElement) =>
+					this.renderOutcomeSettings(content),
+			},
+			{
+				title: "IOTO_SYNC_SETTINGS",
+				renderMethod: (content: HTMLElement) =>
+					this.renderSyncSettings(content),
+			},
+			{
+				title: "IOTO_FETCH_SETTINGS",
+				renderMethod: (content: HTMLElement) =>
+					this.renderFetchSettings(content),
+			},
+			{
+				title: "IOTO_Other_Settings",
+				renderMethod: (content: HTMLElement) =>
+					this.renderOtherSettings(content),
+			},
+		];
 
-		tabbedSettings.addTab(
-			t("IOTO_PROJECT_AND_LTD_List_Settings"),
-			(content) => {
-				this.renderProjectSettings(content);
-			}
-		);
-
-		tabbedSettings.addTab(t("IOTO_INPUT_SELECTOR_SETTINGS"), (content) => {
-			this.renderInputSettings(content);
-		});
-
-		tabbedSettings.addTab(t("IOTO_OUTPUT_SELECTOR_SETTINGS"), (content) => {
-			this.renderOutputSettings(content);
-		});
-
-		tabbedSettings.addTab(t("IOTO_TASK_SELECTOR_SETTINGS"), (content) => {
-			this.renderTaskSettings(content);
-		});
-
-		tabbedSettings.addTab(
-			t("IOTO_OUTCOME_SELECTOR_SETTINGS"),
-			(content) => {
-				this.renderOutcomeSettings(content);
-			}
-		);
-
-		tabbedSettings.addTab(t("IOTO_SYNC_SETTINGS"), (content) => {
-			this.renderSyncSettings(content);
-		});
-
-		tabbedSettings.addTab(t("IOTO_FETCH_SETTINGS"), (content) => {
-			this.renderFetchSettings(content);
-		});
-
-		tabbedSettings.addTab(t("IOTO_Other_Settings"), (content) => {
-			this.renderOtherSettings(content);
+		// 使用循环创建标签页
+		tabConfigs.forEach((config) => {
+			tabbedSettings.addTab(t(config.title as any), config.renderMethod);
 		});
 	}
 
@@ -415,7 +427,7 @@ export class IOTOSettingTab extends PluginSettingTab {
 				onChange: async (newFolder: string, oldFolder: string) => {
 					this.plugin.settings.inputFolder = newFolder;
 					await this.plugin.saveSettings();
-					await this.plugin.folderService.changeIOTOBaseFolder(
+					await this.plugin.serviceManager.folderService.changeIOTOBaseFolder(
 						newFolder,
 						oldFolder
 					);
@@ -429,7 +441,7 @@ export class IOTOSettingTab extends PluginSettingTab {
 				onChange: async (newFolder: string, oldFolder: string) => {
 					this.plugin.settings.outputFolder = newFolder;
 					await this.plugin.saveSettings();
-					await this.plugin.folderService.changeIOTOBaseFolder(
+					await this.plugin.serviceManager.folderService.changeIOTOBaseFolder(
 						newFolder,
 						oldFolder
 					);
@@ -443,10 +455,10 @@ export class IOTOSettingTab extends PluginSettingTab {
 				onChange: async (newFolder: string, oldFolder: string) => {
 					this.plugin.settings.taskFolder = newFolder;
 					await this.plugin.saveSettings();
-					await this.plugin.folderService.rebuildTaskDashboard(
+					await this.plugin.serviceManager.folderService.rebuildTaskDashboard(
 						newFolder || oldFolder
 					);
-					await this.plugin.folderService.changeIOTOBaseFolder(
+					await this.plugin.serviceManager.folderService.changeIOTOBaseFolder(
 						newFolder,
 						oldFolder
 					);
@@ -460,7 +472,7 @@ export class IOTOSettingTab extends PluginSettingTab {
 				onChange: async (newFolder: string, oldFolder: string) => {
 					this.plugin.settings.outcomeFolder = newFolder;
 					await this.plugin.saveSettings();
-					await this.plugin.folderService.changeIOTOBaseFolder(
+					await this.plugin.serviceManager.folderService.changeIOTOBaseFolder(
 						newFolder,
 						oldFolder
 					);
@@ -474,7 +486,7 @@ export class IOTOSettingTab extends PluginSettingTab {
 				onChange: async (newFolder: string, oldFolder: string) => {
 					this.plugin.settings.extraFolder = newFolder;
 					await this.plugin.saveSettings();
-					await this.plugin.folderService.changeIOTOBaseFolder(
+					await this.plugin.serviceManager.folderService.changeIOTOBaseFolder(
 						newFolder,
 						oldFolder
 					);
@@ -488,7 +500,7 @@ export class IOTOSettingTab extends PluginSettingTab {
 				onChange: async (newFolder: string, oldFolder: string) => {
 					this.plugin.settings.IOTOFrameworkPath = newFolder;
 					await this.plugin.saveSettings();
-					await this.plugin.folderService.changeIOTOBaseFolder(
+					await this.plugin.serviceManager.folderService.changeIOTOBaseFolder(
 						newFolder,
 						oldFolder
 					);

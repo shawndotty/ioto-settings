@@ -2,18 +2,12 @@ import { Plugin } from "obsidian";
 import { IOTOSettings } from "./types";
 import { SettingsManager } from "./models/settings";
 import { IOTOSettingTab } from "./ui/settings/settings-tab";
-import { FolderService } from "./services/folder-service";
-import { TemplaterService } from "./services/templater-service";
-import { HotkeyService } from "./services/hotkey-service";
-import { CommandService } from "./services/commands-service";
+import { ServiceManager } from "./services/service-manager";
 
 export default class IOTO extends Plugin {
 	settings: IOTOSettings;
 	settingsManager: SettingsManager;
-	folderService: FolderService;
-	templaterService: TemplaterService;
-	hotkeyService: HotkeyService;
-	commandService: CommandService;
+	serviceManager: ServiceManager;
 
 	async onload() {
 		// 初始化设置管理器
@@ -23,27 +17,23 @@ export default class IOTO extends Plugin {
 		);
 		this.settings = await this.settingsManager.load();
 
-		// 初始化服务
-		this.folderService = new FolderService(this.app, this.settings);
-		this.templaterService = new TemplaterService(this.app, this.settings);
-		this.hotkeyService = new HotkeyService(this.app, this.templaterService);
-		this.commandService = new CommandService(
-			this.app,
-			this,
-			this.settings,
-			this.folderService,
-			this.templaterService,
-			this.hotkeyService
-		);
+		// 初始化服务管理器（使用依赖注入）
+		this.serviceManager = new ServiceManager(this.app, this, this.settings);
+		await this.serviceManager.initialize();
 
 		// 注册命令
-		this.commandService.registerCommands();
+		this.serviceManager.commandService.registerCommands();
 
 		// 添加设置选项卡
 		this.addSettingTab(new IOTOSettingTab(this.app, this));
 	}
 
-	onunload() {}
+	async onunload() {
+		// 清理服务
+		if (this.serviceManager) {
+			await this.serviceManager.dispose();
+		}
+	}
 
 	async loadSettings() {
 		this.settings = await this.settingsManager.load();
