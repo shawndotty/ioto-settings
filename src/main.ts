@@ -15,7 +15,7 @@ export default class IOTO extends Plugin {
 			() => this.loadData(),
 			(data) => this.saveData(data)
 		);
-		this.settings = await this.settingsManager.load();
+		await this.loadSettings();
 
 		// 初始化服务管理器（使用依赖注入）
 		this.serviceManager = new ServiceManager(this.app, this, this.settings);
