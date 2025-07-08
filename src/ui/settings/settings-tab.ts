@@ -3,6 +3,7 @@ import IOTO from "../../main";
 import { TabbedSettings } from "./tabbed-settings";
 import { t } from "../../lang/helpers";
 import { SettingConfig, ThirdPartyServiceConfig } from "../../types";
+import { FolderSuggest } from "../pickers/folder-picker";
 
 export class IOTOSettingTab extends PluginSettingTab {
 	plugin: IOTO;
@@ -90,6 +91,23 @@ export class IOTOSettingTab extends PluginSettingTab {
 			});
 	}
 
+	// 通用方法：创建文本设置项
+	private createSearchSetting(
+		content: HTMLElement,
+		config: SettingConfig
+	): void {
+		new Setting(content)
+			.setName(t(config.name as any))
+			.setDesc(t(config.desc as any))
+			.addSearch((text) => {
+				new FolderSuggest(this.app, text.inputEl);
+				if (config.placeholder) {
+					text.setPlaceholder(t(config.placeholder as any));
+				}
+				text.setValue(config.value).onChange(config.onChange);
+			});
+	}
+
 	// 通用方法：创建文本区域设置项
 	private createTextAreaSetting(
 		content: HTMLElement,
@@ -148,7 +166,8 @@ export class IOTOSettingTab extends PluginSettingTab {
 		new Setting(content)
 			.setName(t(nameKey as any))
 			.setDesc(t(descKey as any))
-			.addText((text) => {
+			.addSearch((text) => {
+				new FolderSuggest(this.app, text.inputEl);
 				text.setPlaceholder(t(placeholderKey as any))
 					.setValue(value)
 					.onChange(async (newFolder) => {
@@ -940,7 +959,7 @@ export class IOTOSettingTab extends PluginSettingTab {
 		];
 
 		utilsSettings.forEach((setting) => {
-			this.createTextSetting(content, {
+			this.createSearchSetting(content, {
 				name: setting.name,
 				desc: setting.desc,
 				value: (this.plugin.settings as any)[setting.key],
