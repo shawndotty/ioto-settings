@@ -27,6 +27,8 @@ If your plugin does not need CSS, delete this file.
     color: var(--text-accent);
 }
 
+/* Input Modal */
+
 .ioto-input-modal {
     padding: 20px;
     border-radius: 8px;
