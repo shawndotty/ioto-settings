@@ -1,11 +1,11 @@
 {
-	"id": "ioto-settings",
-	"name": "IOTO Framework Settings",
-	"version": "1.9.3",
-	"minAppVersion": "0.15.0",
-	"description": "This is a plugin for IOTO framework. You can use this plugin to customize your IOTO framework.",
-	"author": "Johnny Learns",
-	"authorUrl": "https://github.com/shawndotty/ioto-settings",
-	"fundingUrl": "https://space.bilibili.com/432408734",
-	"isDesktopOnly": false
+  "id": "ioto-settings",
+  "name": "IOTO Framework Settings",
+  "version": "1.9.3",
+  "minAppVersion": "0.15.0",
+  "description": "This is a plugin for IOTO framework. You can use this plugin to customize your IOTO framework.",
+  "author": "Johnny Learns",
+  "authorUrl": "https://github.com/shawndotty/ioto-settings",
+  "fundingUrl": "https://space.bilibili.com/432408734",
+  "isDesktopOnly": false
 }
