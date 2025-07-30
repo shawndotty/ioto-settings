@@ -1,6 +1,7 @@
 //Solution copied from obsidian-kanban: https://github.com/mgmeyers/obsidian-kanban/blob/44118e25661bff9ebfe54f71ae33805dc88ffa53/src/lang/helpers.ts
 
 import { moment } from "obsidian";
+import { getAppInstance } from "src/utils";
 import IOTO from "src/main";
 
 import en from "./locale/en";
@@ -13,11 +14,13 @@ const localeMap: { [k: string]: Partial<typeof en> } = {
 	"zh-tw": zhTW,
 };
 
-// 优化语言选择逻辑，增加健壮性和可读性
+// 优化语言选择逻辑，简化变量声明与判断
+const app = getAppInstance();
+const iotoRunningLanguage =
+	app.plugins.plugins["ioto-update"]?.settings?.iotoRunningLanguage ?? "ob";
+
 const lang =
-	IOTO.IOTORunningLanguage === "ob"
-		? moment.locale()
-		: IOTO.IOTORunningLanguage;
+	iotoRunningLanguage === "ob" ? moment.locale() : iotoRunningLanguage;
 const locale = localeMap[lang] ?? en;
 
 export function t(

@@ -9,22 +9,7 @@ export default class IOTO extends Plugin {
 	settingsManager: SettingsManager;
 	serviceManager: ServiceManager;
 
-	// 创建一个静态属性 IOTORunningLanguage
-	static IOTORunningLanguage: string;
-
 	async onload() {
-		// 获取插件 ioto-update 的 Setting 中的 iotoRunningLanguage，并赋值给静态属性 IOTORunningLanguage
-		const iotoUpdatePlugin = this.app.plugins.plugins["ioto-update"];
-		if (
-			iotoUpdatePlugin &&
-			iotoUpdatePlugin.settings &&
-			iotoUpdatePlugin.settings.iotoRunningLanguage
-		) {
-			IOTO.IOTORunningLanguage =
-				iotoUpdatePlugin.settings.iotoRunningLanguage;
-		} else {
-			IOTO.IOTORunningLanguage = "ob"; // 默认值，可根据需要修改
-		}
 		// 初始化设置管理器
 		this.settingsManager = new SettingsManager(
 			() => this.loadData(),
