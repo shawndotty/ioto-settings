@@ -14,7 +14,10 @@ interface TemplaterPlugin {
 }
 
 export class TemplaterService {
-	constructor(private app: App, private settings: IOTOSettings) {}
+	private iotoExtraFolder;
+	constructor(private app: App, private settings: IOTOSettings) {
+		this.iotoExtraFolder = this.settings.extraFolder;
+	}
 
 	private getTemplater(): TemplaterPlugin | null {
 		// 获取Templater插件实例
@@ -43,8 +46,10 @@ export class TemplaterService {
 		const settings = await this.getTemplaterSettings();
 		if (!settings) return false;
 
-		settings.templates_folder = `${t("0-Extras")}/IOTO/Templates/Templater`;
-		settings.user_scripts_folder = `${t("0-Extras")}/IOTO/Scripts`;
+		const extraFolder = this.iotoExtraFolder || t("0-Extras");
+
+		settings.templates_folder = `${extraFolder}/IOTO/Templates/Templater`;
+		settings.user_scripts_folder = `${extraFolder}/IOTO/Scripts`;
 
 		// 保存设置
 		if (templater) {

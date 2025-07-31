@@ -23,14 +23,21 @@ export class HotkeyService {
 	private readonly IOTO_TEMPLATE_PREFIX = "/IOTO/Templates/Templater/OBIOTO/";
 
 	// 热键配置数据
-	private readonly HOTKEY_DEFINITIONS: HotkeyDefinition[] = [
-		// 基础模板热键
-		...this.createBasicTemplateHotkeys(),
-		// 同步服务热键
-		...this.createSyncServiceHotkeys(),
-	];
+	private readonly HOTKEY_DEFINITIONS: HotkeyDefinition[];
 
-	constructor(private app: App, private templaterService: TemplaterService) {}
+	private iotoExtraFolder;
+
+	constructor(private app: App, private templaterService: TemplaterService) {
+		this.iotoExtraFolder =
+			this.app.plugins.plugins["ioto-settings"].settings.extraFolder;
+		// 在构造函数中初始化热键配置数据
+		this.HOTKEY_DEFINITIONS = [
+			// 基础模板热键
+			...this.createBasicTemplateHotkeys(),
+			// 同步服务热键
+			...this.createSyncServiceHotkeys(),
+		];
+	}
 
 	/**
 	 * 创建基础模板热键配置
@@ -92,16 +99,16 @@ export class HotkeyService {
 	 * 创建模板路径
 	 */
 	private createTemplatePath(type: string, name: string): string {
-		return `${t(
-			"0-Extras"
-		)}/IOTO/Templates/Templater/OBIOTO/IOTO-${type}-${name}.md`;
+		const extraFolder = this.iotoExtraFolder || t("0-Extras");
+		return `${extraFolder}/IOTO/Templates/Templater/OBIOTO/IOTO-${type}-${name}.md`;
 	}
 
 	/**
 	 * 创建同步模板路径
 	 */
 	private createSyncTemplatePath(action: string, platform: string): string {
-		return `${t("0-Extras")}/IOTO/Templates/Templater/OBIOTO/IOTO${t(
+		const extraFolder = this.iotoExtraFolder || t("0-Extras");
+		return `${extraFolder}/IOTO/Templates/Templater/OBIOTO/IOTO${t(
 			"SyncTemplates"
 		)}/IOTO-OB${action}${platform}.md`;
 	}
