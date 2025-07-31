@@ -68,7 +68,7 @@ export class HotkeyService {
 		syncServices.forEach(({ name, key }) => {
 			// 同步热键
 			hotkeys.push({
-				templatePath: this.createSyncTemplatePath(`Sync${name}`, "OB"),
+				templatePath: this.createSyncTemplatePath("Sync", name),
 				hotkey: {
 					modifiers: ["Alt"],
 					key,
@@ -77,7 +77,7 @@ export class HotkeyService {
 
 			// 获取热键
 			hotkeys.push({
-				templatePath: this.createSyncTemplatePath(`Fetch${name}`, "OB"),
+				templatePath: this.createSyncTemplatePath("Fetch", name),
 				hotkey: {
 					modifiers: ["Alt", "Shift"],
 					key,
